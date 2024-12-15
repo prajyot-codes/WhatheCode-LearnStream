@@ -5,6 +5,23 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse  } from '../utils/ApiResponse.js'
 // const User = require('../models/student/userteachermodel');
 
+const generateAccessAndRefreshTokens  = async (userId)=>{
+    try {
+        const userTeacher = UserTeacher.findById(userId)
+        const accessToken = userTeacher.generateAccessToken();
+        const refreshToken = userTeacher.generateRefreshToken();
+
+        userTeacher.refreshToken = refreshToken;
+        await userTeacher.save({validateBeforeSave:false})
+
+        return {accessToken,refreshToken}
+
+
+    } catch (error) {
+        throw new ApiError(500,"Something went wrong while generating Refresh And Access tokens")
+    }
+}
+
 const registerUser = asyncHandler( async (req,res,next) =>{
     // 1 get user details from frontend
     // 2 validation - not empty
@@ -19,6 +36,8 @@ const registerUser = asyncHandler( async (req,res,next) =>{
     // 1 for form or json
     const { name, email, password } = req.body
     console.log("email:",email);
+
+    // console log req .body
 
     // 2 check
     if ([name,email,password].some((field)=>
@@ -44,12 +63,12 @@ const registerUser = asyncHandler( async (req,res,next) =>{
     const avatarLocalPath = req.files?.avatar[0]?.path;
     const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
+    // also console log req .files
+
     if (!avatarLocalPath){
         throw new ApiError(400,"avatar file is required")
     }
-    if (!avatarLocalPath){
-        throw new ApiError(400,"avatar file is required")
-    }
+   
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
@@ -73,14 +92,63 @@ const registerUser = asyncHandler( async (req,res,next) =>{
         throw new ApiError(500,"something went wrong while registering the user")
     }
     // 9
-    return res.send(201).json(
-        new ApiResponse(200,createdTeacher,"User Registered Succesfully")
+    console.log("sending response")
+    return res.status(201).json(
+        new ApiResponse(201,createdTeacher,"User Registered Succesfully")
     )
 
 })
 
+const loginUser = asyncHandler(async (req,res,next)=>{
+    // get email and password from the user
+    // compare it with the email and password in the database
+    // generate an access token and a refresh token 
+    // give back as response to the user(send cookie)
 
+    const {email,password} = req.body();
+    if (!email || !password){
+        throw new ApiError(400,"email or password is required")
+    }
+    // find user
+    const userTeacher =await UserTeacher.findOne({email});
+    if (!userTeacher){
+        throw new ApiError(404,'no such user exists')
+    }
+    // basically our created userTeacher variable can use the created passwords else
+    // like this
+    // if (!UserTeacher.findById(userTeacher._id ).isPasswordCorrect(password)){
+    //     throw new ApiError(400,'incorrect password')
+    // }
 
+    const isPasswordValid = await userTeacher.isPasswordCorrect(password)
+    if (!isPasswordValid){
+        throw new ApiError(401,'Invalid User Credentials')
+    }
+    // generate acces token
+    const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(userTeacher._id)
+
+    const LoggedInUserTeacher = await UserTeacher.findById(user._id).select("-password -refreshToken")
+    
+    const options ={
+        httpOnly:True,
+        secure:true
+    }
+    
+    return res.status(200)
+    .cookie("accessToken" ,accessToken,options)
+    .cookie("refreshToken" ,refreshToken,options)
+    .json(
+        new ApiResponse(200,{
+            user: LoggedInUserTeacher,accessToken,refreshToken
+        },
+        "User Logged in Succesfully"
+    )
+    )
+})
+
+const logoutUser = asyncHandler((req,res,next)=>{
+    
+})
 // const jwt =  require('jsonwebtoken')
 // const createToken = (_id)=>{
 //     return jwt.sign({_id},process.env.SECRET,{expiresIn:'3d'});
@@ -107,4 +175,7 @@ const registerUser = asyncHandler( async (req,res,next) =>{
 //         res.status(400).json({error : error.message})        
 //     }
 // }
-export {registerUser}
+export {
+    registerUser,
+    loginUser
+}

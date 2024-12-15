@@ -26,6 +26,7 @@ const uploadOnCloudinary = async (localFilePath) => {
     }
 }
 
-
+// basically in the end we are exporting the uploadonCloudinary function which returns 
+// a basic response which we send back 
 
 export {uploadOnCloudinary}

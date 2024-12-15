@@ -2,6 +2,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js'
 import { UserTeacher } from '../models/student/userteachermodel.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { ApiResponse  } from '../utils/ApiResponse.js'
 // const User = require('../models/student/userteachermodel');
 
 const registerUser = asyncHandler( async (req,res,next) =>{
@@ -49,6 +50,32 @@ const registerUser = asyncHandler( async (req,res,next) =>{
     if (!avatarLocalPath){
         throw new ApiError(400,"avatar file is required")
     }
+    const avatar = await uploadOnCloudinary(avatarLocalPath)
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+
+    if (!avatar){
+        throw new ApiError(400,"Avatar is required")
+    }
+    // 6
+    const userTeacher = await UserTeacher.create({
+        name,
+        avatar: avatar.url,
+        coverImage: coverImage?.url || "",
+        email,
+        password
+    })
+    // 7
+    const createdTeacher =await UserTeacher.findById(userTeacher._id).select(
+        "-password -refreshToken"
+    )
+    // 8 
+    if (!createdTeacher){
+        throw new ApiError(500,"something went wrong while registering the user")
+    }
+    // 9
+    return res.send(201).json(
+        new ApiResponse(200,createdTeacher,"User Registered Succesfully")
+    )
 
 })
 

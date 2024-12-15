@@ -28,6 +28,9 @@ const userteacherSchema=new Schema({
             ref:"Courses"
         }
     ],
+    refreshToken:{
+        type:String
+    }
 },{
     timestamps:true
 })

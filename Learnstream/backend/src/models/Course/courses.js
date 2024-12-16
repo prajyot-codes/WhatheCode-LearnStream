@@ -8,7 +8,8 @@ const courseSchema =new Schema({
             required:true
         },
         thumbnail:{
-
+            type:String,
+            required:true
         },
         title:{
             type:String, 
@@ -17,10 +18,6 @@ const courseSchema =new Schema({
         description:{
             type:String, //cloudinary usrl
             required:true
-        },
-        duration:{
-            type:Number,
-            required : true
         },
         price:{
             type:Number,
@@ -43,10 +40,44 @@ const courseSchema =new Schema({
             ref:"UserStudent"
         }
 
-        ]
+        ],
+        lectures:[{
+            type:Schema.Types.ObjectId,
+            ref:"Lectures"
+        }]
     },
     {
         timestamps:true
     }
 )
+
+const Lectures = new Schema({
+
+     course_id:{
+        type:Schema.Types.ObjectId,
+        ref:Courses
+     },
+     title:{
+        type:String,
+        required:true
+     },
+     videourl:{
+        type:String,
+        required:true
+     },
+     completed:{
+        type:Boolean,
+        required:true,
+        default:false
+     },
+     duration:{
+        type:Number,
+        required : true
+    }
+    },
+    {
+        timestamps:true
+    })
+
+
 export const Courses = mongoose.model("Courses",courseSchema);

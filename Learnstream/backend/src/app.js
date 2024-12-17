@@ -26,8 +26,10 @@ app.use((req,res,next)=>{
 // import userStudentRouter from './routes/studentsauth'
 import userTeacherRouter from './routes/teachersauth.js'
 import userStudentRouter from './routes/studentsauth.js'
+import CourseRouter from './routes/courses.routes.js'
 // Routes declaration
 app.use('/user/teacher',userTeacherRouter);
 app.use('/user/student',userStudentRouter);
+app.use('/course',CourseRouter);
 
 export {app}

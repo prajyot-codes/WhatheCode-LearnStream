@@ -99,7 +99,7 @@ const registerUser = asyncHandler( async (req,res) =>{
     )
 
 })
-
+UserTeacher.findByIdAndDelete()
 const loginUser = asyncHandler(async (req,res)=>{
     // get email and password from the user
     // compare it with the email and password in the database

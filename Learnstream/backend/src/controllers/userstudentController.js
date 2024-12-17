@@ -36,7 +36,7 @@ const registerUserStudent = asyncHandler( async (req,res) =>{
      
     // 1 for form or json
     const { name, email, password } = req.body
-    console.log("email:",email);
+    // console.log("email:",email);
 
     // console log req .body
 

@@ -30,8 +30,16 @@ const uploadOnCloudinary = async (localFilePath) => {
         return null;
     }
 }
+const deleteMediaFromCloudinary = async (publicId) => {
+    try {
+      await cloudinary.uploader.destroy(publicId);
+    } catch (error) {
+      console.log(error);
+      throw new Error("failed to delete assest from cloudinary");
+    }
+  };
 
 // basically in the end we are exporting the uploadonCloudinary function which returns 
 // a basic response which we send back 
 
-export {uploadOnCloudinary}
+export {uploadOnCloudinary,deleteMediaFromCloudinary}

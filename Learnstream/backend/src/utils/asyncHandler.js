@@ -7,6 +7,13 @@ const asyncHandler  = (requestHandler)=>{
 
 export {asyncHandler}
 
+// Key benefits:
+
+// Eliminates the need for manual try-catch blocks in every route
+// Automatically forwards errors to Express error middleware
+// Simplifies async route handler code
+// Helps prevent unhandled promise rejections
+
 
 // const asyncHandler = (fn) => async(req,res,next) => {
 //     try {

@@ -68,6 +68,18 @@ const lectureSchema = new Schema({
      duration:{
         type:Number,
         required : true
+    },
+    public_id:{
+        type:String,
+        required:true
+    },
+    freePreview:{
+        type:Boolean,
+        default:false
+    },
+    course_id:{
+        type:Schema.Types.ObjectId,
+        ref:'Courses'
     }
     },
     {
@@ -87,6 +99,12 @@ const assignmentSchema = new Schema({
 },{
     timestamps:true
 })
+
+courseSchema.pre('remove', async function (next) {
+    await Lectures.deleteMany({ _id: { $in: this.lectures } });
+    next();
+});
+
 
 const Courses = mongoose.model("Courses",courseSchema);
 const Lectures = mongoose.model("Lectures",lectureSchema);

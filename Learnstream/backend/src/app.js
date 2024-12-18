@@ -30,6 +30,6 @@ import CourseRouter from './routes/courses.routes.js'
 // Routes declaration
 app.use('/user/teacher',userTeacherRouter);
 app.use('/user/student',userStudentRouter);
-app.use('/course',CourseRouter);
+app.use('/courses',CourseRouter);
 
 export {app}

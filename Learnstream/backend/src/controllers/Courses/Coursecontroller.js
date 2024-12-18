@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Assignments, Courses, Lectures } from "../../models/Course/courses.js";
 // import { UserTeacher } from "../../models/student/userteachermodel.js";
 import { ApiError } from "../../utils/ApiError.js";
@@ -54,21 +55,22 @@ const createCourse = asyncHandler(async (req,res)=> {
         new ApiResponse(200,course,"created course succesfully")
     )
 })
-const addLecturestoCourse = asyncHandler(async (req,res)=>{
-    const {title,course_title} = req.body
+const addLecture = asyncHandler(async (req,res)=>{
+    const {title} = req.body
+    const {course_id} =req.params
     
-    const course_id = await Courses.findOne({title:course_title}).select('_id') 
-
-    if (title=="" ){
-        throw new ApiError(400,"Title is required")
+    if (Lectures.find({title:title},{})){
+        throw new ApiError("Lecture already exists")
     }
-
+    
     // Validate course existence
     if (!course_id) {
         throw new ApiError(404, "Course not found");
     }
 
     const videoLocalPath = req.file?.path
+
+    
 
     if (!videoLocalPath){
         throw new ApiError(400,"file not uploaded")
@@ -91,16 +93,44 @@ const addLecturestoCourse = asyncHandler(async (req,res)=>{
         course_id
     })
 
-
+    
+    const updatedCourse = await Courses.findByIdAndUpdate(
+        course_id,
+    {$push:{lectures:lecture._id}},
+    {new:true}
+)
+     
+    if (!updatedCourse){
+        throw new ApiError(404,"Course not found or failed to update")
+    }
     return res.status(200).json(
         new ApiResponse(200,lecture,'added lecture succesfully')
     )
 }) 
-const getAllcreatedCourses = asyncHandler(async (req,res) =>{
+const updateLecture = asyncHandler(async (req,res)=>{
+    
+})
+const deleteLecture = asyncHandler(async (req,res)=>{
+    // i will first recieve the lecture id to be deleted along with the courseid 
+    // then i will have to first delete the given lecture from cloudinary
+    // then i will have to delete all the details of that lecture from my database
+    // 
+})
+const getAllLectures = asyncHandler(async (req,res)=>{
+
+})
+const getLecturebyId = asyncHandler(async (req,res)=>{
+
+})
+const getAllCourses = asyncHandler(async (req,res) =>{
 
 }) 
 export {
     createCourse,
-    addLecturestoCourse,
-    getAllcreatedCourses,
+    getAllCourses,
+    addLecture,
+    updateLecture,
+    deleteLecture,
+    getLecturebyId,
+    getAllLectures
 }

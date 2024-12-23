@@ -27,15 +27,15 @@ router.route('/').get(verifyJWT,upload.single('thumbnail'),getAllCourses)
 
 router.route('/:course_id/lectures').post(verifyJWT,upload.single('videourl'),addLecture)
 
-router.route('/courses/:courseId/lectures/:id').put(verifyJWT, updateLecture);
+router.route('/courses/:courseId/lectures/:lecture_id').put(verifyJWT, updateLecture);
 
-router.route('/:course_id/lectures/:id').delete( verifyJWT, deleteLecture);
+router.route('/:course_id/lectures/:lecture_id').delete( verifyJWT, deleteLecture);
 
 router.route('/:course_id/lectures').get(verifyJWT,getAllLectures)
 
-router.route('/:course_id/lectures/:id').get( verifyJWT,getLecturebyId);
+router.route('/:course_id/lectures/:lecture_id').get( verifyJWT,getLecturebyId);
 
-// router.route('/:course_id/free-previews').get( verifyJWT, getFreePreviews);
+// router.route('/:course_id/free-previews').get( verifyJWT, getFreePreviews);lecture_
 
 
 

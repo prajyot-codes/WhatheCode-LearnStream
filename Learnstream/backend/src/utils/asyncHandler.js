@@ -7,6 +7,9 @@ const asyncHandler  = (requestHandler)=>{
 
 export {asyncHandler}
 
+// ok so basically here we are getting back a promise from the async function and we 
+// are resolveing or rejecting it on the basis of the response only doubt in the resolve part
+
 // Key benefits:
 
 // Eliminates the need for manual try-catch blocks in every route

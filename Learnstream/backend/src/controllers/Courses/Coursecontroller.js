@@ -5,6 +5,7 @@ import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { deleteMediaFromCloudinary, uploadOnCloudinary } from "../../utils/cloudinary.js";
+import { UserStudent } from "../../models/student/userstudentmodel.js";
 
 
 const createCourse = asyncHandler(async (req,res)=> {
@@ -15,8 +16,9 @@ const createCourse = asyncHandler(async (req,res)=> {
     if (!title || !description || !price || !req.user || !category){
         throw new ApiError(400,'Basic info about the course required')
     }
-    if (Courses.findOne({title:title})){
-        throw new ApiError(400,"Course Already exists")
+    const existingCourse = await Courses.findOne({ title: title });
+    if (existingCourse) {
+        throw new ApiError(400, "Course Already exists");
     }
 
     if (!req.user){
@@ -55,6 +57,59 @@ const createCourse = asyncHandler(async (req,res)=> {
         new ApiResponse(200,course,"created course succesfully")
     )
 })
+
+const getAllCourses = asyncHandler(async (req,res) =>{
+
+}) 
+
+const enrollStudent  = asyncHandler(async (req,res)=>{
+    // get student data such as id,and payment data
+    // check if the student exists
+    // add student to courses.enrolledStudents Array.
+    // add course to the given Students model 
+    const { courseId:course_id}  = req.params
+
+    const student_id = req.user._id
+   
+    
+    console.log('req.user:', req.user);
+    console.log('courseid',course_id)
+    console.log('student_id:', student_id);
+
+    if (!student_id) {
+        throw new ApiError(401, 'User not authenticated');
+    }
+
+    if (!(await Courses.findById(course_id))){
+        throw new ApiError('course id not found')
+    }
+    if (!(await UserStudent.findById(student_id))){
+        throw new ApiError('student not found')
+    }
+    
+    const updatedCourse = await Courses.findByIdAndUpdate(course_id,
+        {$push:{enrolledStudents:student_id}},{new:true}
+    )
+
+    const updatedStudent = await UserStudent.findByIdAndUpdate(student_id,
+        {$push:{Courses:course_id}},{new:true}
+    )
+
+    if (!updatedCourse || !updatedStudent){
+        throw new ApiError(404,"Failed To Enroll Student")
+    }
+    
+    res.status(200).json(
+        new ApiResponse(200,{},
+            "student succesfully enrolled"
+        )
+    )
+    
+})
+const getEnrolledStudents = asyncHandler(async (req,res)=>{
+
+})
+
 const addLecture = asyncHandler(async (req,res)=>{
     const {title} = req.body
     const {course_id} =req.params
@@ -103,7 +158,8 @@ const addLecture = asyncHandler(async (req,res)=>{
         throw new ApiError(404,"Course not found or failed to update")
     }
     return res.status(200).json(
-        new ApiResponse(200,lecture,'added lecture succesfully')
+        new ApiResponse(200,lecture,
+            'added lecture succesfully')
     )
 }) 
 const updateLecture = asyncHandler(async (req,res)=>{
@@ -154,7 +210,7 @@ const getAllLectures = asyncHandler(async (req,res)=>{
     if (!course){
         throw new ApiError("course not found")
     }
-    console.log(course.lectures)
+    // console.log(course.lectures)
     return res.status(200).json(
         new ApiResponse(200,
             course.lectures,
@@ -164,14 +220,31 @@ const getAllLectures = asyncHandler(async (req,res)=>{
 })
 // when user wants to view a particular lecture
 const getLecturebyId = asyncHandler(async (req,res)=>{
+    // user clicks on lecture the front end sends request via
+    // /:course_id/lectures/:lecture_id
+    const {course_id,lecture_id} = req.params
+    const course = await Courses.findById(course_id)
+    if (!course){
+        throw new ApiError('Course for the Lecture doesnt exist')
+    }
+    const lecture = await Lectures.findById(lecture_id)
+    if (!lecture){
+        throw new ApiError('Lecture Doesnt Exist')
+    }
 
+    return res.status(200).json(
+        new ApiResponse(200,
+            lecture,
+            "Lecture Sent "
+        )
+    )
 })
-const getAllCourses = asyncHandler(async (req,res) =>{
 
-}) 
 export {
     createCourse,
     getAllCourses,
+    getEnrolledStudents,
+    enrollStudent,
     addLecture,
     updateLecture,
     deleteLecture,

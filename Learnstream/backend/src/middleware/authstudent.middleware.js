@@ -2,8 +2,8 @@ import { ApiError } from "../utils/ApiError.js";
 import {ApiResponse} from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
-import { UserTeacher } from "../models/student/userteachermodel.js" 
-const verifyJWT = asyncHandler(async (req,res,next)=>{
+import { UserStudent } from "../models/student/userstudentmodel.js";
+const verifyJWTStudent = asyncHandler(async (req,res,next)=>{
    try {
      const token = req.cookies?.accessToken || req.header
      ("Authorization")?.replace("Bearer","")
@@ -13,14 +13,15 @@ const verifyJWT = asyncHandler(async (req,res,next)=>{
      }
  
      const decodedtoken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
-     const user = await UserTeacher.findById(decodedtoken?._id).select(
+     const user = await UserStudent.findById(decodedtoken?._id).select(
          "-password -refreshToken")
      
      if (!user){
          // Next discusssion front end
-         throw new ApiError(401,"Invalid Acces Token")
+         throw new ApiError(401,"Invalid Access Token")
      }
      req.user = user
+     console.log('Student user set in req:', req.user);
      next();
    } catch (error) {
     throw new ApiError(401,error?.message || 
@@ -29,4 +30,4 @@ const verifyJWT = asyncHandler(async (req,res,next)=>{
    }
 })
 
-export {verifyJWT}
+export {verifyJWTStudent}

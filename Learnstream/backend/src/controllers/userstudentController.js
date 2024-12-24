@@ -201,7 +201,7 @@ const refreshAccessToken= asyncHandler(async (req,res)=>{
             throw new ApiError(401,"refresh token is expired or used")
         }
     
-        const {accessToken,newRefreshToken} = generateAccessAndRefreshTokens(user._id);
+        const {accessToken,newRefreshToken} = await generateAccessAndRefreshTokens(user._id);
         
         return res.
         status(200)
@@ -219,33 +219,6 @@ const refreshAccessToken= asyncHandler(async (req,res)=>{
 
 
 
-
-// const jwt =  require('jsonwebtoken')
-// const createToken = (_id)=>{
-//     return jwt.sign({_id},process.env.SECRET,{expiresIn:'3d'});
-// }
-// const signupStudent = async (req,res)=>{
-//     const {name,email,password}  = req.body;
-//     try {
-//         const user = User.signup(name,email,password);
-//         const token = createToken(user.id);
-//         res.status(200).json({name,email,token})
-//     } catch (error) {
-//         res.status(400).json({error:error.message})   
-//     }
-
-// } 
-// const loginStudent = async (req,res)=>{
-//     const {email,password} = req.body;
-//     try {
-//         const user  = await User.login(email,password);
-//         const token = createToken(user._id);
-//         const name = user.name;
-//         res.status(200).json({name,email,token})
-//     } catch (error) {
-//         res.status(400).json({error : error.message})        
-//     }
-// }
 export {
     registerUserStudent,
     loginUserStudent,

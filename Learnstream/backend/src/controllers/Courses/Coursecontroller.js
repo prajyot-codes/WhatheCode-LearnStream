@@ -58,8 +58,44 @@ const createCourse = asyncHandler(async (req,res)=> {
     )
 })
 
-const getAllCourses = asyncHandler(async (req,res) =>{
+const getCourseById = asyncHandler(async (req, res)=> {
+    const {courseId}  = req.params
 
+    const course = await Courses.getCourseById(courseId)
+
+    if (!course){
+        throw new ApiError("course not found")
+    }
+
+    return res.status(200).json(200,
+        new ApiResponse(200,course,"course sent succesfully")
+    )
+ })
+
+const getCoursesByCategory = asyncHandler(async (req, res) => {
+    const { category } = req.query;
+
+    if (!category) {
+        throw new ApiError(400, 'Category is required');
+    }
+
+    const courses = await Courses.find({ category });
+    res.status(200).json(new ApiResponse(200, courses, 'Courses fetched successfully'));
+});
+
+const getAllCourses = asyncHandler(async (req,res) =>{
+    // to get all courses i will only send back basic details 
+    // such as the course object containing lecture
+    const courses = await Courses.find().
+    select('thumbnail title description price category rating')
+     
+    if (!courses){
+        throw new ApiError('There was Some Error Fetching Courses')
+    }
+
+    return res.status(200).json(
+        new ApiResponse (200,courses, 'Courses Fetched Succesfully')
+    )
 }) 
 
 const enrollStudent  = asyncHandler(async (req,res)=>{
@@ -72,9 +108,9 @@ const enrollStudent  = asyncHandler(async (req,res)=>{
     const student_id = req.user._id
    
     
-    console.log('req.user:', req.user);
-    console.log('courseid',course_id)
-    console.log('student_id:', student_id);
+    // console.log('req.user:', req.user);
+    // console.log('courseid',course_id)
+    // console.log('student_id:', student_id);
 
     if (!student_id) {
         throw new ApiError(401, 'User not authenticated');
@@ -107,7 +143,17 @@ const enrollStudent  = asyncHandler(async (req,res)=>{
     
 })
 const getEnrolledStudents = asyncHandler(async (req,res)=>{
+    const {courseId} = req.params
+    
+    const students = await Courses.findById(courseId).select('enrolledStudents')
+    
+    if (!students){
+        throw new ApiError('Error while fetching students for course')
+    }
 
+    return res.status(200).json(
+        new ApiResponse(200,students,"Succesfully Sent Student Data")
+    )
 })
 
 const addLecture = asyncHandler(async (req,res)=>{
@@ -242,7 +288,9 @@ const getLecturebyId = asyncHandler(async (req,res)=>{
 
 export {
     createCourse,
+    getCoursesByCategory,
     getAllCourses,
+    getCourseById,
     getEnrolledStudents,
     enrollStudent,
     addLecture,

@@ -20,5 +20,5 @@ router.route('/signup').post(
 router.route('/login').post(loginUserStudent)
 // secured route
 router.route('/logout').post(verifyJWTStudent,logoutUserStudent)
-router.route('/refresh-Token').post(refreshAccessToken)
+router.route('/refresh-Token').post(verifyJWTStudent,refreshAccessToken)
 export default router

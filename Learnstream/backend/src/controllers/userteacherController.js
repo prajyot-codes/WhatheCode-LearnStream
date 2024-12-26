@@ -142,8 +142,8 @@ const loginUser = asyncHandler(async (req,res)=>{
     console.log("Cookies set: ", accessToken, refreshToken);
 
     return res.status(200)
-    .cookie("accessToken" ,accessToken,options)
-    .cookie("refreshToken" ,refreshToken,options)
+    .cookie("teacherAccessToken" ,accessToken,options)
+    .cookie("teacherRefreshToken" ,refreshToken,options)
     .json(
         new ApiResponse(200,{
             user: LoggedInUserTeacher,accessToken,refreshToken
@@ -174,8 +174,8 @@ const logoutUser = asyncHandler(async (req,res)=>{
 
     return res
     .status(200)
-    .clearCookie("accessToken",options)
-    .clearCookie("refreshToken",options)
+    .clearCookie("teacherAccessToken",options)
+    .clearCookie("teacherRefreshToken",options)
     .json(new ApiResponse(200,{},"user logged out"));
 })
 
@@ -206,8 +206,8 @@ const refreshAccessToken= asyncHandler(async (req,res)=>{
         
         return res.
         status(200)
-        .cookie("accessToken",accessToken,options)
-        .cookie("refreshToken",newRefreshToken,options)
+        .cookie("teacherAccessToken",accessToken,options)
+        .cookie("teacherRefreshToken",newRefreshToken,options)
         .json(
             new ApiResponse(200,
                 {accessToken,refreshToken:newRefreshToken},

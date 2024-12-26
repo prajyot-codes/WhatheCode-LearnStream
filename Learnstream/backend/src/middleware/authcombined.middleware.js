@@ -1,5 +1,5 @@
-import { verifyJWTStudent } from "./authstudent.middleware";
-import { verifyJWT } from "./authteacher.middleware";
+import { verifyJWTStudent } from "./authstudent.middleware.js";
+import { verifyJWT } from "./authteacher.middleware.js";
 
 const verifyJWTCombined = (req, res, next) => {
     verifyJWT(req, res, (err) => {

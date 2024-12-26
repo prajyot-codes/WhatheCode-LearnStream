@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { UserTeacher } from "../models/student/userteachermodel.js" 
 const verifyJWT = asyncHandler(async (req,res,next)=>{
    try {
-     const token = req.cookies?.accessToken || req.header
+     const token = req.cookies?.teacherAccessToken || req.header
      ("Authorization")?.replace("Bearer","")
  
      if (!token){

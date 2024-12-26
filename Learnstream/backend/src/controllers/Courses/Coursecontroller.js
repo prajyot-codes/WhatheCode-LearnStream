@@ -6,6 +6,7 @@ import { ApiResponse } from "../../utils/ApiResponse.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { deleteMediaFromCloudinary, uploadOnCloudinary } from "../../utils/cloudinary.js";
 import { UserStudent } from "../../models/student/userstudentmodel.js";
+import { Progress } from "../../models/Course/Progress.js";
 
 
 const createCourse = asyncHandler(async (req,res)=> {
@@ -61,7 +62,7 @@ const createCourse = asyncHandler(async (req,res)=> {
 const getCourseById = asyncHandler(async (req, res)=> {
     const {courseId}  = req.params
 
-    const course = await Courses.getCourseById(courseId)
+    const course = await Courses.findById(courseId)
 
     if (!course){
         throw new ApiError("course not found")
@@ -96,7 +97,7 @@ const getAllCourses = asyncHandler(async (req,res) =>{
     return res.status(200).json(
         new ApiResponse (200,courses, 'Courses Fetched Succesfully')
     )
-}) 
+})
 
 const enrollStudent  = asyncHandler(async (req,res)=>{
     // get student data such as id,and payment data
@@ -285,17 +286,65 @@ const getLecturebyId = asyncHandler(async (req,res)=>{
         )
     )
 })
+const markLectureCompleted = asyncHandler(async(req,res) =>{
+    const {courseId,lectureId } = req.params
+    const studentId =  req.user?._id
+    let updated = false
+    await Progress.findOneAndUpdate({studentId,courseId},
+        {
+            $addtoset:{completedLectures:lectureId},
+            $inc:{ completedLectureCount:1},
+            $set:{lastUpdated : Date.now()}
+        },
+    {
+        upsert:true,//ensures that the document is updated 
+        new:true//ensures that the document returned is updated
+    }
+    );
+    updated = true ;
+    return res.status(200).json(
+        new ApiResponse(200,updated,"Marked Lecture as Completed")
+    );
+})
+
+const CourseProgress = asyncHandler(async(req,res)=>{
+    const {courseId:course_id} = req.params
+    console.log(course_id);
+    if (!course_id){
+        throw new ApiError('The course sent doesnt exist or is undefined')
+    }
+    const completedLectures = await Progress.findOne({courseId:course_id,studentId:req.user?._id})
+                    .select('completedLectureCount')
+    console.log(completedLectures)
+    
+    if (!completedLectures){
+        throw new ApiError('Encountered An error while fetching completed Lectures')
+    }
+    
+    const totalLectures  = parseInt(await Courses.findById(course_id).select('lectures').length)
+    
+    console.log(totalLectures)
+
+    if (!totalLectures){
+        throw new ApiError('Encountered An error while fetching totalLectures')
+    }
+    const progress = (completedLectures/totalLectures)*100  
+    return res.status(200)
+    .json(new ApiResponse(200,progress,'progress data sent succesfully'))
+})
 
 export {
     createCourse,
     getCoursesByCategory,
     getAllCourses,
     getCourseById,
+    CourseProgress,
     getEnrolledStudents,
     enrollStudent,
     addLecture,
     updateLecture,
     deleteLecture,
     getLecturebyId,
-    getAllLectures
+    getAllLectures,
+    markLectureCompleted
 }

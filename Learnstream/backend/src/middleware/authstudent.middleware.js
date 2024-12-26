@@ -20,8 +20,8 @@ const verifyJWTStudent = asyncHandler(async (req,res,next)=>{
          // Next discusssion front end
          throw new ApiError(401,"Invalid Access Token")
      }
-     req.user = user
-     console.log('Student user set in req:', req.user);
+     req.student = user
+     console.log('Student user set in req:', req.student);
      next();
    } catch (error) {
     throw new ApiError(401,error?.message || 

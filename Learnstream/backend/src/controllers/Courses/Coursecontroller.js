@@ -14,7 +14,7 @@ const createCourse = asyncHandler(async (req,res)=> {
     // save the rest of the data and link the author 
     const { title,description,price,category } = req.body;
 
-    if (!title || !description || !price || !req.user || !category){
+    if (!title || !description || !price || !req.teacher || !category){
         throw new ApiError(400,'Basic info about the course required')
     }
     const existingCourse = await Courses.findOne({ title: title });
@@ -22,7 +22,7 @@ const createCourse = asyncHandler(async (req,res)=> {
         throw new ApiError(400, "Course Already exists");
     }
 
-    if (!req.user){
+    if (!req.teacher){
         throw new ApiError(401,'User is not logged in')
     }
 
@@ -44,7 +44,7 @@ const createCourse = asyncHandler(async (req,res)=> {
         title ,
         description,
         price,
-        author:req.user._id,
+        author:req.teacher._id,
         category,
     })
 
@@ -106,10 +106,10 @@ const enrollStudent  = asyncHandler(async (req,res)=>{
     // add course to the given Students model 
     const { courseId:course_id}  = req.params
 
-    const student_id = req.user._id
+    const student_id = req.student._id
    
     
-    // console.log('req.user:', req.user);
+    // console.log('req.student:', req.student);
     // console.log('courseid',course_id)
     // console.log('student_id:', student_id);
 
@@ -288,11 +288,11 @@ const getLecturebyId = asyncHandler(async (req,res)=>{
 })
 const markLectureCompleted = asyncHandler(async(req,res) =>{
     const {courseId,lectureId } = req.params
-    const studentId =  req.user?._id
-    let updated = false
-    await Progress.findOneAndUpdate({studentId,courseId},
+    const studentId =  req.student?._id
+    
+    const updated = await Progress.findOneAndUpdate({studentId,courseId},
         {
-            $addtoset:{completedLectures:lectureId},
+            $push:{completedLectures:lectureId},
             $inc:{ completedLectureCount:1},
             $set:{lastUpdated : Date.now()}
         },
@@ -301,7 +301,6 @@ const markLectureCompleted = asyncHandler(async(req,res) =>{
         new:true//ensures that the document returned is updated
     }
     );
-    updated = true ;
     return res.status(200).json(
         new ApiResponse(200,updated,"Marked Lecture as Completed")
     );
@@ -309,26 +308,28 @@ const markLectureCompleted = asyncHandler(async(req,res) =>{
 
 const CourseProgress = asyncHandler(async(req,res)=>{
     const {courseId:course_id} = req.params
-    console.log(course_id);
+    const studentid = req?.student?._id
+    const teacherid = req?.teacher?._id
+    // console.log(course_id);
+    // console.log(studentid)
+    // console.log(teacherid)
     if (!course_id){
         throw new ApiError('The course sent doesnt exist or is undefined')
     }
-    const completedLectures = await Progress.findOne({courseId:course_id,studentId:req.user?._id})
-                    .select('completedLectureCount')
-    console.log(completedLectures)
+    const completedLectures = await Progress.findOne({courseId:course_id,studentId:studentid}).select('completedLectureCount')
+    console.log(completedLectures.completedLectureCount)
     
     if (!completedLectures){
         throw new ApiError('Encountered An error while fetching completed Lectures')
     }
     
-    const totalLectures  = parseInt(await Courses.findById(course_id).select('lectures').length)
-    
+    const course = await Courses.findById(course_id).select('lectures')
+    const totalLectures = course.lectures.length
     console.log(totalLectures)
-
     if (!totalLectures){
         throw new ApiError('Encountered An error while fetching totalLectures')
     }
-    const progress = (completedLectures/totalLectures)*100  
+    const progress = (completedLectures.completedLectureCount/totalLectures)*100  
     return res.status(200)
     .json(new ApiResponse(200,progress,'progress data sent succesfully'))
 })

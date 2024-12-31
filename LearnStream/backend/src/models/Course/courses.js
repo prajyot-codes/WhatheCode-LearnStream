@@ -90,12 +90,47 @@ const assignmentSchema = new Schema({
     course_id:{
         type : String
     },
-    title:{},
-    url:{},
-    grading:{},
-    deadline:{},
-    uploaded:{},
-    checked:{},
+    title:{
+        type:String,
+        required:true
+    },
+    url:{
+        type:String,
+        default:'',
+    },
+    grading:{
+        type:Number,
+    },
+    deadline:{
+        type:Date,
+        required:false,
+    },
+    uploadedAssignments: [{
+        studentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'UserStudent', // Assuming you have a Student model
+            required: true,
+        },
+        assignmentUrl: {
+            type: String,
+            required: true,
+        },
+        uploadedAt: {
+            type: Date,
+            default: Date.now,
+        }
+    }],
+    checked: [{
+        studentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'UserStudent', // Assuming you have a Student model
+            required: true,
+        },
+        isChecked: {
+            type: Boolean,
+            default: false,
+        }
+    }],
 },{
     timestamps:true
 })

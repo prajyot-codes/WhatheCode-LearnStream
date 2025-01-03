@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
 const userstudentSchema=new Schema({
-    
     name:{
         type:String,
         required:true,
@@ -19,10 +18,11 @@ const userstudentSchema=new Schema({
     },
     avatar: {
         type: String, // cloudinary url
-        required: true,
+        required: false
     },
     coverImage: {
-        type: String, // cloudinary url
+        type: String,
+        required:false // cloudinary url
     },
     Courses:[
         {

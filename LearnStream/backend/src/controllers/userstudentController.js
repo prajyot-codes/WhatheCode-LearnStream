@@ -105,7 +105,7 @@ const loginUserStudent = asyncHandler(async (req,res)=>{
     // compare it with the email and password in the database
     // generate an access token and a refresh token 
     // give back as response to the user(send cookie)
-
+    console.log(req.body)
     const {email,password} = req.body;
     if (!email || !password){
         throw new ApiError(400,"email or password is required")
@@ -145,7 +145,7 @@ const loginUserStudent = asyncHandler(async (req,res)=>{
     .cookie("studentRefreshToken" ,refreshToken,options)
     .json(
         new ApiResponse(200,{
-            user: LoggedInUserStudent,accessToken,refreshToken
+            user: LoggedInUserStudent,role:'student',accessToken,refreshToken
         },
         "User Logged in Succesfully"
     )

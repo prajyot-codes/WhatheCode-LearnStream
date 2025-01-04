@@ -1,4 +1,4 @@
-
+import {Router} from 'express'
 
 import { verifyJWT } from "../../middleware/authteacher.middleware.js";
 import { upload } from "../../middleware/multer.middleware.js";
@@ -11,7 +11,7 @@ import { addLecture,
          markLectureCompleted 
     } from "../../controllers/Courses/Lecture.controller.js";
 
-const router = Router();
+const router = Router()
 
 // Lectures
 router.route('/:course_id/lectures').post(verifyJWT,upload.single('videourl'),addLecture)

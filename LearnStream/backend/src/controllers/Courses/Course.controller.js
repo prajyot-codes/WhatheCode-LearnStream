@@ -4,7 +4,7 @@ import { Assignments, Courses, Lectures } from "../../models/Course/courses.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { deleteMediaFromCloudinary, uploadOnCloudinary } from "../../utils/cloudinary.js";
+import { deleteMediaFromCloudinary, uploadMultipleFilesOnCloudinary, uploadOnCloudinary } from "../../utils/cloudinary.js";
 import { UserStudent } from "../../models/student/userstudentmodel.js";
 import { Progress } from "../../models/Course/Progress.js";
 
@@ -185,15 +185,6 @@ const CourseProgress = asyncHandler(async(req,res)=>{
 })
 
 
-// assignments
-
-const uploadAssignment = asyncHandler(async (req,res)=>{
-    const {course_id,title,deadline} = req?.body
-    if (!(course_id || title )){
-        throw new ApiError('CourseId and Title cannot be empty')
-    }
-    const AssignmentFiles = req.files?.assignmentFiles
-}) 
 
 export {
     createCourse,
@@ -203,5 +194,5 @@ export {
     CourseProgress,
     getEnrolledStudents,
     enrollStudent,
-    uploadAssignment
+    
 }

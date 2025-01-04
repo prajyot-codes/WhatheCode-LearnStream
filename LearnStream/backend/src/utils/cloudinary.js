@@ -30,7 +30,7 @@ const uploadOnCloudinary = async (localFilePath) => {
         return null;
     }
 }
-const uploadMultipleFiles = async (filePaths) => {
+const uploadMultipleFilesOnCloudinary = async (filePaths) => {
   try {
       // Validate input
       if (!Array.isArray(filePaths) || filePaths.length === 0) {
@@ -72,4 +72,4 @@ const deleteMediaFromCloudinary = async (publicId) => {
 // basically in the end we are exporting the uploadonCloudinary function which returns 
 // a basic response which we send back 
 
-export {uploadOnCloudinary,deleteMediaFromCloudinary}
+export {uploadOnCloudinary,uploadMultipleFilesOnCloudinary,deleteMediaFromCloudinary}

@@ -94,9 +94,13 @@ const assignmentSchema = new Schema({
         type:String,
         required:true
     },
-    urls:[{
+    assignmentUrls:[{
         type:String,//Cloudinary
         default:'',
+    }],
+    public_id:[{
+        type:String,
+        default:''
     }],
     deadline:{
         type:Date,
@@ -109,7 +113,7 @@ const assignmentSchema = new Schema({
             ref: 'UserStudent', // Assuming you have a Student model
             required: true,
         },
-        assignmentUrl: {
+        submittedAssignmentUrl: {
             type: String,
             required: true,
         },

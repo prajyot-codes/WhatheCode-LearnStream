@@ -15,7 +15,8 @@ const fileFilter = (req, file, cb) => {
   const allowedMimeTypes = [
       "image/jpeg", "image/png", "image/gif",   // Images
       "audio/mpeg", "audio/wav",                // Audio
-      "video/mp4", "video/avi", "video/mkv"     // Video
+      "video/mp4", "video/avi", "video/mkv",     // Video
+      "application/pdf" 
   ];
 
   if (allowedMimeTypes.includes(file.mimetype)) {

@@ -94,15 +94,13 @@ const assignmentSchema = new Schema({
         type:String,
         required:true
     },
-    url:{
-        type:String,
+    urls:[{
+        type:String,//Cloudinary
         default:'',
-    },
-    grading:{
-        type:Number,
-    },
+    }],
     deadline:{
         type:Date,
+        default:null,
         required:false,
     },
     uploadedAssignments: [{
@@ -115,9 +113,16 @@ const assignmentSchema = new Schema({
             type: String,
             required: true,
         },
+        grading:{
+            type:Number,
+        },
         uploadedAt: {
             type: Date,
             default: Date.now,
+        },
+        submittedOnTime:{
+            type:Boolean,
+            default:true
         }
     }],
     checked: [{

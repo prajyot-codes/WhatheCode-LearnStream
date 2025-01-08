@@ -113,10 +113,10 @@ const assignmentSchema = new Schema({
             ref: 'UserStudent', // Assuming you have a Student model
             required: true,
         },
-        submittedAssignmentUrl: {
+        submittedAssignmentUrls: [{
             type: String,
             required: true,
-        },
+        }],
         grading:{
             type:Number,
         },

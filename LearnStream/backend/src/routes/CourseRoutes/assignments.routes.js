@@ -5,13 +5,15 @@ import { upload } from '../../middleware/multer.middleware.js';
 import { verifyJWT } from "../../middleware/authteacher.middleware.js";
 import { verifyJWTStudent } from "../../middleware/authstudent.middleware.js";
 import { verifyJWTCombined } from "../../middleware/authcombined.middleware.js";
-import { uploadAssignment } from '../../controllers/Courses/Assignment.controller.js';
+import { createAssignment, submitAssignment  } from '../../controllers/Courses/Assignment.controller.js';
 
 const router = Router()
 
 // Assignments
 router.route('/:course_id/assignment').post(verifyJWT,upload.fields([
     {name:'assignmentFiles',maxCount:10}
-]),uploadAssignment);
-
+]),createAssignment);
+router.route('/course_id/assignment/:assignmentId/upload').post(verifyJWTStudent,upload.fields([
+    {name:'submissionFiles',maxCount:10}
+]),submitAssignment)
 export default router;

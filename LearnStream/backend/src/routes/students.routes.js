@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { loginUserStudent, logoutUserStudent, refreshAccessToken, registerUserStudent } from "../controllers/UserStudent.controller.js";
+import { loginUserStudent, logoutUserStudent, refreshAccessToken, registerUserStudent } from "../controllers/UserAuth/UserStudent.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import { verifyJWTStudent } from "../middleware/authstudent.middleware.js";
 const router =Router();

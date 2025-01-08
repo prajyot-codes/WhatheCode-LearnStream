@@ -1,8 +1,11 @@
 // import React from 'react';
+
+import { Link } from "react-router-dom";
 import "../index.css";
 import { Button } from "flowbite-react";
 
-function Login() {
+function Home() {
+
   return (
     <div className="flex">
       {/* Left div with white background */}
@@ -15,7 +18,13 @@ function Login() {
             <p>Lorem, ipsum dolor sit amet adipisicing elit. Blanditiis fuga id qui iusto assumenda nisi? Dignissimos, error ratione.</p>
             <br />
             <div className="flex justify-center flex-col items-center">
-              <Button color="success">Login</Button>
+              <Button 
+              color="success">
+                <Link
+                to='/teacher/login'>
+                Login
+                </Link>
+                </Button>
               <br />
               <p className="mt-2">Don't have an account?</p>
               <p className="cursor-pointer">create an account</p>
@@ -32,10 +41,14 @@ function Login() {
           <div className="text-center">
             <h1 className="text-[#588157] text-2xl">For Students</h1>
             <br />
+           
             <p>Lorem, ipsum dolor sit amet adipisicing elit. Blanditiis fuga id qui iusto assumenda nisi? Dignissimos, error ratione.</p>
             <br />
             <div className="flex justify-center flex-col items-center">
+            <Link
+            to='/student/login'>
               <Button color="success">Login</Button>
+            </Link>
               <br />
               <p className="mt-2">Don’t have an account?</p>
               <p className="cursor-pointer">create an account</p>
@@ -47,4 +60,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Home;

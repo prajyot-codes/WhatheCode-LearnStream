@@ -1,11 +1,11 @@
 import React from "react";
 import { Avatar, Navbar } from "flowbite-react";
 
-const Component = () => {
+const Navbar1 = () => {
   return (
     <Navbar fluid rounded className="mt-0 pt-0">
       <Navbar.Brand href="/">
-        <img src="../../assets/logo.svg" className="mr-5 h-24 sm:h-20" alt="Flowbite React Logo" />
+        <img src="../../assets/Black And White Aesthetic Minimalist Modern Simple Typography Coconut Cosmetics Logo.png" className="mr-5 h-40 w- sm:h-20" alt="Flowbite React Logo" />
       </Navbar.Brand>
       <div className="flex md:order-2">
         {/* Only Avatar without Dropdown */}
@@ -31,4 +31,4 @@ const Component = () => {
   );
 };
 
-export default Component;
+export default Navbar1;

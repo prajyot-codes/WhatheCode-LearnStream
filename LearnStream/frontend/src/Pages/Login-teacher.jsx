@@ -1,5 +1,5 @@
 import React from "react";
-import Component from "../flowbite-componets/login-form";
+import Component from "../components/login-form";
 function LoginT() {
   return (
     <div className="flex">

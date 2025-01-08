@@ -110,7 +110,7 @@ const loginUserStudent = asyncHandler(async (req,res)=>{
     if (!email || !password){
         throw new ApiError(400,"email or password is required")
     }
-
+    console.log(typeof(email),typeof(password))
     // User Object
     const userStudent =await UserStudent.findOne({email});
 
@@ -145,7 +145,7 @@ const loginUserStudent = asyncHandler(async (req,res)=>{
     .cookie("studentRefreshToken" ,refreshToken,options)
     .json(
         new ApiResponse(200,{
-            user: LoggedInUserStudent,accessToken,refreshToken
+            user: LoggedInUserStudent,role:'student',accessToken,refreshToken
         },
         "User Logged in Succesfully"
     )

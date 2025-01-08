@@ -61,26 +61,24 @@ const registerUserStudent = asyncHandler( async (req,res) =>{
     // that is the stored image files in multer 
     // since when the router first runs we run the multer middleware 
     // and upload the images onto multer 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // const avatarLocalPath = req.files?.avatar[0]?.path;
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
-    // also console log req .files
+    // // also console log req .files
 
-    if (!avatarLocalPath){
-        throw new ApiError(400,"avatar file is required")
-    }
+    // if (!avatarLocalPath){
+    //     throw new ApiError(400,"avatar file is required")
+    // }
    
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    // const avatar = await uploadOnCloudinary(avatarLocalPath)
+    // const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
-    if (!avatar){
-        throw new ApiError(400,"Avatar is required")
-    }
+    // if (!avatar){
+    //     throw new ApiError(400,"Avatar is required")
+    // }
     // 6
     const userStudent = await UserStudent.create({
         name,
-        avatar: avatar.url,
-        coverImage: coverImage?.url || "",
         email,
         password
     })

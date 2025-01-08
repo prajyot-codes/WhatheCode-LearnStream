@@ -6,16 +6,16 @@ const router =Router();
 
 router.route('/signup').post(
     // injecting middle ware
-    upload.fields([
-        {
-            name:"avatar", // front end field should also be avatar
-            maxCount: 1
-        },
-        {
-            name:"coverImage",
-            maxCount: 1
-        }
-    ]),
+    // upload.fields([
+    //     {
+    //         name:"avatar", // front end field should also be avatar
+    //         maxCount: 1
+    //     },
+    //     {
+    //         name:"coverImage",
+    //         maxCount: 1
+    //     }
+    // ]),
     registerUser)
 router.route('/login').post(loginUser)
 // secured route

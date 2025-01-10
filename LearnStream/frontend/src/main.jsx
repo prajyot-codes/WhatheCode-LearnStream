@@ -8,6 +8,8 @@ import { AuthProvider } from './contexts/AuthProvider.jsx'
 import Home from './Pages/Home.jsx'
 import LoginS from './Pages/Login-students.jsx'
 import LoginT from './Pages/Login-teacher.jsx'
+import Teachers from './Pages/Teachers.jsx'
+import Student from './Pages/Student.jsx'
 // const router = createBrowserRouter([
 //   {
 //     path: '/',
@@ -35,6 +37,8 @@ const router = createBrowserRouter(
       <Route path='/' element={<Home/>} />
       <Route path='student/login' element={<LoginS />} />
       <Route path='teacher/login' element={<LoginT />} />
+      <Route path='teacher/:user_id' element = {<Teachers/>}/>
+      <Route path='student/:user_id' element = {<Student/>}/>
     </Route>
   )
 )

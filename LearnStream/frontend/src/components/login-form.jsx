@@ -1,15 +1,15 @@
 import React from "react";
-import { Button, Checkbox, Label, TextInput } from "flowbite-react";
+import { Button, Checkbox, Label, Spinner, TextInput } from "flowbite-react";
 
 import { useRef, useState, useEffect, useContext } from 'react';
 import AuthContext from "../contexts/AuthProvider";
 import axios from '../api/axios';
-const LOGIN_URL = '/user/student/login';
-function Component() {
+import { Link, useNavigate } from "react-router-dom";
+function Component({role}) {
+    const navigate = useNavigate();
     const { setAuth } = useContext(AuthContext);
     const userRef = useRef();
     const errRef = useRef();
-
     const [user, setUser] = useState('');
     const [pwd, setPwd] = useState('');
     const [errMsg, setErrMsg] = useState('');
@@ -22,12 +22,21 @@ function Component() {
     useEffect(() => {
         setErrMsg('');
     }, [user, pwd])
+    
+    useEffect(() => {
+      const userId = localStorage.getItem('user_id');
+      const accessToken = localStorage.getItem('accessToken');
+      const role = localStorage.getItem('roles')
+      if ((userId && accessToken) || success) {
+        navigate(`/${role}/${userId}`);
+      }
+    }, [navigate, success]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(LOGIN_URL,
+            const response = await axios.post(`/user/${role}/login`,
                 JSON.stringify({ email:user, password:pwd }),
                 {
                     headers: { 'Content-Type': 'application/json' },
@@ -38,9 +47,10 @@ function Component() {
             //console.log(JSON.stringify(response));
             const accessToken = response?.data?.data?.accessToken;
             const user_id = response?.data?.data?.user._id
-            const roles = response?.data?.data?.roles;
+            const roles = response?.data?.data?.role;
             localStorage.setItem('accessToken',accessToken);
             localStorage.setItem('user_id',user_id);
+            localStorage.setItem('roles',roles)
             setAuth({ user, pwd, roles, accessToken });
             setUser('');
             setPwd('');
@@ -62,13 +72,10 @@ function Component() {
 
   return (
     ((localStorage.getItem(`user_id`)&&localStorage.getItem(`accessToken`)) || success) ? (
-      <section>
-          <h1>You are logged in!</h1>
-          <br />
-          <p>
-             
-          </p>
-      </section>
+      <>
+      <Spinner/>  
+      </>
+  
   ):(
     <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4">
     <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>

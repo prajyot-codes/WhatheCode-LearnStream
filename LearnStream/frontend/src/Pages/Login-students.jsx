@@ -14,7 +14,7 @@ function LoginS() {
             <div className="bg-gray-100 p-8 rounded-lg shadow-md w-96">
                 <h2 className="text-center text-xl">Welcome Back</h2>
                 <br />
-            <Component/>
+            <Component role='student'/>
             </div>
           </div>
         </div>

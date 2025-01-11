@@ -26,7 +26,7 @@ function Component({role}) {
     useEffect(() => {
       const userId = localStorage.getItem('user_id');
       const accessToken = localStorage.getItem('accessToken');
-      const role = localStorage.getItem('roles')
+      // const role = localStorage.getItem('roles')
       if ((userId && accessToken) || success) {
         navigate(`/${role}/${userId}`);
       }

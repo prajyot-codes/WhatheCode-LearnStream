@@ -58,7 +58,31 @@ const createCourse = asyncHandler(async (req,res)=> {
         new ApiResponse(200,course,"created course succesfully")
     )
 })
+const getCourseByStudentId = asyncHandler(async (req,res)=>{
+    const {student_id}  = req.params;
 
+    if (!student_id){
+        throw new ApiError('user is not logged in  or is undefined')
+    }
+    const studentcourses = await UserStudent.findById(student_id, { Courses: 1 })
+  .populate({
+    path: 'Courses',
+    select: 'thumbnail title description price category author',
+    populate: {
+      path: 'author',
+      select: 'name' // Populate only the author's name
+    }
+  });
+    console.log(studentcourses);
+    if (!studentcourses){
+        throw new ApiError('student doesnt have any courses')
+    }
+
+    res.status(200).json(
+        new ApiResponse(200,studentcourses,'studentcourses succesfully sent ')
+    )
+
+})
 const getCourseById = asyncHandler(async (req, res)=> {
     const {courseId}  = req.params
 
@@ -339,6 +363,7 @@ export {
     getCoursesByCategory,
     getAllCourses,
     getCourseById,
+    getCourseByStudentId,
     CourseProgress,
     getEnrolledStudents,
     enrollStudent,

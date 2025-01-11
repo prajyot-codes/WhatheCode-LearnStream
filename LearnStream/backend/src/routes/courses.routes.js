@@ -8,6 +8,7 @@ import {
     getAllCourses, 
     getAllLectures, 
     getCourseById, 
+    getCourseByStudentId, 
     getCoursesByCategory, 
     getEnrolledStudents, 
     getLecturebyId, 
@@ -23,6 +24,7 @@ const router = Router();
 
 
 // Courses
+router.route('/:student_id').get(verifyJWTStudent,getCourseByStudentId);
 router.route('/').post(verifyJWT,upload.single('thumbnail'),createCourse)
 router.route('/:courseId').get( verifyJWT, getCourseById);//
 router.route('/:courseId/students').get( verifyJWT, getEnrolledStudents);//

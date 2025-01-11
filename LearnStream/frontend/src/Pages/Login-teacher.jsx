@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import Component from "../components/login-form";
+import AuthContext from "../contexts/AuthProvider";
 function LoginT() {
+  
   return (
     <div className="flex">
       {/* Left Div */}

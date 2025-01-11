@@ -1,20 +1,17 @@
-import React from 'react'
-import { useParams } from 'react-router-dom'
+import React from 'react';
+import { useParams } from 'react-router-dom';
 
 const Teachers = () => {
-  const {user_id} = useParams();
+  const { user_id } = useParams();
+
   return (
     <div>
-      Teachers
+      {/* Teacher's Welcome Section */}
       <section>
-                <h1> welcome teacher {user_id} are logged in!</h1>
-                <br />
-                <p>
-                   
-                </p>
-            </section>
-      </div>
-  )
-}
+        <h1>Welcome Teacher {user_id}, you are logged in!</h1>
+      </section>
+    </div>
+  );
+};
 
-export default Teachers
+export default Teachers;

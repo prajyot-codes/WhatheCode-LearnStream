@@ -22,81 +22,53 @@ const generateAccessAndRefreshTokens  = async (userId)=>{
         throw new ApiError(500,"Something went wrong while generating Refresh And Access tokens")
     }
 }
-
-const registerUserStudent = asyncHandler( async (req,res) =>{
-    // 1 get user details from frontend
-    // 2 validation - not empty
-    // 3 check if user already exists: username, email
-    // 4 check for images, check for avatar
-    // 5 upload them to cloudinary, avatar
-    // 6 create user object - create entry in db
-    // 7 remove password and refresh token field from response
-    // 8 check for user creation
-    // 9 return res
-     
-    // 1 for form or json
-    const { name, email, password } = req.body
-    // console.log("email:",email);
-
-    // console log req .body
-
-    // 2 check
-    if ([name,email,password].some((field)=>
-    field?.trim() === "")){
-        throw new ApiError(400,"all fields are required")
+const registerUserStudent = asyncHandler(async (req, res) => {
+    const { name, email, password } = req.body;
+  
+    if ([name, email, password].some((field) => field?.trim() === "")) {
+      throw new ApiError(400, "All fields are required");
     }
-    
-
-    // 3 existence
-    const existedUser =await UserStudent.findOne({
-        $or: [{ email },{ name }]
-    })
-    // console.log(existedUser);
-    if (existedUser){
-        throw new ApiError(409,"User with email or username already exits");
+  
+    const existedUser = await UserStudent.findOne({
+      $or: [{ email }, { name }]
+    });
+  
+    if (existedUser) {
+      throw new ApiError(409, "User with email or username already exists");
+    }
+    console.log('helo')
+    const userStudent = await UserStudent.create({ name, email, password });
+    console.log('helo')
+  
+    // Generate tokens
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(userStudent._id);
+    console.log("1")
+    console.log("Cookies set: ", accessToken, refreshToken);
+    // Send the response with accessToken and userId
+    const createdStudent = await UserStudent.findById(userStudent._id).select("-password -refreshToken");
+  
+    if (!createdStudent) {
+      throw new ApiError(500, "Something went wrong while registering the user");
+    }
+  
+    const options = {
+        httpOnly:true,
+        secure:true
     }
 
 
-    // 4 here we first get the path from multer 
-    // that is the stored image files in multer 
-    // since when the router first runs we run the multer middleware 
-    // and upload the images onto multer 
-    // const avatarLocalPath = req.files?.avatar[0]?.path;
-    // const coverImageLocalPath = req.files?.coverImage[0]?.path;
-
-    // // also console log req .files
-
-    // if (!avatarLocalPath){
-    //     throw new ApiError(400,"avatar file is required")
-    // }
-   
-    // const avatar = await uploadOnCloudinary(avatarLocalPath)
-    // const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-
-    // if (!avatar){
-    //     throw new ApiError(400,"Avatar is required")
-    // }
-    // 6
-    const userStudent = await UserStudent.create({
-        name,
-        email,
-        password
-    })
-    // 7
-    const createdStudent =await UserStudent.findById(userStudent._id).select(
-        "-password -refreshToken"
+    return res.status(200)
+    .cookie("studentAccessToken" ,accessToken,options)
+    .cookie("studentRefreshToken" ,refreshToken,options)
+    .json(
+        new ApiResponse(200,{
+            user: createdStudent,role:'student',accessToken,refreshToken
+        },
+        "User Logged in Succesfully"
     )
-    // 8 
-    if (!createdStudent){
-        throw new ApiError(500,"something went wrong while registering the user")
-    }
-    // 9
-    console.log("sending response")
-    return res.status(201).json(
-        new ApiResponse(201,createdStudent,"User Registered Succesfully")
     )
-
-})
+  });
+  
 
 const loginUserStudent = asyncHandler(async (req,res)=>{
     // get email and password from the user

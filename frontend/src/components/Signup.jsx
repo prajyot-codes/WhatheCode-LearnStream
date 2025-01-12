@@ -76,7 +76,7 @@ const Signup = (props) => {
 
       // Access the accessToken and userId from the response data
       const accessToken = response?.data?.data?.accessToken;
-      const userId = response?.data?.data?.userId;
+      const userId = response?.data?.data?.user._id;
   
       // Print the accessToken and userId to the console
       console.log("Access Token:", accessToken);

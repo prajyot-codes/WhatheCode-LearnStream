@@ -4,9 +4,7 @@ import { upload } from "../middleware/multer.middleware.js";
 import { verifyJWTStudent } from "../middleware/authstudent.middleware.js";
 const router =Router();
 
-router.route('/signup').post(
-    verifyJWTStudent,
-registerUserStudent)
+router.route('/signup').post(registerUserStudent)
 router.route('/login').post(loginUserStudent)
 // secured route
 router.route('/logout').post(verifyJWTStudent,logoutUserStudent)

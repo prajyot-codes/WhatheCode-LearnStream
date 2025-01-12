@@ -19,10 +19,11 @@ const userstudentSchema=new Schema({
     },
     avatar: {
         type: String, // cloudinary url
-        required: true,
+        required: false,
     },
     coverImage: {
         type: String, // cloudinary url
+        required:false,
     },
     Courses:[
         {

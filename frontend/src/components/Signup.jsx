@@ -2,14 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import { Link } from "react-router-dom";
 import axios from "../api/axios";
-import AuthContext from "../contexts/AuthProvider";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
-const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const PWD_REGEX = /^.{8,}$/; 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const Signup = (props) => {
-  const SignupURL = `/user/${props.role}/signup`;
+  const SignupURL = `/user/student/signup`;
 
   const userRef = useRef();
   const errRef = useRef();
@@ -51,37 +50,45 @@ const Signup = (props) => {
   }, [pwd, matchPwd]);
 
   useEffect(() => {
-    setErrMsg("");
-  }, [user, email, pwd, matchPwd]);
-
+    setErrMsg('');
+  },[user,pwd,matchPwd])
+    
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const v1 = USER_REGEX.test(user);
-    const v2 = PWD_REGEX.test(pwd);
-    const v3 = EMAIL_REGEX.test(email);
-
-    if (!v1 || !v2 || !v3) {
-      setErrMsg("Invalid Entry");
+    if (!validName || !validPwd || !validEmail) {
+      setErrMsg("Invalid form data. Please check your inputs.");
       return;
     }
-
+  
+    if (!document.getElementById("agree").checked) {
+      setErrMsg("You must agree to the terms and conditions.");
+      return;
+    }
+  
     try {
       const response = await axios.post(
         SignupURL,
-        JSON.stringify({ username: user, email, password: pwd }),
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
+        JSON.stringify({ name: user, email, password: pwd }),
+        { headers: { "Content-Type": "application/json" }, withCredentials: true }
       );
-      console.log(response?.data);
+      
+      console.log(response?.data)
+
+      // Access the accessToken and userId from the response data
+      const accessToken = response?.data?.data?.accessToken;
+      const userId = response?.data?.data?.userId;
+  
+      // Print the accessToken and userId to the console
+      console.log("Access Token:", accessToken);
+      console.log("User ID:", userId);
+  
+      // If registration is successful
       setSuccess(true);
       setUser("");
       setEmail("");
       setPwd("");
       setMatchPwd("");
     } catch (err) {
-      console.log(err)
       if (!err?.response) {
         setErrMsg("No Server Response");
       } else if (err.response?.status === 409) {
@@ -92,9 +99,11 @@ const Signup = (props) => {
       errRef.current.focus();
     }
   };
+  
+
 
   return (
-    (localStorage.getItem("user_id") && localStorage.getItem("accessToken")) || success ? (
+     success ? (
       <section className="p-4 text-center">
         <h1 className="text-2xl font-bold mb-4">You are logged in!</h1>
         <p className="text-gray-600">Welcome back to LearnStream!</p>
@@ -123,6 +132,7 @@ const Signup = (props) => {
               value={user}
               required
               shadow
+              aria-invalid={!validName}
               onFocus={() => setUserFocus(true)}
               onBlur={() => setUserFocus(false)}
             />
@@ -140,6 +150,7 @@ const Signup = (props) => {
               value={email}
               required
               shadow
+              aria-invalid={!validEmail}
               onFocus={() => setEmailFocus(true)}
               onBlur={() => setEmailFocus(false)}
             />
@@ -156,13 +167,20 @@ const Signup = (props) => {
               value={pwd}
               required
               shadow
+              aria-invalid={!validPwd}
               onFocus={() => setPwdFocus(true)}
               onBlur={() => setPwdFocus(false)}
             />
-            {pwdFocus && !validPwd && (
-              <p className="text-sm text-red-600">
-                8-24 chars, uppercase, lowercase, number, special char.
-              </p>
+            {pwdFocus && (
+              <ul className="text-sm text-red-600">
+                <li className={pwd.length >= 8 ? "text-green-600" : ""}>At least 8 characters</li>
+                {/* <li className={/[A-Z]/.test(pwd) ? "text-green-600" : ""}>One uppercase letter</li>
+                <li className={/[a-z]/.test(pwd) ? "text-green-600" : ""}>One lowercase letter</li>
+                <li className={/[0-9]/.test(pwd) ? "text-green-600" : ""}>One number</li>
+                <li className={/[!@#$%]/.test(pwd) ? "text-green-600" : ""}>
+                  One special character (!@#$%)
+                </li> */}
+              </ul>
             )}
           </div>
           <div>
@@ -174,6 +192,7 @@ const Signup = (props) => {
               value={matchPwd}
               required
               shadow
+              aria-invalid={!validMatch}
               onFocus={() => setMatchFocus(true)}
               onBlur={() => setMatchFocus(false)}
             />

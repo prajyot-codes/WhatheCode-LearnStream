@@ -1,6 +1,6 @@
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { ApiError } from '../../utils/ApiError.js'
-import { UserStudent } from '../../models/student/userstudentmodel.js';
+import { UserStudent } from '../../models/user/userstudentmodel.js';
 import { uploadOnCloudinary } from '../../utils/cloudinary.js';
 import { ApiResponse  } from '../../utils/ApiResponse.js'
 import  jwt  from 'jsonwebtoken';
@@ -35,9 +35,9 @@ const registerUserStudent = asyncHandler( async (req,res) =>{
     // 9 return res
      
     // 1 for form or json
+    console.log(req.body);
     const { name, email, password } = req.body
-    // console.log("email:",email);
-
+    console.log("email:",email);
     // console log req .body
 
     // 2 check
@@ -83,18 +83,42 @@ const registerUserStudent = asyncHandler( async (req,res) =>{
         password
     })
     // 7
+    
+    const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(userStudent._id)
+    
     const createdStudent =await UserStudent.findById(userStudent._id).select(
         "-password -refreshToken"
     )
-    // 8 
-    if (!createdStudent){
-        throw new ApiError(500,"something went wrong while registering the user")
+    
+    const options = {
+        httpOnly:true,
+        secure:true
     }
-    // 9
-    console.log("sending response")
-    return res.status(201).json(
-        new ApiResponse(201,createdStudent,"User Registered Succesfully")
+
+    console.log("Cookies set: ", accessToken, refreshToken);
+
+    return res.status(200)
+    .cookie("studentAccessToken" ,accessToken,options)
+    .cookie("studentRefreshToken" ,refreshToken,options)
+    .json(
+        new ApiResponse(200,{
+            user: createdStudent,
+            role:'student',
+            accessToken,
+            refreshToken
+        },
+        "User Logged in Succesfully"
     )
+    )
+    // // 8 
+    // if (!createdStudent){
+    //     throw new ApiError(500,"something went wrong while registering the user")
+    // }
+    // // 9
+    // console.log("sending response")
+    // return res.status(201).json(
+    //     new ApiResponse(201,createdStudent,"User Registered Succesfully")
+    // )
 
 })
 

@@ -10,10 +10,21 @@ import { createAssignment, submitAssignment  } from '../../controllers/Courses/A
 const router = Router()
 
 // Assignments
-router.route('/:course_id/assignment').post(verifyJWT,upload.fields([
-    {name:'assignmentFiles',maxCount:10}
-]),createAssignment);
-router.route('/course_id/assignment/:assignmentId/upload').post(verifyJWTStudent,upload.fields([
-    {name:'submissionFiles',maxCount:10}
-]),submitAssignment)
+router.route('/:course_id/modules/:moduleId/assignments')
+    .post(
+        verifyJWT,
+        upload.fields([{ name: 'assignmentFiles', maxCount: 10 }]),
+        createAssignment
+    ); // Create a new assignment for a module
+
+router.route('/:courseId/modules/:moduleId/assignments/:assignmentId/upload')
+    .post(
+        verifyJWTStudent,
+        upload.fields([{ name: 'submissionFiles', maxCount: 10 }]),
+        submitAssignment
+    ); // Submit an assignment
+
+// router.route('/:courseId/modules/:moduleId/assignments/:assignmentId')
+    // .get(verifyJWTCombined, getAssignmentById) // Get assignment details
+    // .delete(verifyJWT, deleteAssignment); // Delete an assignment
 export default router;

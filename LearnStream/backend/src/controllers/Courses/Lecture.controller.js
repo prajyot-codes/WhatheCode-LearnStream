@@ -7,14 +7,15 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { deleteMediaFromCloudinary, uploadOnCloudinary } from "../../utils/cloudinary.js";
 // import { UserStudent } from "../../models/student/userstudentmodel.js";
 import { Progress } from "../../models/Course/Progress.js";
+import { Modules } from "../../models/Course/Modules.js";
 
 
 const addLecture = asyncHandler(async (req,res)=>{
     const {title} = req.body
-    const {course_id} =req.params
+    const {moduleId,course_id} =req.params
     
     // Validate course existence
-    if (!course_id) {
+    if (!moduleId ||!course_id) {
         throw new ApiError(404, "Course not found");
     }
 
@@ -40,7 +41,7 @@ const addLecture = asyncHandler(async (req,res)=>{
         videourl:videoUrl,
         duration:video_duration,
         public_id:video_public_id,
-        course_id
+        moduleId
     })
 
     if (!lecture){
@@ -51,93 +52,129 @@ const addLecture = asyncHandler(async (req,res)=>{
         course_id,
     {$push:{lectures:lecture._id}},
     {new:true}
-)
+    )
+    const updatedModule = await Modules.findByIdAndUpdate(
+        moduleId,
+        {$push:{lectures:lecture._id}},
+        {new:true}
+    )
      
-    if (!updatedCourse){
-        throw new ApiError(404,"Course not found or failed to update")
+    if (!updatedCourse ||!updatedModule){
+        throw new ApiError(404,"Course/Module not found or failed to update")
     }
     return res.status(200).json(
         new ApiResponse(200,lecture,
             'added lecture succesfully')
     )
 }) 
-const updateLecture = asyncHandler(async (req,res)=>{
-    // there can be a title change 
-    // a video change in which case i just have to delete and add
-    // enabling full preview for some lectures and not for others
-})
+const updateLecture = asyncHandler(async (req, res) => {
+    const { module_id, lecture_id } = req.params;
+    const { title, enableFreePreview } = req.body;
+
+    const module = await Modules.findById(module_id);
+    if (!module) {
+        throw new ApiError(404, "Module not found");
+    }
+
+    const lecture = await Lectures.findById(lecture_id);
+    if (!lecture) {
+        throw new ApiError(404, "Lecture not found");
+    }
+
+    if (title) lecture.title = title;
+    if (typeof enableFreePreview === "boolean") {
+        lecture.freePreview = enableFreePreview;
+    }
+
+    // Handle video replacement if a new video file is uploaded
+    if (req.file?.path) {
+        await deleteMediaFromCloudinary(lecture.public_id);
+
+        const video = await uploadOnCloudinary(req.file.path);
+        lecture.videourl = video.secure_url;
+        lecture.public_id = video.public_id;
+        lecture.duration = video.duration;
+    }
+
+    await lecture.save();
+    return res.status(200).json(
+        new ApiResponse(200, lecture, "Lecture updated successfully")
+    );
+});
 const deleteLecture = asyncHandler(async (req,res)=>{
     // i will first recieve the lecture id to be deleted along with the courseid 
     // then i will have to first delete the given lecture from cloudinary
     // then first delete from course database lectures array
     // then i will have to delete all the details of that lecture from my database
 
-    const {course_id,lecture_id} = req.params
+    const {moduleId,course_id,lecture_id} = req.params
 
 
     const course = await  Courses.findById(course_id)
     const lecture = await Lectures.findById(lecture_id)
-
+    const module = await Modules.findById(moduleId)
     if (!course){
         throw new ApiError(404,"Course Not Found")
     }
     if (!lecture){
         throw new ApiError(404,"Lecture Not Found")
     }
+    if (!module){
+        throw new ApiError(404,"Lecture Not Found")
+    }
 
     await deleteMediaFromCloudinary(lecture.public_id);
-    //delete from courses array 
-    course.lectures = course.lectures.filter(lectureId =>!lectureId.equals(lecture_id))
 
+    //delete from courses array 
+    course.lectures = course.lectures.filter(lectureId =>!lectureId
+        .equals(lecture_id))
+    await course.save();
+    
+    module.lectures = module.lectures.filter(
+        (id) => !id.equals(lecture._id)
+    );
+    await module.save();
+    
     Lectures.findByIdAndDelete(lecture_id);
-   //  I have not completed this controller please do tommorrow
+   
     return res.status(200)
     .json(new ApiResponse(200,null,"Lecture deleted succesfully"))
 })
-const getAllLectures = asyncHandler(async (req,res)=>{
-    // to get all lectures related to a course first get the courses id 
-    // then we go to the lectures field of the courses model 
-    // we iterate over the ids and only send the relevant data  
-    // then we send this to the frontend in the form of an object
-    // {lecture_id,lecture_title,lecture_duration,freePreview}
-    
-    const {course_id} = req.params
-    const course =  await Courses.findById(course_id).populate({
-        path:'lectures',
-        select:'_id title duration freePreview completed'
+const getAllLectures = asyncHandler(async (req, res) => {
+    const { moduleId } = req.params;
+
+    const module = await Modules.findById(moduleId).populate({
+        path: "lectures",
+        select: "_id title duration freePreview",
     });
-    if (!course){
-        throw new ApiError("course not found")
-    }
-    // console.log(course.lectures)
-    return res.status(200).json(
-        new ApiResponse(200,
-            course.lectures,
-            "All Lectures Sent "
-        )
-    )
-})
-// when user wants to view a particular lecture
-const getLecturebyId = asyncHandler(async (req,res)=>{
-    // user clicks on lecture the front end sends request via
-    // /:course_id/lectures/:lecture_id
-    const {course_id,lecture_id} = req.params
-    const course = await Courses.findById(course_id)
-    if (!course){
-        throw new ApiError('Course for the Lecture doesnt exist')
-    }
-    const lecture = await Lectures.findById(lecture_id)
-    if (!lecture){
-        throw new ApiError('Lecture Doesnt Exist')
+
+    if (!module) {
+        throw new ApiError(404, "Module not found");
     }
 
     return res.status(200).json(
-        new ApiResponse(200,
-            lecture,
-            "Lecture Sent "
-        )
-    )
-})
+        new ApiResponse(200, module.lectures, "All lectures retrieved successfully")
+    );
+});
+// when user wants to view a particular lecture
+const getLectureById = asyncHandler(async (req, res) => {
+    const { moduleId, lecture_id } = req.params;
+
+    const module = await Modules.findById(moduleId);
+    if (!module) {
+        throw new ApiError(404, "Module not found");
+    }
+
+    const lecture = await Lectures.findById(lecture_id);
+    if (!lecture) {
+        throw new ApiError(404, "Lecture not found");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, lecture, "Lecture retrieved successfully")
+    );
+});
+
 const markLectureCompleted = asyncHandler(async(req,res) =>{
     const {courseId,lectureId } = req.params
     const studentId =  req.student?._id
@@ -162,7 +199,7 @@ export {
     addLecture,
     updateLecture,
     deleteLecture,
-    getLecturebyId,
+    getLectureById,
     getAllLectures,
     markLectureCompleted,
 }

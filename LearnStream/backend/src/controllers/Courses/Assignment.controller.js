@@ -11,8 +11,8 @@ import { deleteMediaFromCloudinary, uploadMultipleFilesOnCloudinary, uploadOnClo
 
 const createAssignment = asyncHandler(async (req,res)=>{
     const {title,deadline} = req?.body
-    const {course_id} = req?.params;
-    if ((!course_id || !title )){
+    const {course_id,moduleId} = req?.params;
+    if ((!course_id || !title ||!moduleId)){
         throw new ApiError('CourseId and Title cannot be empty')
     }
     const assignmentFiles = req.files?.assignmentFiles;
@@ -29,6 +29,7 @@ const createAssignment = asyncHandler(async (req,res)=>{
 
     const assignment = await Assignments.create({
         course_id,
+        module_id:moduleId,
         title,
         public_id:public_ids,
         assignmentUrls:fileUrls,

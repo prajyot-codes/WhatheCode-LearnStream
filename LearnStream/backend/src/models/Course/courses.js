@@ -1,6 +1,7 @@
 
 import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2'
 import mongoose,{Schema} from 'mongoose'
+import { Modules } from './Modules';
 const courseSchema =new Schema({
         
         thumbnail:{
@@ -43,6 +44,10 @@ const courseSchema =new Schema({
         assignments:[{
             type:Schema.Types.ObjectId,
             ref:"Assignments"
+        }],
+        modules: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Modules'
         }]
     },
     {
@@ -80,75 +85,100 @@ const lectureSchema = new Schema({
     course_id:{
         type:Schema.Types.ObjectId,
         ref:'Courses'
+    },
+    module_id: { // Links assignments to modules
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Modules',
+        required: true,
     }
     },
     {
         timestamps:true
 })
-
 const assignmentSchema = new Schema({
-    course_id:{
-        type : String
+    module_id: { // Links assignments to modules
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Modules',
+        required: true,
     },
-    title:{
-        type:String,
-        required:true
+    title: {
+        type: String,
+        required: true,
     },
-    assignmentUrls:[{
-        type:String,//Cloudinary
-        default:'',
-    }],
-    public_id:[{
-        type:String,
-        default:''
-    }],
-    deadline:{
-        type:Date,
-        default:null,
-        required:false,
-    },
-    uploadedAssignments: [{
-        studentId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'UserStudent', // Assuming you have a Student model
-            required: true,
+    assignmentUrls: [ // URLs for assignment files
+        {
+            type: String, // Cloudinary or other storage URLs
+            default: '',
         },
-        submittedAssignmentUrls: [{
+    ],
+    public_id: [ // Cloudinary file IDs
+        {
             type: String,
-            required: true,
-        }],
-        grading:{
-            type:Number,
+            default: '',
         },
-        uploadedAt: {
-            type: Date,
-            default: Date.now,
+    ],
+    deadline: {
+        type: Date,
+        default: null,
+    },
+    uploadedAssignments: [
+        {
+            studentId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'UserStudent',
+                required: true,
+            },
+            submittedAssignmentUrls: [
+                {
+                    type: String,
+                    required: true,
+                },
+            ],
+            uploadedAt: {
+                type: Date,
+                default: Date.now,
+            },
         },
-        submittedOnTime:{
-            type:Boolean,
-            default:true
-        }
-    }],
-    checked: [{
-        studentId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'UserStudent', // Assuming you have a Student model
-            required: true,
+    ],
+    checked: [
+        {
+            studentId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'UserStudent',
+                required: true,
+            },
+            isChecked: {
+                type: Boolean,
+                default: false,
+            },
+            grading: {
+                type: Number, // Grade assigned to the student
+                default: null,
+            },
+            submittedOnTime: {
+                type: Boolean, // Whether the submission was on time
+                default: true,
+            },
         },
-        isChecked: {
-            type: Boolean,
-            default: false,
-        }
-    }],
-},{
-    timestamps:true
-})
+    ],
+}, { timestamps: true });
+
 
 courseSchema.pre('remove', async function (next) {
-    await Lectures.deleteMany({ _id: { $in: this.lectures } });
-    next();
-});
+    try {
+        // Find all modules associated with the course
+        const modules = await Modules.find({ course_id: this._id });
 
+        // Iterate over modules and remove them (triggers Module's pre('remove') middleware)
+        for (const module of modules) {
+            await module.remove();
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 
 const Courses = mongoose.model("Courses",courseSchema);
 const Lectures = mongoose.model("Lectures",lectureSchema);

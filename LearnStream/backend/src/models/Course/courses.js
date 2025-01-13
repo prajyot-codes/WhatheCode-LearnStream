@@ -1,7 +1,7 @@
 
 import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2'
 import mongoose,{Schema} from 'mongoose'
-import { Modules } from './Modules';
+import { Modules } from './Modules.js';
 const courseSchema =new Schema({
         
         thumbnail:{

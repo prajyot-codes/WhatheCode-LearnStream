@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Assignments, Lectures } from './courses';
+import { Assignments, Lectures } from './courses.js';
 const { Schema } = mongoose;
 
 const moduleSchema = new Schema({

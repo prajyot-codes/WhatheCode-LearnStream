@@ -17,13 +17,9 @@ const Navbar1 = () => {
   // },[localStorage.])
 
   return (
-    <Navbar fluid rounded className="mt-0 pt-0">
-      <Navbar.Brand href="/">
-        <img
-          src="../../assets/Black And White Aesthetic Minimalist Modern Simple Typography Coconut Cosmetics Logo.png"
-          className="mr-5 h-16 sm:h-20"
-          alt="Flowbite React Logo"
-        />
+    <Navbar fluid rounded className="mt-0 pt-3 ">
+      <Navbar.Brand className="font-league font-[700] text-xl " href="/">
+        <span className="text-[#7ED757]">Learn</span>Stream
       </Navbar.Brand>
       <div className="flex md:order-2">
         {/* Show Avatar only when user_id and accessToken exist */}

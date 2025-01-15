@@ -8,6 +8,9 @@ export default {
     flowbite.content(),
   ],
   theme: {
+    fontFamily: {
+      league: ['League Spartan', 'sans-serif'], // Add your custom font here
+    },
     extend: { width: {
       '50vh': '50vh', // Adds a custom width value
     },},

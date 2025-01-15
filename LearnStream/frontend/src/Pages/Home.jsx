@@ -1,63 +1,66 @@
-// import React from 'react';
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+import axios from '../api/axios';
 
-import { Link } from "react-router-dom";
-import "../index.css";
-import { Button } from "flowbite-react";
-
-function Home() {
-
+const Home = () => {
+  const [courseCategories,setCourseCategories] = useState();
+  
+  const loadCourses =async (e)=>{
+  
+      try {
+        const response = axios.get('/courses/',{
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true 
+      });
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+  }
   return (
-    <div className="flex">
-      {/* Left div with white background */}
-      <div className="bg-white border-r-2 overflow-hidden border-black w-1/2 h-screen text-white flex justify-center items-center">
-        {/* Centered div */}
-        <div className="bg-white w-4/12 h-auto flex justify-center items-center text-black">
-          <div className="text-center">
-            <h1 className="text-[#588157] text-2xl">For Teachers</h1>
-            <br />
-            <p>Lorem, ipsum dolor sit amet adipisicing elit. Blanditiis fuga id qui iusto assumenda nisi? Dignissimos, error ratione.</p>
-            <br />
-            <div className="flex justify-center flex-col items-center">
-              <Button 
-              color="success">
-                <Link
-                to='/teacher/login'>
-                Login
-                </Link>
-                </Button>
-              <br />
-              <p className="mt-2">Don't have an account?</p>
-              <p className="cursor-pointer">create an account</p>
+    <>
+    <section
+    className="relative bg-[url('/assets/HeroImg.png')] bg-cover bg-center bg-no-repeat"
+    style={{ height: '90vh', width: '100%' }}
+    >
+      
+      <div className="absolute inset-0 bg-gradient-to-r from-black/75 to-transparent/0"></div>
 
+        <div className="relative mx-auto max-w-screen-xl px-4 py-32 sm:px-6 lg:flex lg:h-screen lg:items-center lg:px-8">
+          <div className="max-w-xl text-center ltr:sm:text-left">
+            <h1 className="text-3xl font-extrabold sm:text-17xl">Transform Your Education Journey.</h1>
+            <p className="mt-4 max-w-lg sm:text-xl/relaxed ">
+            Take the first step toward mastering new skills and broadening your horizons.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-4 text-center justify-center">
+              <Link
+                to={'/login'}
+                className="block w-full rounded bg-[#588157] px-12 py-3 text-sm font-medium text-white shadow hover:bg-[#137dc7] focus:outline-none focus:ring sm:w-auto hover:text-black"
+                >
+                Get Started
+              </Link>
+              <a
+                href="#"
+                className="block w-full rounded bg-white px-12 py-3 text-sm font-medium text-black shadow hover:text-black focus:outline-none focus:ring sm:w-auto"
+                >
+                Learn More
+              </a>
             </div>
           </div>
         </div>
-      </div>
+    </section>
 
-      {/* Right div with white background */}
-      <div className="bg-white border-l-2 overflow-hidden border-black w-1/2 h-screen flex justify-center items-center">
-        {/* Centered div */}
-        <div className="bg-white w-4/12 h-auto flex justify-center items-center text-black">
-          <div className="text-center">
-            <h1 className="text-[#588157] text-2xl">For Students</h1>
-            <br />
-           
-            <p>Lorem, ipsum dolor sit amet adipisicing elit. Blanditiis fuga id qui iusto assumenda nisi? Dignissimos, error ratione.</p>
-            <br />
-            <div className="flex justify-center flex-col items-center">
-            <Link
-            to='/student/login'>
-              <Button color="success">Login</Button>
-            </Link>
-              <br />
-              <p className="mt-2">Don’t have an account?</p>
-              <p className="cursor-pointer">create an account</p>
-            </div>
-          </div>
-        </div>
+    <div onLoad={loadCourses} className='text-6xl font-sans font-bold ml-4 mt'>
+      Courses
+      <div >
+        <ul>
+
+        </ul>
       </div>
     </div>
-  );
+    </>
+
+  )
 }
 
-export default Home;
+export default Home

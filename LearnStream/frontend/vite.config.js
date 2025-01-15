@@ -6,5 +6,6 @@ export default defineConfig({
   server: {
     port: 2000, // Change the port number here
   },
-  plugins: [react()],
+    plugins: [react()],
+    
 })

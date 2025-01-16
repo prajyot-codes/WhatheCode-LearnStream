@@ -26,7 +26,7 @@ router.route('/:courseId').get( verifyJWT, getCourseById);//
 router.route('/:courseId/students').get( verifyJWT, getEnrolledStudents);//
 router.route('/:courseId/enroll').post( verifyJWTStudent, enrollStudent);
 router.route('/category').get(verifyJWTCombined,getCoursesByCategory)
-router.route('/').get(verifyJWTCombined,getAllCourses)// i still have doubts regarding this feature and plan to remove it 
+router.route('/').get(getAllCourses)// i still have doubts regarding this feature and plan to remove it 
 router.route('/:courseId/progress').get(verifyJWTCombined, CourseProgress)//
 
 // router.route('/:courseId').put( verifyJWT, updateCourse);

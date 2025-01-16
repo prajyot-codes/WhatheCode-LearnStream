@@ -1,22 +1,33 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from '../api/axios';
+import CategoryBar from '../components/CategoryBar';
 
 const Home = () => {
   const [courseCategories,setCourseCategories] = useState();
+  const courseDiv=useRef(null);
   
   const loadCourses =async (e)=>{
   
+
+    
       try {
-        const response = axios.get('/courses/',{
+        const response =await  axios.get('/courses/',{
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true 
       });
-        console.log(response);
+
+      // console.log(response);
+        console.log(response.data?.data?.map((course)=>{
+          return course?.category;
+        }));
       } catch (error) {
         console.log(error);
       }
   }
+  useEffect(()=>{
+    loadCourses();
+  },[])
   return (
     <>
     <section
@@ -50,13 +61,12 @@ const Home = () => {
         </div>
     </section>
 
-    <div onLoad={loadCourses} className='text-6xl font-sans font-bold ml-4 mt'>
+    <div ref={courseDiv} className='   font-sans font-bold ml-4 mt'>
       Courses
-      <div >
-        <ul>
-
-        </ul>
+      <div>
+        <CategoryBar/>
       </div>
+      
     </div>
     </>
 

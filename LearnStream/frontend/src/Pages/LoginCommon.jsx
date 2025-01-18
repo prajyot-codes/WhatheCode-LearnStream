@@ -26,8 +26,10 @@ function LoginCommon() {
                 </Link>
                 </Button>
               <br />
+              <Link to="/signup/teacher">
               <p className="mt-2">Don't have an account?</p>
               <p className="cursor-pointer">create an account</p>
+              </Link>
 
             </div>
           </div>
@@ -50,8 +52,10 @@ function LoginCommon() {
               <Button color="success">Login</Button>
             </Link>
               <br />
+              <Link to="/signup/student">
               <p className="mt-2">Don’t have an account?</p>
               <p className="cursor-pointer">create an account</p>
+              </Link>
             </div>
           </div>
         </div>

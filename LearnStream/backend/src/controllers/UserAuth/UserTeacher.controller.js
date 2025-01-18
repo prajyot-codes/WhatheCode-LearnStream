@@ -24,17 +24,7 @@ const generateAccessAndRefreshTokens  = async (userId)=>{
 }
 
 const registerUser = asyncHandler( async (req,res) =>{
-    // 1 get user details from frontend
-    // 2 validation - not empty
-    // 3 check if user already exists: username, email
-    // 4 check for images, check for avatar
-    // 5 upload them to cloudinary, avatar
-    // 6 create user object - create entry in db
-    // 7 remove password and refresh token field from response
-    // 8 check for user creation
-    // 9 return res
-     
-    // 1 for form or json
+    
     const { name, email, password } = req.body
     console.log("email:",email);
 
@@ -57,28 +47,6 @@ const registerUser = asyncHandler( async (req,res) =>{
     }
 
 
-    // 4 here we first get the path from multer 
-    // that is the stored image files in multer 
-    // since when the router first runs we run the multer middleware 
-    // and upload the images onto multer 
-    // const avatarLocalPath = req.files?.avatar[0]?.path;
-    // const coverImageLocalPath = req.files?.coverImage[0]?.path;
-
-    // // also console log req .files
-
-    // if (!avatarLocalPath){
-    //     throw new ApiError(400,"avatar file is required")
-    // }
-   
-    // const avatar = await uploadOnCloudinary(avatarLocalPath)
-    // const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-    
-    // // console.log(avatar)
-
-    if (!avatar){
-        throw new ApiError(400,"Avatar is required")
-    }
-    // 6
     const userTeacher = await UserTeacher.create({
         name,
         email,
@@ -98,6 +66,27 @@ const registerUser = asyncHandler( async (req,res) =>{
         new ApiResponse(201,createdTeacher,"User Registered Succesfully")
     )
 
+
+    const options = {
+        httpOnly:true,
+        secure:true
+    }
+
+    console.log("Cookies set: ", accessToken, refreshToken);
+
+    return res.status(200)
+    .cookie("studentAccessToken" ,accessToken,options)
+    .cookie("studentRefreshToken" ,refreshToken,options)
+    .json(
+        new ApiResponse(200,{
+            user: createdStudent,
+            role:'student',
+            accessToken,
+            refreshToken
+        },
+        "User Logged in Succesfully"
+    )
+    )
 })
 const loginUser = asyncHandler(async (req,res)=>{
     // get email and password from the user

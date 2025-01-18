@@ -157,7 +157,7 @@ const enrollStudent  = asyncHandler(async (req,res)=>{
 
     if (!updatedCourse || !updatedStudent){
         throw new ApiError(404,"Failed To Enroll Student")
-    }
+    }``
     
     res.status(200).json(
         new ApiResponse(200,{},

@@ -4,6 +4,7 @@ import { Button, Checkbox, Label, Spinner, TextInput } from "flowbite-react";
 import { useRef, useState, useEffect, useContext } from 'react';
 import AuthContext from "../contexts/AuthProvider";
 import axios from '../api/axios';
+
 import { Link, useNavigate } from "react-router-dom";
 function Component({role}) {
     const navigate = useNavigate();
@@ -55,6 +56,9 @@ function Component({role}) {
             localStorage.setItem('user_id',user_id);
             localStorage.setItem('roles',roles)
             setAuth({ user, pwd, roles, accessToken });
+            const targetUrl = `/${role}/${user_id}`;
+            navigate(targetUrl);
+            window.location.href = targetUrl;
             setUser('');
             setPwd('');
             setSuccess(true);

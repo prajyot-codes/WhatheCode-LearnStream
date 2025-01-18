@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from '../api/axios';
 import CategoryBar from '../components/CategoryBar';
+import GeneralCourses from '../components/GeneralCourses';
 
 const Home = () => {
   const [courseCategories,setCourseCategories] = useState();
@@ -64,7 +65,7 @@ const Home = () => {
     <div ref={courseDiv} className='   font-sans font-bold ml-4 mt'>
       Courses
       <div>
-        <CategoryBar/>
+        <GeneralCourses/>
       </div>
       
     </div>

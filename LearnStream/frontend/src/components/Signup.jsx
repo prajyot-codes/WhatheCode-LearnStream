@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../api/axios"; // Axios instance with base URL
+import AuthContext from "../contexts/AuthProvider";
 
 // Regex for validations
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
@@ -11,7 +12,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const Signup = ({ role, verb = "amazing" }) => {
   const navigate = useNavigate();
   const SignupURL = `/user/${role}/signup`; // API endpoint based on role
-
+  const { setAuth } = useContext(AuthContext);
   // Refs for form and error focus
   const userRef = useRef(null);
   const errRef = useRef();
@@ -86,10 +87,11 @@ const Signup = ({ role, verb = "amazing" }) => {
       // Extract user data from the response
       const { accessToken, user: userData } = response.data.data;
       localStorage.setItem("user_id", userData._id);
-      localStorage.setItem("accesstoken", accessToken);
-      localStorage.setItem("user_name", userData.name);
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("name", userData.name);
       localStorage.setItem("avatarUrl", userData.avatar || "https://via.placeholder.com/150");
 
+      setAuth({'user_id':userData._id,accessToken,'name':userData.name,role})
       // Redirect user based on role
       const targetUrl = `/${role}/${userData._id}`;
       navigate(targetUrl);

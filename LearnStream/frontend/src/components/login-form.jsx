@@ -54,8 +54,8 @@ function Component({role}) {
             localStorage.setItem('name',name);
             localStorage.setItem('accessToken',accessToken);
             localStorage.setItem('user_id',user_id);
-            localStorage.setItem('roles',roles)
-            setAuth({ user, pwd, roles, accessToken });
+            localStorage.setItem('role',roles)
+            setAuth({ user_id,name, roles, accessToken });
             const targetUrl = `/${role}/${user_id}`;
             navigate(targetUrl);
             window.location.href = targetUrl;

@@ -103,7 +103,7 @@ const getCoursesByCategory = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Category is required');
     }
 
-    const courses = await Courses.find({ category });
+    const courses = await Courses.find({ category }).select('thumbnail title author modules rating ');
     res.status(200).json(new ApiResponse(200, courses, 'Courses fetched successfully'));
 });
 

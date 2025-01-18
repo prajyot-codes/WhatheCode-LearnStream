@@ -1,8 +1,15 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Component from "../components/login-form";
 import AuthContext from "../contexts/AuthProvider";
+import { useNavigate } from "react-router-dom";
 function LoginT() {
-  
+  const navigate = useNavigate()
+  const role = localStorage.getItem('role')
+  useEffect(()=>{
+    if (role=='student'){
+        navigate('/login')
+    }
+  },[navigate])
   return (
     <div className="flex">
       {/* Left Div */}

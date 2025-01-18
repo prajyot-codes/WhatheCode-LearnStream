@@ -7,6 +7,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { deleteMediaFromCloudinary, uploadMultipleFilesOnCloudinary, uploadOnCloudinary } from "../../utils/cloudinary.js";
 import { UserStudent } from "../../models/user/userstudentmodel.js";
 import { Progress } from "../../models/Course/Progress.js";
+import { UserTeacher } from "../../models/user/userteachermodel.js";
 
 const createCourse = asyncHandler(async (req,res)=> {
     // thumbnail upload using multer and cloudinary
@@ -47,8 +48,17 @@ const createCourse = asyncHandler(async (req,res)=> {
         category,
     })
 
+    const teacher = await UserTeacher.findByIdAndUpdate(req.teacher._id,{
+        $push:{Courses:course._id}
+    },
+    {new:true});
+
     if (!course){
-        throw new ApiError(401,"something went wrong while creating course")
+        throw new ApiError(400,"something went wrong while creating course")
+    }
+
+    if (!teacher){
+        throw new ApiError(400,'Error while adding reference to teacher')
     }
 
     return res
@@ -82,6 +92,31 @@ const getCourseByStudentId = asyncHandler(async (req,res)=>{
     )
 
 })
+const getCourseByTeacherId = asyncHandler(async(req,res)=>{
+    const {teacher_id}  = req.params;
+
+    if (!teacher_id){
+        throw new ApiError('user is not logged in  or is undefined')
+    }
+    const teachercourses = await UserTeacher.findById(teacher_id, { Courses: 1 })
+  .populate({
+    path: 'Courses',
+    select: 'thumbnail title description price category author',
+    populate: {
+      path: 'author',
+      select: 'name' 
+    }
+  });
+    console.log(teachercourses);
+    if (!teachercourses){
+        throw new ApiError('student doesnt have any courses')
+    }
+
+    res.status(200).json(
+        new ApiResponse(200,teachercourses,'studentcourses succesfully sent ')
+    )
+
+})
 const getCourseById = asyncHandler(async (req, res)=> {
     const {courseId}  = req.params
 
@@ -103,9 +138,18 @@ const getCoursesByCategory = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Category is required');
     }
     console.log(category)
-    const courses = await Courses.find({ category }).select('thumbnail title author modules rating ');
-    console.log(courses)
-    res.status(200).json(new ApiResponse(200, courses, 'Courses fetched successfully'));
+    const courses = await Courses.find({ category }).select('thumbnail title author modules price ');
+    const updatedCourses = await Promise.all(
+        courses.map(async (course) => {
+            const author = await UserTeacher.findById(course.author).select('name');
+            return {
+                ...course._doc, // Spread course data (MongoDB documents have `_doc` for raw data)
+                author: author, // Add author details
+            };
+        })
+    );
+    console.log(updatedCourses)
+    res.status(200).json(new ApiResponse(200, updatedCourses, 'Courses fetched successfully'));
 });
 
 const getAllCourses = asyncHandler(async (req,res) =>{
@@ -220,5 +264,5 @@ export {
     CourseProgress,
     getEnrolledStudents,
     enrollStudent,
-    
+    getCourseByTeacherId
 }

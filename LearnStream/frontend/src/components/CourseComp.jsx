@@ -1,6 +1,10 @@
 import React from 'react'
 import { Card } from "flowbite-react";
+import axios from '../api/axios';
 const CourseComp = ({courses=[],ButtonName,buttonHandler,errRef,errMsg}) => {
+  const getAuthorName =async (course_id)=>{
+      
+  }
   return (
     <div className="flex flex-wrap gap-6">
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
@@ -62,7 +66,7 @@ const CourseComp = ({courses=[],ButtonName,buttonHandler,errRef,errMsg}) => {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold text-gray-900 dark:text-white">$599</span>
+                  <span className="text-3xl font-bold text-gray-900 dark:text-white">${course?.price}</span>
                   <a
                     href="#"
                     onClick={(e)=>{buttonHandler(e)}}
@@ -70,6 +74,7 @@ const CourseComp = ({courses=[],ButtonName,buttonHandler,errRef,errMsg}) => {
                   >
                     {ButtonName}
                   </a>
+                  <p className="text-gray-600">Instructor:{console.log(course.author.name)} {course?.author?.name|| getAuthorName}</p>
                 </div>
               </Card>
               ))}

@@ -4,6 +4,8 @@ import ReactPlayer from 'react-player';
 import axios from "../api/axios";
 import { Button } from "flowbite-react";
 import { Link } from "react-router-dom";
+import GeneralCourses from "../components/GeneralCourses";
+import CourseComp from "../components/CourseComp";
 const videos = [
   {
     id: 1,
@@ -32,7 +34,7 @@ const Teachers = () => {
   useEffect(() => { 
     const fetchCourses = async () => {
       try {
-        const response = await axios.get(`courses/${user_id}`, {
+        const response = await axios.get(`courses/teacher/${user_id}`, {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         });
@@ -53,6 +55,9 @@ const Teachers = () => {
     fetchCourses();
   }, [userAccessToken]);
 
+  const editCourse = async ()=>{
+    
+  }
   return (
     <div>
       {/* Navbar */}
@@ -63,29 +68,16 @@ const Teachers = () => {
         Offers regarding courses
       </div>
 
+      <section>
+        <h1>Welcome  {localStorage.getItem('name')},
+           you are logged in!</h1>
+      </section>
+
       {/* My Learning Section */}
       <div className="p-6">
-        <h3 className="text-2xl font-semibold mb-4">My Learning</h3>
+        <h3 className="text-2xl font-semibold mb-4">My Courses</h3>
         <div className="flex flex-wrap gap-6">
-          <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-          {courses?.map((course) => (
-            <div
-              key={course._id}
-              className="max-w-sm rounded overflow-hidden shadow-lg"
-            >
-              <img className="w-full" src={course.thumbnail} alt="Course Thumbnail" />
-              <div className="px-6 py-4">
-                <div className="font-bold text-xl mb-2">{course.title}</div>
-                <p className="text-gray-700 text-base">
-                  {course.description}
-                </p>
-              </div>
-              <div className="px-6 py-4 flex justify-between items-center">
-                <span className="text-xl font-semibold">{course.price}</span>
-                <span className="text-gray-600">Instructor: {course?.author?.name}</span>
-              </div>
-            </div>
-          ))}
+         <CourseComp courses={courses} errMsg={errMsg} ButtonName={'Edit Course'} buttonHandler={editCourse} errRef={errRef} />
         </div>
       </div>
 
@@ -93,28 +85,11 @@ const Teachers = () => {
       <div className="p-6">
         <h3 className="text-2xl font-semibold mb-4">Top Courses</h3>
         <div className="flex gap-6">
-          {videos.map((video) => (
-            <div
-              key={video.id}
-              className="bg-gray-100 rounded-lg p-4 shadow-md w-64 h-auto flex flex-col items-center"
-            >
-              {/* React Player */}
-              <ReactPlayer
-                url={video.src}
-                controls
-                width="100%"
-                height="200px"
-              />
-              {/* Video Title */}
-              <p className="font-bold text-lg mt-2">{video.title}</p>
-            </div>
-          ))}
+          <GeneralCourses/> 
         </div>
       </div>
 
-      <section>
-        <h1>Welcome Student {user_id}, you are logged in!</h1>
-      </section>
+      
 
       {/* Sticky Button */}
       <div className="relative bottom-4 right-4">
@@ -129,3 +104,19 @@ const Teachers = () => {
 };
 
 export default Teachers;
+// {videos.map((video) => (
+//   <div
+//     key={video.id}
+//     className="bg-gray-100 rounded-lg p-4 shadow-md w-64 h-auto flex flex-col items-center"
+//   >
+//     {/* React Player */}
+//     <ReactPlayer
+//       url={video.src}
+//       controls
+//       width="100%"
+//       height="200px"
+//     />
+//     Video Title
+//     <p className="font-bold text-lg mt-2">{video.title}</p>
+//   </div>
+// ))}

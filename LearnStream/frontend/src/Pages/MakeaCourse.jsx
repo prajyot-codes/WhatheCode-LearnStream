@@ -1,15 +1,25 @@
 import React, { useState } from "react";
 import { Button, TextInput, Textarea, Label, Dropdown } from "flowbite-react";
 import axios from "../api/axios"; // Ensure this path matches your file structure
+import { useNavigate } from "react-router-dom";
+
 
 function MakeaCourse() {
+  const navigate = useNavigate();
   const [courseTitle, setCourseTitle] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
   const [coursePrice, setCoursePrice] = useState("");
   const [courseCategory, setCourseCategory] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
 
-  const categories = ["Technology", "Science", "Business", "Arts", "Health"];
+  const categories = [ "Web Development",
+    "Arts and Humanities",
+    "Business",
+    "Computer Science",
+    "Data Science",
+    "Information Technology",
+    "Health",
+    "Math and Logic"];
 
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
@@ -53,6 +63,7 @@ function MakeaCourse() {
       setCoursePrice("");
       setCourseCategory("");
       setThumbnail(null);
+      navigate(`/teacher/${localStorage.getItem('user_id')}`)
     } catch (e) {
       console.error("Error creating course:", e.response?.data || e.message);
     }

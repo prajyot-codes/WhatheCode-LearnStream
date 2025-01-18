@@ -6,6 +6,7 @@ import {
     getAllCourses, 
     getCourseById, 
     getCourseByStudentId, 
+    getCourseByTeacherId, 
     getCoursesByCategory, 
     getEnrolledStudents, 
  } from "../../controllers/Courses/Course.controller.js";
@@ -22,6 +23,7 @@ const router = Router();
 
 router.route('/').post(verifyJWT,upload.single('thumbnail'),createCourse)
 router.route('/:student_id').get(verifyJWTStudent,getCourseByStudentId);
+router.route('/teacher/:teacher_id').get(verifyJWT,getCourseByTeacherId)
 router.route('/:courseId').get( verifyJWT, getCourseById);//
 router.route('/:courseId/students').get( verifyJWT, getEnrolledStudents);//
 router.route('/:courseId/enroll').post( verifyJWTStudent, enrollStudent);

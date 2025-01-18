@@ -1,10 +1,10 @@
 import React from 'react'
 import axios from '../api/axios'
 
-const CourseContents = () => {
+const CourseContents = ({course_id}) => {
     const getCourseContents=async ()=>{
         try {
-            const response  = axios.get(``,{
+            const response  = axios.get(`/${course_id}/modules`,{
                 
             })
         } catch (error) {

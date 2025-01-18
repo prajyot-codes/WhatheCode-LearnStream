@@ -13,7 +13,7 @@ const GeneralCourses = ({enrolled,setEnrolled,errMsg,setErrMsg}) => {
         "Health",
         "Math and Logic"
       ];
-    const [selectedCategory,setSelectedCategory] = useState('')
+    const [selectedCategory,setSelectedCategory] = useState(categories[0])
     const [courses,setCourses] = useState([])
      useEffect(()=>{ 
             const fetchCourses = async ()=>{

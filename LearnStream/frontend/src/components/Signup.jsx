@@ -1,18 +1,22 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
-import { Link } from "react-router-dom";
-import axios from "../api/axios";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "../api/axios"; // Axios instance with base URL
 
+// Regex for validations
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^.{8,}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const Signup = (props) => {
-  const SignupURL = `/user/student/signup`;
+const Signup = ({ role, verb = "amazing" }) => {
+  const navigate = useNavigate();
+  const SignupURL = `/user/${role}/signup`; // API endpoint based on role
 
-  const userRef = useRef(null); // Initialize ref properly
+  // Refs for form and error focus
+  const userRef = useRef(null);
   const errRef = useRef();
 
+  // States for form data and validations
   const [user, setUser] = useState("");
   const [validName, setValidName] = useState(false);
   const [userFocus, setUserFocus] = useState(false);
@@ -33,31 +37,35 @@ const Signup = (props) => {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    // Safeguard to ensure ref is not undefined
-    if (userRef.current) {
-      userRef.current.focus();
-    }
+    // Focus on the username field when the component loads
+    userRef.current?.focus();
   }, []);
 
   useEffect(() => {
+    // Validate username
     setValidName(USER_REGEX.test(user));
   }, [user]);
 
   useEffect(() => {
+    // Validate email
     setValidEmail(EMAIL_REGEX.test(email));
   }, [email]);
 
   useEffect(() => {
+    // Validate password and matching password
     setValidPwd(PWD_REGEX.test(pwd));
     setValidMatch(pwd === matchPwd);
   }, [pwd, matchPwd]);
 
   useEffect(() => {
+    // Clear error messages when inputs change
     setErrMsg("");
-  }, [user, pwd, matchPwd]);
+  }, [user, email, pwd, matchPwd]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate form inputs before submission
     if (!validName || !validPwd || !validEmail) {
       setErrMsg("Invalid form data. Please check your inputs.");
       return;
@@ -72,21 +80,28 @@ const Signup = (props) => {
       const response = await axios.post(
         SignupURL,
         JSON.stringify({ name: user, email, password: pwd }),
-        { headers: { "Content-Type": "application/json" }, withCredentials: true }
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      const accessToken = response?.data?.data?.accessToken;
-      const userId = response?.data?.data?.user._id;
-
-      localStorage.setItem("user_id", userId);
+      // Extract user data from the response
+      const { accessToken, user: userData } = response.data.data;
+      localStorage.setItem("user_id", userData._id);
       localStorage.setItem("accesstoken", accessToken);
+      localStorage.setItem("user_name", userData.name);
+      localStorage.setItem("avatarUrl", userData.avatar || "https://via.placeholder.com/150");
 
+      // Redirect user based on role
+      const targetUrl = `/${role}/${userData._id}`;
+      navigate(targetUrl);
       setSuccess(true);
+
+      // Clear form fields
       setUser("");
       setEmail("");
       setPwd("");
       setMatchPwd("");
     } catch (err) {
+      // Handle errors
       if (!err?.response) {
         setErrMsg("No Server Response");
       } else if (err.response?.status === 409) {
@@ -94,12 +109,12 @@ const Signup = (props) => {
       } else {
         setErrMsg("Registration Failed");
       }
-      errRef.current.focus();
+      errRef.current?.focus();
     }
   };
 
   return (
-    (localStorage.getItem("user_id") && localStorage.getItem("accesstoken")) || success ? (
+    success ? (
       <section className="p-4 text-center">
         <h1 className="text-2xl font-bold mb-4">You are logged in!</h1>
         <p className="text-gray-600">Welcome back to LearnStream!</p>
@@ -114,7 +129,7 @@ const Signup = (props) => {
           {errMsg}
         </p>
         <h2 className="text-xl font-bold mb-2">Welcome to LearnStream</h2>
-        <p className="mb-4">Register to start your {props.verb || "amazing"} journey</p>
+        <p className="mb-4">Register to start your {verb} journey</p>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
             <Label htmlFor="username" value="Username" />
@@ -122,7 +137,7 @@ const Signup = (props) => {
               id="username"
               type="text"
               placeholder="Username"
-              ref={userRef} // Correct ref assignment
+              ref={userRef}
               autoComplete="off"
               onChange={(e) => setUser(e.target.value)}
               value={user}
@@ -194,7 +209,7 @@ const Signup = (props) => {
             <Checkbox id="agree" />
             <Label htmlFor="agree">
               I agree with the{" "}
-              <Link to="/terms" className="text-cyan-600 hover:underline dark:text-cyan-500">
+              <Link to="/terms" className="text-cyan-600 hover:underline">
                 terms and conditions
               </Link>
             </Label>

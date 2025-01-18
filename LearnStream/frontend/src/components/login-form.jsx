@@ -26,9 +26,9 @@ function Component({role}) {
     useEffect(() => {
       const userId = localStorage.getItem('user_id');
       const accessToken = localStorage.getItem('accessToken');
-      // const role = localStorage.getItem('roles')
+      const name = localStorage.getItem('name')
       if ((userId && accessToken) || success) {
-        navigate(`/${role}/${userId}`);
+        navigate(`/${role}/${userId}`,{state:{name}});
       }
     }, [navigate, success]);
 
@@ -48,6 +48,9 @@ function Component({role}) {
             const accessToken = response?.data?.data?.accessToken;
             const user_id = response?.data?.data?.user._id
             const roles = response?.data?.data?.role;
+            const name = response?.data?.data?.user.name;
+            console.log(name);
+            localStorage.setItem('name',name);
             localStorage.setItem('accessToken',accessToken);
             localStorage.setItem('user_id',user_id);
             localStorage.setItem('roles',roles)

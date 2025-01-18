@@ -6,16 +6,17 @@ import { UserTeacher } from "../models/user/userteachermodel.js"
 const verifyJWT = asyncHandler(async (req,res,next)=>{
    try {
      const token = req.cookies?.teacherAccessToken || req.header
-     ("Authorization")?.replace("Bearer","")
- 
+     ("Authorization")?.replace("Bearer","").trim()
+
      if (!token){
          throw new ApiError(401,"Unauthorized Request")
      }
  
      const decodedtoken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
+     console.log(decodedtoken);
      const user = await UserTeacher.findById(decodedtoken?._id).select(
          "-password -refreshToken")
-     
+     console.log(user)
      if (!user){
          // Next discusssion front end
          throw new ApiError(401,"Invalid Access Token")

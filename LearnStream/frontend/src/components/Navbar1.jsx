@@ -37,6 +37,7 @@ const Navbar1 = () => {
       if (response){
         localStorage.clear();
         navigate('/');
+        window.location.href = '/'
       }
       else throw Error;
     } catch (error) {

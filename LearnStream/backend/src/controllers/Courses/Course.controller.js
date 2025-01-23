@@ -109,11 +109,11 @@ const getCourseByTeacherId = asyncHandler(async(req,res)=>{
   });
     console.log(teachercourses);
     if (!teachercourses){
-        throw new ApiError('student doesnt have any courses')
+        throw new ApiError('teacher doesnt have any courses')
     }
 
     res.status(200).json(
-        new ApiResponse(200,teachercourses,'studentcourses succesfully sent ')
+        new ApiResponse(200,teachercourses,'teachercourses succesfully sent ')
     )
 
 })

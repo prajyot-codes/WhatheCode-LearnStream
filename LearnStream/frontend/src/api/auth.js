@@ -1,13 +1,7 @@
-import axios from 'axios';
-
-// Create an Axios instance
-const apiClient = axios.create({
-    baseURL: 'http://localhost:8000',
-    withCredentials: true, // Allows sending cookies
-});
+import apiClient from './axios'; // Your configured Axios instance
 
 // Function to call the backend refresh token endpoint
-const fetchNewAccessToken = async () => {
+export const fetchNewAccessToken = async () => {
     try {
         const response = await apiClient.post('/auth/refresh-token', {}, { withCredentials: true });
         const { accessToken } = response.data.data;
@@ -21,7 +15,3 @@ const fetchNewAccessToken = async () => {
         throw error; // Handle logout or other fallback logic if needed
     }
 };
-
-// Add interceptors here using fetchNewAccessToken
-
-export default apiClient;

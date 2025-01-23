@@ -74,7 +74,7 @@ const CourseComp = ({courses=[],ButtonName,buttonHandler,errRef,errMsg}) => {
                   >
                     {ButtonName}
                   </a>
-                  <p className="text-gray-600">Instructor:{console.log(course.author.name)} {course?.author?.name|| getAuthorName}</p>
+                  <p className="text-gray-600">Instructor: {course?.author?.name|| getAuthorName}</p>
                 </div>
               </Card>
               ))}

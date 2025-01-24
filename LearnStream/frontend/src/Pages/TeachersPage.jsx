@@ -77,7 +77,7 @@ const Teachers = () => {
       <div className="p-6">
         <h3 className="text-2xl font-semibold mb-4">My Courses</h3>
         <div className="flex flex-wrap gap-6">
-         <CourseComp courses={courses} errMsg={errMsg} ButtonName={'Edit Course'} buttonHandler={editCourse} errRef={errRef} />
+         <CourseComp courses={courses}  errMsg={errMsg} ButtonName={'Edit Course'} buttonHandler={editCourse} errRef={errRef} />
         </div>
       </div>
 

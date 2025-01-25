@@ -56,14 +56,18 @@ function MakeaCourse() {
 
 
       console.log("Course created successfully:", response.data);
+      const courseId= response?.data?._id || response?.data?.data?._id;
 
+      console.log(courseId);
+      const userId=localStorage.getItem('user_id')
+      // console.log(response?.data?.data.)
       // Reset form fields
       setCourseTitle("");
       setCourseDescription("");
       setCoursePrice("");
       setCourseCategory("");
       setThumbnail(null);
-      navigate(`/teacher/${localStorage.getItem('user_id')}`)
+      navigate(`/teacher/${userId}/${courseId}`)
     } catch (e) {
       console.error("Error creating course:", e.response?.data || e.message);
     }

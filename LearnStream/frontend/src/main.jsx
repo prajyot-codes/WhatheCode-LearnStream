@@ -9,11 +9,12 @@ import LoginS from './Pages/Login-students.jsx';
 import LoginT from './Pages/Login-teacher.jsx';
 import SignupS from './Pages/Signup-students.jsx';
 import SignupT from './Pages/Signup-Teacher.jsx';
-import Teachers from './Pages/Teachers.jsx';
-import Student from './Pages/Student.jsx';
+import Teachers from './Pages/TeachersPage.jsx';
+import Student from './Pages/StudentPage.jsx';
 import LoginCommon from './Pages/LoginCommon.jsx';
 import Home from './Pages/Home.jsx';
 import MakeaCourse from './Pages/MakeaCourse.jsx';
+import ModuleForm from './Pages/Courseupdatation.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,6 +27,7 @@ const router = createBrowserRouter(
       <Route path='signup/teacher' element={<SignupT />} />
       <Route path='teacher/:user_id' element={<Teachers />} />
       <Route path='teacher/:user_id/makecourse' element={<MakeaCourse />} />
+      <Route path='teacher/:user_id/:course_id' element={<ModuleForm />} />
       <Route path='student/:user_id' element={<Student />} />
     </Route>
   )

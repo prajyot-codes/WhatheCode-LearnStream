@@ -1,6 +1,6 @@
 
   import React, { useEffect, useRef, useState } from "react";
-  import { useLocation, useParams } from 'react-router-dom';
+  import { useLocation, useNavigate, useParams } from 'react-router-dom';
   import axios from "../api/axios";
   
 import CourseComp from "../components/CourseComp";
@@ -83,7 +83,10 @@ import GeneralCourses from "../components/GeneralCourses";
       }
       fetchStudentCourses();
     },[localStorage.getItem('accessToken')])  
-
+    const viewCourse = ()=>{
+      const navigate  = useNavigate();
+      navigate(to=`courses/modules`)
+    }
       return (
         
         <div>
@@ -98,7 +101,7 @@ import GeneralCourses from "../components/GeneralCourses";
           {/* My Learning Section */}
           <div className="p-6">
             <h3 className="text-2xl font-semibold mb-4">My Learning</h3>
-            <CourseComp courses={studentcourses} ButtonName={`View Course`} buttonHandler={enrollStudent} errRef={errRef} errMsg={errMsg}/>
+            <CourseComp courses={studentcourses} ButtonName={`View Course`} buttonHandler={viewCourse} errRef={errRef} errMsg={errMsg}/>
           </div>
     
           {/* Top Courses Section */}

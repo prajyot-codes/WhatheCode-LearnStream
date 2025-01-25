@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import axios from '../api/axios';
+import { useParams } from 'react-router-dom';
 
 function ModuleForm() {
   const [modules, setModules] = useState([]);
+  const { user_id, course_id } = useParams();
 
 
   // const addLectureToModule= async (moduleId) => {
@@ -105,10 +107,80 @@ function ModuleForm() {
     );
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Submitted Modules:', modules);
+  const addLectureToModule = async (moduleId) => {
+    try {
+      // Iterate over all modules
+      for (const module of modules) {
+        // For each module, iterate over the lectures
+        for (const lecture of module.lectures) {
+          const formData = new FormData();
+          formData.append('title', lecture.title);
+          formData.append('file', lecture.file);
+  
+          // Sending a POST request for each lecture in the module
+          const response = await axios.post(
+            `/courses/${course_id}/modules/${moduleId}/lectures`, // Backend route for adding a lecture to a module
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+          );
+  
+          console.log('Lecture added to module:', response.data);
+        }
+      }
+  
+      alert('All lectures added successfully!');
+    } catch (error) {
+      console.error('Error adding lectures:', error);
+      if (error.response) {
+        alert(`Error: ${error.response.data.message || 'Something went wrong'}`);
+      } else {
+        alert('An unexpected error occurred. Please try again.');
+      }
+    }
   };
+  
+  // const moduleresponse=[];
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      // Map over the modules and send each one to the backend
+      for (const module of modules) {
+        const response = await axios.post(
+          `/courses/${course_id}/modules`, // Backend route
+          JSON.stringify({
+            title: module.name,
+            description: module.description || "", // Optional description
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        // console.log('response obj',response);
+        
+        await addLectureToModule(response?.data?.data?._id)
+        // console.log('Module added:', modules); // Log the server response for debugging
+      }
+  
+      alert('Modules submitted successfully!');
+    } catch (error) {
+      console.error('Error adding modules:', error);
+      if (error.response) {
+        alert(`Error: ${error.response.data.message || 'Something went wrong'}`);
+      } else {
+        alert('An unexpected error occurred. Please try again.');
+      }
+    }
+  };
+  
+  
+  
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-10">

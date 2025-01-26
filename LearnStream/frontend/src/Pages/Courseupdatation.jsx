@@ -115,7 +115,7 @@ function ModuleForm() {
         for (const lecture of module.lectures) {
           const formData = new FormData();
           formData.append('title', lecture.title);
-          formData.append('file', lecture.file);
+          formData.append('videourl', lecture.file);
   
           // Sending a POST request for each lecture in the module
           const response = await axios.post(
@@ -162,7 +162,7 @@ function ModuleForm() {
             },
           }
         );
-        // console.log('response obj',response);
+        console.log('response obj',response);
         
         await addLectureToModule(response?.data?.data?._id)
         // console.log('Module added:', modules); // Log the server response for debugging

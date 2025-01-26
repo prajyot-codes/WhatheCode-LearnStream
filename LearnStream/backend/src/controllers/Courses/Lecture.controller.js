@@ -8,65 +8,74 @@ import { deleteMediaFromCloudinary, uploadOnCloudinary } from "../../utils/cloud
 // import { UserStudent } from "../../models/student/userstudentmodel.js";
 import { Progress } from "../../models/Course/Progress.js";
 import { Modules } from "../../models/Course/Modules.js";
+import fs from 'fs-extra';
 
+const addLecture = asyncHandler(async (req, res) => {
+    const { title } = req.body;
+    const { moduleId, course_id } = req.params;
 
-const addLecture = asyncHandler(async (req,res)=>{
-    const {title} = req.body
-    const {moduleId,course_id} =req.params
-    
-    // Validate course existence
-    if (!moduleId ||!course_id) {
-        throw new ApiError(404, "Course not found");
+    // Validate input
+    if (!title || !moduleId || !course_id) {
+        throw new ApiError(400, 'Missing required fields: title, moduleId, or course_id');
     }
 
-    const videoLocalPath = req.file?.path
+    const videoLocalPath = req.file?.path;
 
-    
-
-    if (!videoLocalPath){
-        throw new ApiError(400,"file not uploaded")
+    if (!videoLocalPath) {
+        throw new ApiError(400, 'File not uploaded');
     }
 
-    const video = await uploadOnCloudinary(videoLocalPath)
-    const videoUrl = video.secure_url
-    if (!videoUrl){
-        throw new ApiError(400,"video was not uploaded properly to cloudinary")
+    // Upload to Cloudinary
+    const video = await uploadOnCloudinary(videoLocalPath);
+    const videoUrl = video.secure_url;
+    if (!videoUrl) {
+        throw new ApiError(400, 'Video was not uploaded properly to Cloudinary');
     }
 
-    const video_public_id = video.public_id
-    const video_duration = video.duration
+    const video_public_id = video.public_id;
+    const video_duration = video.duration;
 
+    // Create a new lecture
     const lecture = await Lectures.create({
         title,
-        videourl:videoUrl,
-        duration:video_duration,
-        public_id:video_public_id,
-        moduleId
-    })
+        videourl: videoUrl,
+        duration: video_duration,
+        public_id: video_public_id,
+        module_id: moduleId 
+    });
 
-    if (!lecture){
-        throw new ApiError("lecture was not added")
+    if (!lecture) {
+        throw new ApiError(500, 'Lecture was not added');
     }
 
+    // Update related course and module
     const updatedCourse = await Courses.findByIdAndUpdate(
         course_id,
-    {$push:{lectures:lecture._id}},
-    {new:true}
-    )
+        { $push: { lectures: lecture._id } },
+        { new: true }
+    );
     const updatedModule = await Modules.findByIdAndUpdate(
         moduleId,
-        {$push:{lectures:lecture._id}},
-        {new:true}
-    )
-     
-    if (!updatedCourse ||!updatedModule){
-        throw new ApiError(404,"Course/Module not found or failed to update")
+        { $push: { lectures: lecture._id } },
+        { new: true }
+    );
+
+    if (!updatedCourse || !updatedModule) {
+        throw new ApiError(404, 'Course/Module not found or failed to update');
     }
+
+    // Clean up temporary file
+
+    fs.remove(videoLocalPath, (err) => {
+        if (err) console.error('Error deleting temporary file:', err);
+    });
+
     return res.status(200).json(
-        new ApiResponse(200,lecture,
-            'added lecture succesfully')
-    )
-}) 
+        new ApiResponse(200, lecture, 'Added lecture successfully')
+    );
+});
+
+
 const updateLecture = asyncHandler(async (req, res) => {
     const { module_id, lecture_id } = req.params;
     const { title, enableFreePreview } = req.body;

@@ -49,7 +49,7 @@ const GeneralCourses = ({enrolled,errMsg,setErrMsg}) => {
   return (
     <div>
       <CategoryBar categories={categories} onCategorySelect={handleCategoryChange} />
-      <CourseComp courses={courses} ButtonName={enrolled}  errMsg={errMsg} />
+      <CourseComp courses={courses}   errMsg={errMsg} />
     </div>
   );
 };

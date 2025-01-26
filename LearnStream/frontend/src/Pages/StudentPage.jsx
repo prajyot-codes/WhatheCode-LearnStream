@@ -27,7 +27,7 @@ import GeneralCourses from "../components/GeneralCourses";
       const { name }= location.state || {};
       const errRef = useRef();
       // const ModuleRef = useRef();
-      
+      const [course_id,setCourse_id] = useState(''); 
       const [errMsg, setErrMsg] = useState('');
       const [studentcourses,setStudentCourses] = useState([])
       
@@ -85,7 +85,7 @@ import GeneralCourses from "../components/GeneralCourses";
     },[localStorage.getItem('accessToken')])  
     const viewCourse = ()=>{
       const navigate  = useNavigate();
-      navigate(to=`courses/modules`)
+      // navigate(to=`${}/modules`)
     }
       return (
         
@@ -108,7 +108,7 @@ import GeneralCourses from "../components/GeneralCourses";
           <div className="p-6">
             <h3 className="text-2xl font-semibold mb-4">Top Courses</h3>
             <div className="flex gap-6">
-            <GeneralCourses enrolled={enrolled} setEnrolled={setEnrolled} errMsg={errMsg} setErrMsg={setErrMsg}/>
+            <GeneralCourses enrolled={enrolled} setEnrolled={enrollStudent} errMsg={errMsg} setErrMsg={setErrMsg}/>
             </div>
           </div>
           <section>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import CategoryBar from './CategoryBar'
 import CourseComp from './CourseComp'
 import axios from '../api/axios';
-const GeneralCourses = ({enrolled,setEnrolled,errMsg,setErrMsg}) => {
+const GeneralCourses = ({enrolled,errMsg,setErrMsg}) => {
     const categories = [
         "Web Development",
         "Arts and Humanities",
@@ -49,7 +49,7 @@ const GeneralCourses = ({enrolled,setEnrolled,errMsg,setErrMsg}) => {
   return (
     <div>
       <CategoryBar categories={categories} onCategorySelect={handleCategoryChange} />
-      <CourseComp courses={courses} ButtonName={enrolled} buttonHandler={setEnrolled} errMsg={errMsg} />
+      <CourseComp courses={courses} ButtonName={enrolled}  errMsg={errMsg} />
     </div>
   );
 };

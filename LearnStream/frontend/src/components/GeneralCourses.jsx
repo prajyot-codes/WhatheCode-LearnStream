@@ -77,6 +77,7 @@ const GeneralCourses = ({ viewCourse, errMsg, setErrMsg }) => {
         onCategorySelect={handleCategoryChange}
         data-oid="_bnfkzx"
       />
+
       <CourseComp
         courses={courses}
         ButtonName={buttonName}

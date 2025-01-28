@@ -234,6 +234,7 @@ const Signup = ({ role, verb = "amazing" }) => {
             value="Confirm Password"
             data-oid="2vopvxi"
           />
+
           <TextInput
             id="repeat-password"
             type="password"

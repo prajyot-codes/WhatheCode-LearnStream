@@ -19,16 +19,19 @@ function App() {
             element={<Login data-oid="csy-ybe" />}
             data-oid="4.l8fqs"
           />
+
           <Route
             path="/teacher-login"
             element={<LoginT data-oid="s.x21so" />}
             data-oid="tybo8cg"
           />
+
           <Route
             path="/student-login"
             element={<LoginS data-oid="tjk3z68" />}
             data-oid="sk_eh3v"
           />
+
           <Route
             path="/Student"
             element={<Student data-oid="1huzaju" />}

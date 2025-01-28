@@ -57,14 +57,14 @@ const registerUser = asyncHandler( async (req,res) =>{
         "-password -refreshToken"
     )
     // 8 
-    if (!createdTeacher){
-        throw new ApiError(500,"something went wrong while registering the user")
-    }
-    // 9
-    console.log("sending response")
-    return res.status(201).json(
-        new ApiResponse(201,createdTeacher,"User Registered Succesfully")
-    )
+    // if (!createdTeacher){
+    //     throw new ApiError(500,"something went wrong while registering the user")
+    // }
+    // // 9
+    // console.log("sending response")
+    // return res.status(201).json(
+    //     new ApiResponse(201,createdTeacher,"User Registered Succesfully")
+    // )
 
 
     const options = {
@@ -75,14 +75,11 @@ const registerUser = asyncHandler( async (req,res) =>{
     console.log("Cookies set: ", accessToken, refreshToken);
 
     return res.status(200)
-    .cookie("studentAccessToken" ,accessToken,options)
-    .cookie("studentRefreshToken" ,refreshToken,options)
+    .cookie("teacherAccessToken" ,accessToken,options)
+    .cookie("teacherRefreshToken" ,refreshToken,options)
     .json(
         new ApiResponse(200,{
-            user: createdStudent,
-            role:'student',
-            accessToken,
-            refreshToken
+            user: LoggedInUserTeacher,role:'teacher',accessToken,refreshToken
         },
         "User Logged in Succesfully"
     )

@@ -1,16 +1,11 @@
-import React, { useState } from "react";
-import axios from "../api/axios";
-import { useParams } from "react-router-dom";
+import React, { useState,useRef } from 'react';
+import axios from '../api/axios';
+import { useParams } from 'react-router-dom';
 
 function ModuleForm() {
   const [modules, setModules] = useState([]);
   const { user_id, course_id } = useParams();
-
-  // const addLectureToModule= async (moduleId) => {
-  //   try{
-  //     const response=await axios.post()
-  //   }
-  // }
+  
   const handleAddModule = () => {
     setModules([
       ...modules,
@@ -107,6 +102,40 @@ function ModuleForm() {
     );
   };
 
+  const addAssignmentToModule= async(moduleId) => {
+    try{
+      for(const module of modules){
+        for(const assignment of module.assignments)
+        {
+          const formdata= new FormData();
+          formdata.append('title',assignment.title)
+          formdata.append('assignmentUrls',assignment.file)
+          formdata.append('deadline',assignment.deadline)
+          const response=axios.post(
+             `/courses/${course_id}/modules/${moduleId}/assignments`,
+            formdata,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+          )
+          console.log(response);
+          
+        }
+      }
+      alert('All assignment added successfully!');
+    }
+    catch(error){
+      console.error('Error adding lectures:', error);
+      if (error.response) {
+        alert(`Error: ${error.response.data.message || 'Something went wrong'}`);
+      } else {
+        alert('An unexpected error occurred. Please try again.');
+      }  
+    }
+  }
+
   const addLectureToModule = async (moduleId) => {
     try {
       // Iterate over all modules
@@ -164,9 +193,10 @@ function ModuleForm() {
             },
           },
         );
-        console.log("response obj", response);
-
-        await addLectureToModule(response?.data?.data?._id);
+        console.log('response obj',response);
+        
+        await addLectureToModule(response?.data?.data?._id)
+        await addAssignmentToModule(response?.data?.data?._id)
         // console.log('Module added:', modules); // Log the server response for debugging
       }
 
@@ -332,7 +362,22 @@ function ModuleForm() {
                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         data-oid=":i-hq-h"
                       />
-
+                      <input
+                        type="date"
+                        value={assignment.deadline}
+                        onChange={(e) =>
+                          handleInputChange(
+                            module.id,
+                            'assignments',
+                            assignment.id,
+                            'title',
+                            e.target.value
+                          )
+                        }
+                        placeholder="set deadline"
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      
                       <button
                         type="button"
                         onClick={() =>

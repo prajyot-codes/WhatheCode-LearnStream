@@ -15,5 +15,5 @@ export default {
       '50vh': '50vh', // Adds a custom width value
     },},
   },
-  plugins: [ flowbite.plugin(),],
+  plugins: [ flowbite.plugin(),]
 };

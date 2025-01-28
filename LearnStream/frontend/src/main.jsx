@@ -14,7 +14,8 @@ import Student from './Pages/StudentPage.jsx';
 import LoginCommon from './Pages/LoginCommon.jsx';
 import Home from './Pages/Home.jsx';
 import MakeaCourse from './Pages/MakeaCourse.jsx';
-import ModuleForm from './Pages/Courseupdatation.jsx';
+// import ModuleForm from './Pages/Courseupdatation.jsx';
+import ViewtheModules from './Pages/ViewtheModules.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,7 +28,8 @@ const router = createBrowserRouter(
       <Route path='signup/teacher' element={<SignupT />} />
       <Route path='teacher/:user_id' element={<Teachers />} />
       <Route path='teacher/:user_id/makecourse' element={<MakeaCourse />} />
-      <Route path='teacher/:user_id/:course_id' element={<ModuleForm />} />
+      {/* <Route path='teacher/:user_id/:course_id' element={<ModuleForm />} /> */}
+      <Route path='teacher/:user_id/:course_id' element={<ViewtheModules />} />
       <Route path='student/:user_id' element={<Student />} />
     </Route>
   )

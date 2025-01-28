@@ -81,7 +81,7 @@ const Signup = ({ role, verb = "amazing" }) => {
       const response = await axios.post(
         SignupURL,
         JSON.stringify({ name: user, email, password: pwd }),
-        { headers: { "Content-Type": "application/json" } }
+        { headers: { "Content-Type": "application/json" } },
       );
 
       // Extract user data from the response
@@ -89,9 +89,17 @@ const Signup = ({ role, verb = "amazing" }) => {
       localStorage.setItem("user_id", userData._id);
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("name", userData.name);
-      localStorage.setItem("avatarUrl", userData.avatar || "https://via.placeholder.com/150");
+      localStorage.setItem(
+        "avatarUrl",
+        userData.avatar || "https://via.placeholder.com/150",
+      );
 
-      setAuth({'user_id':userData._id,accessToken,'name':userData.name,role})
+      setAuth({
+        user_id: userData._id,
+        accessToken,
+        name: userData.name,
+        role,
+      });
       // Redirect user based on role
       const targetUrl = `/${role}/${userData._id}`;
       navigate(targetUrl);
@@ -115,111 +123,154 @@ const Signup = ({ role, verb = "amazing" }) => {
     }
   };
 
-  return (
-    success ? (
-      <section className="p-4 text-center">
-        <h1 className="text-2xl font-bold mb-4">You are logged in!</h1>
-        <p className="text-gray-600">Welcome back to LearnStream!</p>
-      </section>
-    ) : (
-      <div className="p-4 rounded-lg border-2 border-gray-300 max-w-md mx-auto">
-        <p
-          ref={errRef}
-          className={`text-red-600 text-center ${errMsg ? "visible" : "hidden"}`}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p>
-        <h2 className="text-xl font-bold mb-2">Welcome to LearnStream</h2>
-        <p className="mb-4">Register to start your {verb} journey</p>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <div>
-            <Label htmlFor="username" value="Username" />
-            <TextInput
-              id="username"
-              type="text"
-              placeholder="Username"
-              ref={userRef}
-              autoComplete="off"
-              onChange={(e) => setUser(e.target.value)}
-              value={user}
-              required
-              shadow
-              aria-invalid={!validName}
-              onFocus={() => setUserFocus(true)}
-              onBlur={() => setUserFocus(false)}
-            />
-            {userFocus && user && !validName && (
-              <p className="text-sm text-red-600">4-24 characters, start with a letter.</p>
-            )}
-          </div>
-          <div>
-            <Label htmlFor="email" value="Email" />
-            <TextInput
-              id="email"
-              type="email"
-              placeholder="example@gmail.com"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-              required
-              shadow
-              aria-invalid={!validEmail}
-              onFocus={() => setEmailFocus(true)}
-              onBlur={() => setEmailFocus(false)}
-            />
-            {emailFocus && email && !validEmail && (
-              <p className="text-sm text-red-600">Enter a valid email address.</p>
-            )}
-          </div>
-          <div>
-            <Label htmlFor="password" value="Password" />
-            <TextInput
-              id="password"
-              type="password"
-              onChange={(e) => setPwd(e.target.value)}
-              value={pwd}
-              required
-              shadow
-              aria-invalid={!validPwd}
-              onFocus={() => setPwdFocus(true)}
-              onBlur={() => setPwdFocus(false)}
-            />
-            {pwdFocus && (
-              <ul className="text-sm text-red-600">
-                <li className={pwd.length >= 8 ? "text-green-600" : ""}>At least 8 characters</li>
-              </ul>
-            )}
-          </div>
-          <div>
-            <Label htmlFor="repeat-password" value="Confirm Password" />
-            <TextInput
-              id="repeat-password"
-              type="password"
-              onChange={(e) => setMatchPwd(e.target.value)}
-              value={matchPwd}
-              required
-              shadow
-              aria-invalid={!validMatch}
-              onFocus={() => setMatchFocus(true)}
-              onBlur={() => setMatchFocus(false)}
-            />
-            {matchFocus && !validMatch && (
-              <p className="text-sm text-red-600">Passwords do not match.</p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Checkbox id="agree" />
-            <Label htmlFor="agree">
-              I agree with the{" "}
-              <Link to="/terms" className="text-cyan-600 hover:underline">
-                terms and conditions
-              </Link>
-            </Label>
-          </div>
-          <Button type="submit">Register new account</Button>
-        </form>
-      </div>
-    )
+  return success ? (
+    <section className="p-4 text-center" data-oid="3oczxfr">
+      <h1 className="text-2xl font-bold mb-4" data-oid="p5lvk96">
+        You are logged in!
+      </h1>
+      <p className="text-gray-600" data-oid="tm1fpzb">
+        Welcome back to LearnStream!
+      </p>
+    </section>
+  ) : (
+    <div
+      className="p-4 rounded-lg border-2 border-gray-300 max-w-md mx-auto"
+      data-oid="lstbdri"
+    >
+      <p
+        ref={errRef}
+        className={`text-red-600 text-center ${errMsg ? "visible" : "hidden"}`}
+        aria-live="assertive"
+        data-oid="i3v-s2l"
+      >
+        {errMsg}
+      </p>
+      <h2 className="text-xl font-bold mb-2" data-oid="xs3cpvq">
+        Welcome to LearnStream
+      </h2>
+      <p className="mb-4" data-oid="1wjeutn">
+        Register to start your {verb} journey
+      </p>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={handleSubmit}
+        data-oid="q:igovz"
+      >
+        <div data-oid="hn37mn5">
+          <Label htmlFor="username" value="Username" data-oid="70voh4f" />
+          <TextInput
+            id="username"
+            type="text"
+            placeholder="Username"
+            ref={userRef}
+            autoComplete="off"
+            onChange={(e) => setUser(e.target.value)}
+            value={user}
+            required
+            shadow
+            aria-invalid={!validName}
+            onFocus={() => setUserFocus(true)}
+            onBlur={() => setUserFocus(false)}
+            data-oid="rt1j3h."
+          />
+
+          {userFocus && user && !validName && (
+            <p className="text-sm text-red-600" data-oid="7t6x:q-">
+              4-24 characters, start with a letter.
+            </p>
+          )}
+        </div>
+        <div data-oid="ple1-s3">
+          <Label htmlFor="email" value="Email" data-oid="ttt0zlo" />
+          <TextInput
+            id="email"
+            type="email"
+            placeholder="example@gmail.com"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            required
+            shadow
+            aria-invalid={!validEmail}
+            onFocus={() => setEmailFocus(true)}
+            onBlur={() => setEmailFocus(false)}
+            data-oid="77x2kns"
+          />
+
+          {emailFocus && email && !validEmail && (
+            <p className="text-sm text-red-600" data-oid="2uxt1tf">
+              Enter a valid email address.
+            </p>
+          )}
+        </div>
+        <div data-oid="lbhiek-">
+          <Label htmlFor="password" value="Password" data-oid="fsgd4hp" />
+          <TextInput
+            id="password"
+            type="password"
+            onChange={(e) => setPwd(e.target.value)}
+            value={pwd}
+            required
+            shadow
+            aria-invalid={!validPwd}
+            onFocus={() => setPwdFocus(true)}
+            onBlur={() => setPwdFocus(false)}
+            data-oid="sz-ccab"
+          />
+
+          {pwdFocus && (
+            <ul className="text-sm text-red-600" data-oid="p2gdvk.">
+              <li
+                className={pwd.length >= 8 ? "text-green-600" : ""}
+                data-oid="g0g86h-"
+              >
+                At least 8 characters
+              </li>
+            </ul>
+          )}
+        </div>
+        <div data-oid="wlb7u_4">
+          <Label
+            htmlFor="repeat-password"
+            value="Confirm Password"
+            data-oid="2vopvxi"
+          />
+          <TextInput
+            id="repeat-password"
+            type="password"
+            onChange={(e) => setMatchPwd(e.target.value)}
+            value={matchPwd}
+            required
+            shadow
+            aria-invalid={!validMatch}
+            onFocus={() => setMatchFocus(true)}
+            onBlur={() => setMatchFocus(false)}
+            data-oid="347fqcf"
+          />
+
+          {matchFocus && !validMatch && (
+            <p className="text-sm text-red-600" data-oid="bmzidlw">
+              Passwords do not match.
+            </p>
+          )}
+        </div>
+        <div className="flex items-center gap-2" data-oid="3qysggp">
+          <Checkbox id="agree" data-oid="gl:yvkg" />
+          <Label htmlFor="agree" data-oid="a_:5ida">
+            I agree with the{" "}
+            <Link
+              to="/terms"
+              className="text-cyan-600 hover:underline"
+              data-oid="47-lbtf"
+            >
+              terms and conditions
+            </Link>
+          </Label>
+        </div>
+        <Button type="submit" data-oid="1.81-pe">
+          Register new account
+        </Button>
+      </form>
+    </div>
   );
 };
 

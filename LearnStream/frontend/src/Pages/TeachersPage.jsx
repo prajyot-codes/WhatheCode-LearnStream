@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from 'react-router-dom';
-import ReactPlayer from 'react-player';
+import { useParams } from "react-router-dom";
+import ReactPlayer from "react-player";
 import axios from "../api/axios";
 import { Button } from "flowbite-react";
 import { Link } from "react-router-dom";
@@ -18,24 +18,25 @@ const videos = [
     src: "/assets/videos/video2.mp4", // Update with your actual local file path
   },
 ];
+
 const Teachers = () => {
-  const role='teacher';
+  const role = "teacher";
   const { user_id } = useParams();
   const errRef = useRef();
-  const [errMsg, setErrMsg] = useState('');
+  const [errMsg, setErrMsg] = useState("");
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    setErrMsg('');
+    setErrMsg("");
   }, [user_id]);
 
-  const userAccessToken = localStorage.getItem('accessToken');
-  
-  useEffect(() => { 
+  const userAccessToken = localStorage.getItem("accessToken");
+
+  useEffect(() => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(`courses/teacher/${user_id}`, {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
         setCourses(response.data.data.Courses);
@@ -43,11 +44,11 @@ const Teachers = () => {
       } catch (err) {
         console.log(err);
         if (!err?.response) {
-          setErrMsg('No Server Response');
+          setErrMsg("No Server Response");
         } else if (err.response?.status === 401) {
-          setErrMsg('Unauthorized');
+          setErrMsg("Unauthorized");
         } else {
-          setErrMsg('Courses Retrieval Failed');
+          setErrMsg("Courses Retrieval Failed");
         }
         errRef.current.focus();
       }
@@ -55,48 +56,63 @@ const Teachers = () => {
     fetchCourses();
   }, [userAccessToken]);
 
-  const editCourse = async ()=>{
-    
-  }
+  const editCourse = async () => {};
   return (
-    <div>
+    <div data-oid="dg5zf9l">
       {/* Navbar */}
       {/* <Component /> */}
 
       {/* Offers Section */}
-      <div className="bg-gray-300 p-9 text-center text-xl font-semibold">
+      <div
+        className="bg-gray-300 p-9 text-center text-xl font-semibold"
+        data-oid=":ik41cr"
+      >
         Offers regarding courses
       </div>
 
-      <section>
-        <h1>Welcome  {localStorage.getItem('name')},
-           you are logged in!</h1>
+      <section data-oid="x7pxwvc">
+        <h1 data-oid="1_l6zgt">
+          Welcome {localStorage.getItem("name")}, you are logged in!
+        </h1>
       </section>
 
       {/* My Learning Section */}
-      <div className="p-6">
-        <h3 className="text-2xl font-semibold mb-4">My Courses</h3>
-        <div className="flex flex-wrap gap-6">
-         <CourseComp courses={courses}  errMsg={errMsg} ButtonName={'Edit Course'} buttonHandler={editCourse} errRef={errRef} />
+      <div className="p-6" data-oid="sn37k0p">
+        <h3 className="text-2xl font-semibold mb-4" data-oid="vtk24l9">
+          My Courses
+        </h3>
+        <div className="flex flex-wrap gap-6" data-oid="jcg6v:v">
+          <CourseComp
+            courses={courses}
+            errMsg={errMsg}
+            ButtonName={"Edit Course"}
+            buttonHandler={editCourse}
+            errRef={errRef}
+            data-oid="qcz2l0w"
+          />
         </div>
       </div>
 
       {/* Top Courses Section */}
-      <div className="p-6">
-        <h3 className="text-2xl font-semibold mb-4">Top Courses</h3>
-        <div className="flex gap-6">
-          <GeneralCourses/> 
+      <div className="p-6" data-oid="108xzp2">
+        <h3 className="text-2xl font-semibold mb-4" data-oid="tsg2k72">
+          Top Courses
+        </h3>
+        <div className="flex gap-6" data-oid="wstw3b1">
+          <GeneralCourses data-oid="t4_w22." />
         </div>
       </div>
 
-      
-
       {/* Sticky Button */}
-      <div className="relative bottom-4 right-4">
-        <Link to={`/${role}/${user_id}/makecourse`}>
-        <Button pill className="w-45 h-12 rounded-full flex items-center justify-center">
-          Make a new course
-        </Button>
+      <div className="relative bottom-4 right-4" data-oid="ukipt1u">
+        <Link to={`/${role}/${user_id}/makecourse`} data-oid="::vsf5j">
+          <Button
+            pill
+            className="w-45 h-12 rounded-full flex items-center justify-center"
+            data-oid="urrp3b5"
+          >
+            Make a new course
+          </Button>
         </Link>
       </div>
     </div>

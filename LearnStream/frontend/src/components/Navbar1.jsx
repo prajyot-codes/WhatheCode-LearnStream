@@ -9,7 +9,7 @@ const Navbar1 = () => {
   const [accessToken, setAccessToken] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [userName, setUserName] = useState("Guest");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   // Fetch user details from localStorage when component mounts
   useEffect(() => {
     setUserId(localStorage.getItem("user_id"));
@@ -20,41 +20,46 @@ const Navbar1 = () => {
     setUserName(localStorage.getItem("user_name") || "Guest");
   }, []);
 
-  const handleLogout =async () => {
+  const handleLogout = async () => {
     try {
       const response = await axios.post(
-        `/user/${localStorage.getItem('role')}/logout`,
+        `/user/${localStorage.getItem("role")}/logout`,
         {}, // Empty body
         {
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
           withCredentials: true,
-        }
+        },
       );
-      
-      if (response){
+
+      if (response) {
         localStorage.clear();
-        navigate('/');
-        window.location.href = '/'
-      }
-      else throw Error;
+        navigate("/");
+        window.location.href = "/";
+      } else throw Error;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-    
   };
 
   return (
-    <Navbar fluid rounded className="mt-0 pt-3">
+    <Navbar fluid rounded className="mt-0 pt-3" data-oid="f_gqhtc">
       {/* Brand Logo */}
-      <Navbar.Brand className="font-league font-[700] text-xl" href="/">
-        <span className="text-[#7ED757]">Learn</span>Stream
+      <Navbar.Brand
+        className="font-league font-[700] text-xl"
+        href="/"
+        data-oid="e1r3ndv"
+      >
+        <span className="text-[#7ED757]" data-oid="qldedvf">
+          Learn
+        </span>
+        Stream
       </Navbar.Brand>
 
       {/* Right Section */}
-      <div className="flex md:order-2">
+      <div className="flex md:order-2" data-oid="0yvzoh0">
         {/* Dropdown Menu for Logged-In Users */}
         {userId && accessToken && (
           <Dropdown
@@ -65,29 +70,43 @@ const Navbar1 = () => {
                 alt="User Avatar"
                 img={avatarUrl} // Dynamically fetched avatar URL
                 rounded
+                data-oid="l5t4:0t"
               />
             }
+            data-oid="igcam_u"
           >
-            <Dropdown.Header>
-              <span className="block text-sm">{userName}</span>
+            <Dropdown.Header data-oid="diinric">
+              <span className="block text-sm" data-oid="qrej-ka">
+                {userName}
+              </span>
             </Dropdown.Header>
-            <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
+            <Dropdown.Item onClick={handleLogout} data-oid="pk4b.80">
+              Sign out
+            </Dropdown.Item>
           </Dropdown>
         )}
 
         {/* Navbar Toggle (Mobile) */}
-        <Navbar.Toggle />
+        <Navbar.Toggle data-oid="nqr9pr8" />
       </div>
 
       {/* Navbar Links */}
-      <Navbar.Collapse>
-        <Navbar.Link href="/" active>
+      <Navbar.Collapse data-oid="kd1flil">
+        <Navbar.Link href="/" active data-oid="i94m4rz">
           Home
         </Navbar.Link>
-        <Navbar.Link href="/about">About</Navbar.Link>
-        <Navbar.Link href="/services">Services</Navbar.Link>
-        <Navbar.Link href="/pricing">Pricing</Navbar.Link>
-        <Navbar.Link href="/contact">Contact</Navbar.Link>
+        <Navbar.Link href="/about" data-oid="ljv5_i3">
+          About
+        </Navbar.Link>
+        <Navbar.Link href="/services" data-oid="o0z8y9i">
+          Services
+        </Navbar.Link>
+        <Navbar.Link href="/pricing" data-oid="j_e6c.t">
+          Pricing
+        </Navbar.Link>
+        <Navbar.Link href="/contact" data-oid="88i.hu.">
+          Contact
+        </Navbar.Link>
       </Navbar.Collapse>
     </Navbar>
   );

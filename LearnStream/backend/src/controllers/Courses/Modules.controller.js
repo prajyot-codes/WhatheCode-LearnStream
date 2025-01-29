@@ -133,15 +133,15 @@ const deleteModule = asyncHandler(async (req, res) => {
 
 const getCourseModules = asyncHandler(async (req, res) => {
     const { course_id } = req.params;
-
+    console.log(course_id)
     const course = await Courses.findById(course_id).populate({
         path: 'modules',
         populate: [
-            { path: 'lectures', select: 'title duration freePreview' },
+            { path: 'lectures', select: 'title duration freePreview public_id' },
             { path: 'assignments', select: 'title deadline' }
         ]
     });
-
+    console.log(course)
     if (!course) {
         throw new ApiError(404, "Course not found");
     }

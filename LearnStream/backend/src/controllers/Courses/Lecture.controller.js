@@ -59,7 +59,8 @@ const addLecture = asyncHandler(async (req, res) => {
         { $push: { lectures: lecture._id } },
         { new: true }
     );
-
+    console.log(updatedModule)
+    console.log(updatedCourse)
     if (!updatedCourse || !updatedModule) {
         throw new ApiError(404, 'Course/Module not found or failed to update');
     }

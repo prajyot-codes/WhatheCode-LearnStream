@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import CategoryBar from './CategoryBar'
 import CourseComp from './CourseComp'
 import axios from '../api/axios';
-const GeneralCourses = ({enrolled,errMsg,setErrMsg}) => {
+const GeneralCourses = ({enrolled,setEnrolled,errMsg,setErrMsg}) => {
     const categories = [
         "Web Development",
         "Arts and Humanities",

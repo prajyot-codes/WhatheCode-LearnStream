@@ -16,6 +16,8 @@ import Home from './Pages/Home.jsx';
 import MakeaCourse from './Pages/MakeaCourse.jsx';
 // import ModuleForm from './Pages/Courseupdatation.jsx';
 import ViewtheModules from './Pages/ViewtheModules.jsx';
+import ViewStudentModules from './Pages/ViewStudentModule.jsx';
+import LectureAssig from './Pages/LectureAssig.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,6 +32,8 @@ const router = createBrowserRouter(
       <Route path='teacher/:user_id/makecourse' element={<MakeaCourse />} />
       {/* <Route path='teacher/:user_id/:course_id' element={<ModuleForm />} /> */}
       <Route path='teacher/:user_id/:course_id' element={<ViewtheModules />} />
+      <Route path='student/:user_id/:course_id' element={<ViewStudentModules/>} />
+      <Route path ='student/:user_id/:course_id/:module_id/view' element={<LectureAssig/>}/>
       <Route path='student/:user_id' element={<Student />} />
     </Route>
   )

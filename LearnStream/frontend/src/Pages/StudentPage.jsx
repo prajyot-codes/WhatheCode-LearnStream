@@ -83,9 +83,9 @@ import GeneralCourses from "../components/GeneralCourses";
       }
       fetchStudentCourses();
     },[localStorage.getItem('accessToken')])  
+    const navigate  = useNavigate();
     const viewCourse = ()=>{
-      const navigate  = useNavigate();
-      // navigate(to=`${}/modules`)
+      navigate(`${course_id}`)
     }
       return (
         
@@ -101,7 +101,7 @@ import GeneralCourses from "../components/GeneralCourses";
           {/* My Learning Section */}
           <div className="p-6">
             <h3 className="text-2xl font-semibold mb-4">My Learning</h3>
-            <CourseComp courses={studentcourses} ButtonName={`View Course`} buttonHandler={viewCourse} errRef={errRef} errMsg={errMsg}/>
+            <CourseComp courses={studentcourses} setCourse_id={setCourse_id} ButtonName={`View Course`} buttonHandler={viewCourse} errRef={errRef} errMsg={errMsg}/>
           </div>
     
           {/* Top Courses Section */}

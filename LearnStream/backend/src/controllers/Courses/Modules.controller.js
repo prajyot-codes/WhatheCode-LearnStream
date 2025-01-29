@@ -124,7 +124,7 @@ const deleteModule = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Module not found");
     }
 
-    await module.remove(); // Triggers the `pre` middleware for cleanup
+    await module.deleteOne(); // Triggers the `pre` middleware for cleanup
 
     return res.status(200).json(
         new ApiResponse(200, null, "Module deleted successfully")

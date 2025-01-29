@@ -1,11 +1,13 @@
 import React, { useState,useRef } from 'react';
 import axios from '../api/axios';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function ModuleForm() {
   const [modules, setModules] = useState([]);
   const { user_id, course_id } = useParams();
-  
+  const navigate=useNavigate()
+
   const handleAddModule = () => {
     setModules([
       ...modules,
@@ -194,6 +196,10 @@ function ModuleForm() {
         
         await addLectureToModule(response?.data?.data?._id)
         await addAssignmentToModule(response?.data?.data?._id)
+        const targetUrl=`/teacher/${user_id}/${course_id}`
+        navigate(targetUrl);
+        window.location.href=targetUrl
+
         // console.log('Module added:', modules); // Log the server response for debugging
       }
   
@@ -212,7 +218,7 @@ function ModuleForm() {
   
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-10">
+    <div className=" overflow-scroll  w-auto bg-gray-100 flex items-center justify-center py-10">
       <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Module Form</h1>
         <form onSubmit={handleSubmit}>
@@ -381,6 +387,7 @@ function ModuleForm() {
             >
               Add Module
             </button>
+            <br/>
             <button
               type="submit"
               className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"

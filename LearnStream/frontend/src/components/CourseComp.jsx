@@ -7,7 +7,7 @@ const CourseComp = ({setCourse_id, courses=[],ButtonName,buttonHandler,errRef,er
   const handleButtonClick=(e,courseId) => {
     e.preventDefault();
     setCourse_id(courseId)
-    buttonHandler();
+    buttonHandler(courseId);
   }
   const userId= localStorage.getItem('user_id')
   const username= localStorage.getItem('name')

@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import axios from "../api/axios";
 import { useNavigate, useParams } from "react-router-dom";
+import AuthContext from "../contexts/AuthProvider";
 // import Modal from "./Modal";
 // import ModuleForm from "./Courseupdatation";
 
@@ -49,11 +50,17 @@ const ModuleDropdown = ({ module, viewLecture }) => {
 
 const ViewStudentModules = () => {
   const { course_id } = useParams();
+  const user_id = localStorage.getItem('user_id')
   const [modules, setModules] = useState([]);
   const navigate = useNavigate();
   const viewLecture = (module_id, lectures) => {
-    console.log("Navigating with lectures:", lectures); // Debugging step
-    navigate(`${module_id}/view`, { state: { lectures } });
+    console.log("Navigating with lectures:", lectures);
+    if (user_id){
+      navigate(`/student/${user_id}/${course_id}/${module_id}/view`, { state: { lectures } });
+    } // Debugging step
+    else{
+      navigate('/login/student')
+    }
   };
 
   const loadModules = useCallback(async () => {

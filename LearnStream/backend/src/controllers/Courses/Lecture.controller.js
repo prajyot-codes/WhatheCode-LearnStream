@@ -145,7 +145,7 @@ const deleteLecture = asyncHandler(async (req,res)=>{
     );
     await module.save();
     
-    Lectures.findByIdAndDelete(lecture_id);
+    await Lectures.findByIdAndDelete(lecture_id);
    
     return res.status(200)
     .json(new ApiResponse(200,null,"Lecture deleted succesfully"))

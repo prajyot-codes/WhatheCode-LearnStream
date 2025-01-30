@@ -5,6 +5,7 @@ import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { deleteMediaFromCloudinary, uploadMultipleFilesOnCloudinary, uploadOnCloudinary } from "../../utils/cloudinary.js";
+import { Modules } from "../../models/Course/Modules.js";
 // import { UserStudent } from "../../models/student/userstudentmodel.js";
 
 // assignments
@@ -140,7 +141,61 @@ const submitAssignment = asyncHandler(async (req,res)=>{
         new ApiResponse(200,{},'submittedAssignment Succesfully')
     )
 })
+const getAssignmentById = asyncHandler(async (req, res)=>{
+    const {assignmentId} = req?.params;
+
+    if (!assignmentId){
+        throw new ApiError(404,'AssignmentId not sent')
+    }
+
+    const assignment = await Assignments.findById(assignmentId).select('-module_id -assignmentUrls')
+
+    if (!assignment){
+        throw new ApiError(404,'The Assignment Requested was not found');
+    }
+    res.status(200).json(
+        new ApiResponse(200,assignment,'Assignment sent succesfully')
+    )
+}) 
+const deleteAssignment = asyncHandler(async (req,res)=>{
+    const {moduleId,courseId,assignmentId} = req.params
+
+    const course = await  Courses.findById(courseId)
+    const assignment = await Assignments.findById(assignmentId)
+    const module = await Modules.findById(moduleId)
+    
+    if (!course){
+        throw new ApiError(404,"Course Not Found")
+    }
+    if (!assignment){
+        throw new ApiError(404,"Lecture Not Found")
+    }
+    if (!module){
+        throw new ApiError(404,"Lecture Not Found")
+    }
+    
+    assignment.public_id.forEach(async (id)=>{
+        await deleteMediaFromCloudinary(id);
+    })
+
+    //delete from courses array 
+    course.assignments = course.assignments.filter(assignment_id =>!assignment_id
+        .equals(assignment._id))
+    await course.save();
+    
+    module.assignments = module.assignments.filter(
+        (id) => !id.equals(assignment._id)
+    );
+    await module.save();
+    
+    await Assignments.findByIdAndDelete(assignmentId);
+    
+    return res.status(200)
+    .json(new ApiResponse(200,null,"Assignment deleted succesfully"))
+})
 export {
     createAssignment,
     submitAssignment,
+    deleteAssignment,
+    getAssignmentById
 }

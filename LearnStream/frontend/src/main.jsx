@@ -32,7 +32,7 @@ const router = createBrowserRouter(
       <Route path='teacher/:user_id/makecourse' element={<MakeaCourse />} />
       {/* <Route path='teacher/:user_id/:course_id' element={<ModuleForm />} /> */}
       <Route path='teacher/:user_id/:course_id' element={<ViewtheModules />} />
-      <Route path='student/:user_id/:course_id' element={<ViewStudentModules/>} />
+      <Route path='user/:course_id'  element={<ViewStudentModules/>} />
       <Route path ='student/:user_id/:course_id/:module_id/view' element={<LectureAssig/>}/>
       <Route path='student/:user_id' element={<Student />} />
     </Route>

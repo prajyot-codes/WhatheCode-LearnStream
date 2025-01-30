@@ -84,8 +84,8 @@ import GeneralCourses from "../components/GeneralCourses";
       fetchStudentCourses();
     },[localStorage.getItem('accessToken')])  
     const navigate  = useNavigate();
-    const viewCourse = ()=>{
-      navigate(`${course_id}`)
+    const viewCourse = (course_id)=>{
+      navigate(`/user/${course_id}`)
     }
       return (
         

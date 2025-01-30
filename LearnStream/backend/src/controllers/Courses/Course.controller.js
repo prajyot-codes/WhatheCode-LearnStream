@@ -185,13 +185,21 @@ const enrollStudent  = asyncHandler(async (req,res)=>{
         throw new ApiError(401, 'User not authenticated');
     }
 
-    if (!(await Courses.findById(course_id))){
+    const studenttobeEnrolled =await UserStudent.findById(student_id);
+    const courseTobeEnrolled = await Courses.findById(course_id);
+    if (!studenttobeEnrolled){
         throw new ApiError('course id not found')
     }
-    if (!(await UserStudent.findById(student_id))){
+    if (!courseTobeEnrolled){
         throw new ApiError('student not found')
     }
     
+    const alreadyeEnrolled = studenttobeEnrolled.Courses.includes(course_id);
+
+    if (alreadyeEnrolled){
+        throw new ApiError(400,"the student is already enrolled in course");
+    }
+
     const updatedCourse = await Courses.findByIdAndUpdate(course_id,
         {$push:{enrolledStudents:student_id}},{new:true}
     )

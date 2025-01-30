@@ -9,7 +9,7 @@ const router = Router()
 // Modules
 router.route('/:course_id/modules')
     .post(verifyJWT, addModule) // Create a new module
-    .get(verifyJWTCombined, getCourseModules); // Get all modules for a course
+    .get(getCourseModules); // Get all modules for a course
 
 router.route('/:courseId/modules/:module_id')
     .get(verifyJWTCombined, getModuleById) // Get a specific module

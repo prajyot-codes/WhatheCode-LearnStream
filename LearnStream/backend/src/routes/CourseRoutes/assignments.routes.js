@@ -5,7 +5,7 @@ import { upload } from '../../middleware/multer.middleware.js';
 import { verifyJWT } from "../../middleware/authteacher.middleware.js";
 import { verifyJWTStudent } from "../../middleware/authstudent.middleware.js";
 import { verifyJWTCombined } from "../../middleware/authcombined.middleware.js";
-import { createAssignment, submitAssignment  } from '../../controllers/Courses/Assignment.controller.js';
+import { createAssignment, deleteAssignment, getAssignmentById, submitAssignment  } from '../../controllers/Courses/Assignment.controller.js';
 
 const router = Router()
 
@@ -24,7 +24,7 @@ router.route('/:courseId/modules/:moduleId/assignments/:assignmentId/upload')
         submitAssignment
     ); // Submit an assignment
 
-// router.route('/:courseId/modules/:moduleId/assignments/:assignmentId')
-    // .get(verifyJWTCombined, getAssignmentById) // Get assignment details
-    // .delete(verifyJWT, deleteAssignment); // Delete an assignment
+router.route('/:courseId/modules/:moduleId/assignments/:assignmentId')
+    .get(verifyJWTCombined, getAssignmentById) // Get assignment details
+    .delete(verifyJWT, deleteAssignment); // Delete an assignment
 export default router;

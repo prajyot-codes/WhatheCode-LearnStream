@@ -22,9 +22,9 @@ const router = Router();
 // Courses
 
 router.route('/').post(verifyJWT,upload.single('thumbnail'),createCourse)
-router.route('/:student_id').get(verifyJWTStudent,getCourseByStudentId);
+router.route('/student/:student_id').get(verifyJWTStudent,getCourseByStudentId);
 router.route('/teacher/:teacher_id').get(verifyJWT,getCourseByTeacherId)
-router.route('/:courseId').get( verifyJWT, getCourseById);//
+router.route('/:courseId').get( verifyJWTCombined, getCourseById);//
 router.route('/:courseId/students').get( verifyJWT, getEnrolledStudents);//
 router.route('/:courseId/enroll').post( verifyJWTStudent, enrollStudent);
 router.route('').get(getCoursesByCategory)

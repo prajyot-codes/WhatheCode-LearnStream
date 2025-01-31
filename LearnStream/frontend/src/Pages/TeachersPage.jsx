@@ -22,6 +22,7 @@ const Teachers = () => {
   const role='teacher';
   const { user_id } = useParams();
   const errRef = useRef();
+  const [course_id,setCourse_id] = useState('')
   const [errMsg, setErrMsg] = useState('');
   const [courses, setCourses] = useState([]);
 
@@ -54,9 +55,9 @@ const Teachers = () => {
     };
     fetchCourses();
   }, [userAccessToken]);
-
-  const editCourse = async ()=>{
-    
+  const name = localStorage.getItem('name');
+  const viewCourse = (course_id)=>{
+    navigate(`/user/${course_id}`)
   }
   return (
     <div>
@@ -68,16 +69,15 @@ const Teachers = () => {
         Offers regarding courses
       </div>
 
-      <section>
-        <h1>Welcome  {localStorage.getItem('name')},
-           you are logged in!</h1>
-      </section>
+      <section className="m-5 text-3xl">
+          <h1>Welcome <span className="font-league bold text-4xl">{name.charAt(0).toUpperCase() + name.slice(1)}</span></h1>
+          </section>
 
       {/* My Learning Section */}
       <div className="p-6">
         <h3 className="text-2xl font-semibold mb-4">My Courses</h3>
         <div className="flex flex-wrap gap-6">
-         <CourseComp courses={courses}  errMsg={errMsg} ButtonName={'Edit Course'} buttonHandler={editCourse} errRef={errRef} />
+         <CourseComp setCourse_id={setCourse_id} courses={courses}  errMsg={errMsg} ButtonName={'Edit Course'} buttonHandler={viewCourse} errRef={errRef} />
         </div>
       </div>
 

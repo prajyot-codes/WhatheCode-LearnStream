@@ -4,10 +4,15 @@ import axios from "../api/axios";
 import { useParams } from "react-router-dom";
 import Modal from "./Modal";
 import ModuleForm from "./Courseupdatation";
+import LectureAssignment from "../components/LectureAssignment";
+// Assuming your custom logo is imported here
+import CustomLogo from "../../public/assets/lectureLogo"; // Update path as necessary
+import AssignmentIcon from "../../public/assets/assignmentsvg";
 
-const ModuleDropdown = ({ module, deleteModule }) => {
+const ModuleDropdown = ({ module, deleteModule, deleteAssignment, deletelecture }) => {
   const [isOpen, setIsOpen] = useState(false);
-  
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="border rounded-lg shadow-sm mb-4 bg-white">
       <button
@@ -22,11 +27,31 @@ const ModuleDropdown = ({ module, deleteModule }) => {
           {/* Lectures Section */}
           {module.lectures.length > 0 ? (
             module.lectures.map((lecture, index) => (
-              <div key={index} className="py-2 border-b last:border-none">
-                <span className="font-medium">{lecture.title}</span>
-                <span className="block text-gray-500 text-sm">
-                  Duration: {lecture.duration.toFixed(2)} mins
-                </span>
+              <div
+                key={index}
+                className="flex justify-between items-start py-2 border-b last:border-none"
+              >
+                {/* Left side: Custom Logo, Lecture Title & Duration */}
+                <div className="flex flex-col">
+                  {/* Custom Logo */}
+                  <div className="flex items-center gap-2">
+                    <CustomLogo size={25} color="gray" /> {/* Your Custom Logo */}
+                    <span className="font-medium block">{lecture.title}</span>
+                  </div>
+
+                  {/* Duration */}
+                  <div className="text-gray-500 text-sm mt-1">
+                    Duration: {lecture.duration.toFixed(2)} mins
+                  </div>
+                </div>
+
+                {/* Right side: Delete (X) */}
+                <button
+                  onClick={() => deletelecture(module._id, lecture._id)} // Correctly call deletelecture
+                  className="text-red-500 cursor-pointer hover:text-red-700"
+                >
+                  ✖
+                </button>
               </div>
             ))
           ) : (
@@ -36,11 +61,42 @@ const ModuleDropdown = ({ module, deleteModule }) => {
           {/* Assignments Section */}
           {module.assignments.length > 0 ? (
             module.assignments.map((assignment, index) => (
-              <div key={index} className="py-2 border-b last:border-none">
-                <span className="font-medium">{assignment.title}</span>
-                <span className="block text-gray-500 text-sm">
-                  Deadline: {assignment.deadline}
-                </span>
+              <div
+                key={index}
+                className="flex justify-between items-start py-2 border-b last:border-none"
+              >
+                {/* Left side: Icon, Title & Deadline */}
+                <div className="flex flex-col">
+                  {/* Icon and Title */}
+                  <div className="flex items-center gap-2">
+                    <AssignmentIcon size={20} color="gray" />
+                    <span className="font-medium block">{assignment.title}</span>
+                  </div>
+
+                  {/* Deadline below the Title */}
+                  {assignment.deadline ? (
+                    <span className="text-gray-500 text-sm mt-1">
+                      Deadline:{" "}
+                      {
+                        new Date(assignment.deadline)
+                          .toISOString()
+                          .split("T")[0]
+                      }
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 text-sm mt-1">
+                      No due date
+                    </span>
+                  )}
+                </div>
+
+                {/* Right side: Delete (X) */}
+                <button
+                  onClick={() => deleteAssignment(module._id, assignment._id)}
+                  className="cursor-pointer text-red-500 hover:text-red-700"
+                >
+                  ✖
+                </button>
               </div>
             ))
           ) : (
@@ -48,12 +104,23 @@ const ModuleDropdown = ({ module, deleteModule }) => {
           )}
 
           {/* Delete Module Button */}
-          <button
-            onClick={() => deleteModule(module._id)}
-            className="p-1 m-1 rounded-lg bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-          >
-            Delete
-          </button>
+          <div className="flex justify-between">
+            <button
+              onClick={() => deleteModule(module._id)}
+              className="p-1 m-1 rounded-lg bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+            >
+              Delete
+            </button>
+            <button
+              onClick={() => setOpen(true)}
+              className="p-1 m-1 w-auto rounded-lg bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+            >
+              Add lecture-assignment
+            </button>
+            <Modal open={open} onClose={() => setOpen(false)}>
+              <LectureAssignment moduleId={module._id} />
+            </Modal>
+          </div>
         </div>
       )}
     </div>
@@ -63,7 +130,6 @@ const ModuleDropdown = ({ module, deleteModule }) => {
 const ViewtheModules = () => {
   const { course_id } = useParams();
   const [modules, setModules] = useState([]);
-  const [open, setOpen] = useState(false);
 
   const deleteModule = async (module_id) => {
     try {
@@ -73,6 +139,56 @@ const ViewtheModules = () => {
       );
     } catch (error) {
       console.error("Error deleting module:", error);
+    }
+  };
+
+  const deletelecture = async (moduleId, lectureId) => {
+    try {
+      await axios.delete(
+        `/courses/${course_id}/modules/${moduleId}/lectures/${lectureId}`
+      );
+
+      // Update the modules state after deletion
+      setModules((prevModules) =>
+        prevModules.map((module) =>
+          module._id === moduleId
+            ? {
+                ...module,
+                lectures: module.lectures.filter(
+                  (a) => a._id !== lectureId
+                ),
+              }
+            : module
+        )
+      );
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting lecture:", error);
+    }
+  };
+
+  const deleteAssignment = async (moduleId, assignmentId) => {
+    try {
+      await axios.delete(
+        `/courses/${course_id}/modules/${moduleId}/assignments/${assignmentId}`
+      );
+
+      // Update the modules state after deletion
+      setModules((prevModules) =>
+        prevModules.map((module) =>
+          module._id === moduleId
+            ? {
+                ...module,
+                assignments: module.assignments.filter(
+                  (a) => a._id !== assignmentId
+                ),
+              }
+            : module
+        )
+      );
+      // window.location.reload();
+    } catch (error) {
+      console.error("Error deleting assignment:", error);
     }
   };
 
@@ -92,10 +208,11 @@ const ViewtheModules = () => {
     loadModules();
   }, [course_id, loadModules]);
 
+  const [open, setOpen] = useState(false);
   return (
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Course Modules</h1>
-      
+
       {/* Modules List */}
       {modules.length > 0 ? (
         modules.map((module) => (
@@ -103,6 +220,8 @@ const ViewtheModules = () => {
             key={module._id}
             module={module}
             deleteModule={deleteModule}
+            deleteAssignment={deleteAssignment}
+            deletelecture={deletelecture} // Pass deletelecture as a prop
           />
         ))
       ) : (
@@ -110,7 +229,7 @@ const ViewtheModules = () => {
       )}
 
       {/* Add Module Button */}
-      <button 
+      <button
         onClick={() => setOpen(true)}
         className="bg-green-200 p-2 rounded-lg border border-stone-800 mt-4"
       >

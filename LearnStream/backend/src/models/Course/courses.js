@@ -114,6 +114,7 @@ const assignmentSchema = new Schema({
         },
     ],
     deadline: {
+        required:false,
         type: Date,
         default: null,
     },

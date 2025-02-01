@@ -35,25 +35,7 @@ const videos = [
     // const viewCourse = async (course_id)=>{
       
     // }
-    const enrollStudent =async ()=>{
-        try {
-          if (localStorage.getItem('accessToken')!=undefined ) {
-          
-            const response = await axios.post(`/courses/${courses._id}/enroll`,
-            {
-                headers: { 'Content-Type': 'application/json' },
-                withCredentials: true ,
-                Authorization: `Bearer ${token}`, 
-            })
-            if (response.statusText == `student succesfully enrolled`){
-              setEnrolled(`View Course`)
-            }
-        }
-        else throw Error;
-        } catch (error) {
-          console.log(error);
-        }
-    }
+    
       useEffect(() => {
               setErrMsg('');
           }, [user_id])

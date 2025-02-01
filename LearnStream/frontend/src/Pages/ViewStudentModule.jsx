@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import axios from "../api/axios";
 import { useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../contexts/AuthProvider";
+import EnrollButton from "../components/EnrollButton";
 // import Modal from "./Modal";
 // import ModuleForm from "./Courseupdatation";
 const ModuleDropdown = ({ module, viewLecture }) => {
@@ -104,20 +105,14 @@ const [course,setCourse] = useState({})
     loadModules();
     courseDetails()
   }, [course_id]); // Fix infinite re-rendering
-  const handleEnrollClick = ()=>{}
   return (
     <div className="max-w-3xl mx-auto p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex-col items-center mb-4">
 
         <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
-        <h2 className="text-xl font-bold mb-2">{course.author}</h2>
-        <button
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-          onClick={handleEnrollClick}
-          >
-          Enroll Now
-        </button>
+        <h2 className="text-xl font-bold mb-2 font-league-200">Instructor : {course.author.name}</h2>
+        <EnrollButton course_id={course_id}/>
         </div>
         <img src={course.thumbnail} alt="" srcset="" className="w-full "/>
       </div>

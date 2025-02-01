@@ -65,11 +65,7 @@ const lectureSchema = new Schema({
         type:String, //cloudinary url
         required:true
      },
-     completed:{
-        type:Boolean,
-        required:true,
-        default:false
-     },
+     
      duration:{
         type:Number,
         required : true
@@ -162,7 +158,6 @@ const assignmentSchema = new Schema({
         },
     ],
 }, { timestamps: true });
-
 
 courseSchema.pre('remove', async function (next) {
     try {

@@ -137,7 +137,7 @@ const getCourseModules = asyncHandler(async (req, res) => {
     const course = await Courses.findById(course_id).populate({
         path: 'modules',
         populate: [
-            { path: 'lectures', select: 'title duration freePreview public_id' },
+            { path: 'lectures', select: 'title duration freePreview public_id ' },
             { path: 'assignments', select: 'title deadline' }
         ]
     });

@@ -34,7 +34,7 @@ router.route('').get(getCoursesByCategory)
 router.route('/').post(verifyJWT,upload.single('thumbnail'),createCourse)
                 .get(getAllCourses)// i still have doubts regarding this feature and plan to remove it 
 // router.route('/:courseId').put( verifyJWT, updateCourse);
-router.route('/:courseId').delete( verifyJWT, deleteCourse);
+// router.route('/:courseId').delete( verifyJWT, deleteCourse);
 
 
 

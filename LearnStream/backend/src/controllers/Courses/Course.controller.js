@@ -265,36 +265,33 @@ const getEnrolledStudents = asyncHandler(async (req,res)=>{
         new ApiResponse(200,students,"Succesfully Sent Student Data")
     )
 })
+const CourseProgress = asyncHandler(async (req, res) => {
+    const { courseId } = req.params;
+    const studentId = req?.student?._id;
 
-const CourseProgress = asyncHandler(async(req,res)=>{
-    const {courseId:course_id} = req.params
-    const studentid = req?.student?._id
-    const teacherid = req?.teacher?._id
-    // console.log(course_id);
-    // console.log(studentid)
-    // console.log(teacherid)
-    if (!course_id){
-        throw new ApiError('The course sent doesnt exist or is undefined')
+    if (!courseId) {
+        throw new ApiError("The course sent doesn't exist or is undefined");
     }
-    const completedLectures = await Progress.findOne({courseId:course_id,studentId:studentid}).select('completedLectureCount')
-    console.log(completedLectures.completedLectureCount)
-    
-    if (!completedLectures){
-        throw new ApiError('Encountered An error while fetching completed Lectures')
-    }
-    
-    const course = await Courses.findById(course_id).select('lectures')
-    const totalLectures = course.lectures.length
-    console.log(totalLectures)
-    if (!totalLectures){
-        throw new ApiError('Encountered An error while fetching totalLectures')
-    }
-    const progress = (completedLectures.completedLectureCount/totalLectures)*100  
-    return res.status(200)
-    .json(new ApiResponse(200,progress,'progress data sent succesfully'))
-})
 
-const  
+    // Fetch progress for the student in the given course
+    const progress = await Progress.findOne({ courseId, studentId }).select('completedLectureCount');
+
+    if (!progress) {
+        return res.status(200).json(new ApiResponse(200, 0, "No progress found, returning 0%"));
+    }
+
+    // Fetch total lectures in the course
+    const course = await Courses.findById(courseId).select('lectures');
+
+    if (!course || !course.lectures) {
+        throw new ApiError("Encountered an error while fetching total lectures");
+    }
+
+    const totalLectures = course?.lectures.length || 0;
+    const progressPercentage = totalLectures > 0 ? (progress.completedLectureCount / totalLectures) * 100 : 0;
+
+    return res.status(200).json(new ApiResponse(200, progressPercentage, "Progress data sent successfully"));
+});
 
 
 export {

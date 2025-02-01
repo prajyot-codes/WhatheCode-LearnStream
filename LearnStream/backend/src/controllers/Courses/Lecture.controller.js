@@ -184,27 +184,66 @@ const getLectureById = asyncHandler(async (req, res) => {
         new ApiResponse(200, lecture, "Lecture retrieved successfully")
     );
 });
+const markLectureCompleted = asyncHandler(async (req, res) => {
+    const { courseId, lectureId } = req.params;
+    const studentId = req.student?._id;
 
-const markLectureCompleted = asyncHandler(async(req,res) =>{
-    const {courseId,lectureId } = req.params
-    const studentId =  req.student?._id
-    
-    const updated = await Progress.findOneAndUpdate({studentId,courseId},
-        {
-            $push:{completedLectures:lectureId},
-            $inc:{ completedLectureCount:1},
-            $set:{lastUpdated : Date.now()}
-        },
-    {
-        upsert:true,//ensures that the document is updated 
-        new:true//ensures that the document returned is updated
+    let progress = await Progress.findOne({ studentId, courseId });
+
+    if (!progress) {
+        // If progress doesn't exist, create a new entry
+        progress = await Progress.create({
+            studentId,
+            courseId,
+            completedLectures: [{ lectureId, completedAt: Date.now() }],
+            completedLectureCount: 1,
+            lastUpdated: Date.now()
+        });
+    } else {
+        // Check if lecture already exists
+        const isAlreadyCompleted = progress.completedLectures.some(
+            (lecture) => lecture.lectureId.toString() === lectureId
+        );
+
+        if (!isAlreadyCompleted) {
+            // **Add new completed lecture**
+            progress.completedLectures.push({ lectureId, completedAt: Date.now() });
+            progress.completedLectureCount = progress.completedLectures.length;
+        }
     }
-    );
-    return res.status(200).json(
-        new ApiResponse(200,updated,"Marked Lecture as Completed")
-    );
-})
 
+    await progress.save();
+
+    return res.status(200).json(new ApiResponse(200, progress, "Marked Lecture as Completed"));
+});
+
+
+const getLecturesCompleted  = asyncHandler(async (req,res)=>{
+    const { courseId } = req.params;
+    const studentId = req.student?._id; // Ensure authentication middleware sets req.student
+
+    if (!studentId) {
+        return res.status(401).json({ success: false, message: "Unauthorized access" });
+    }
+
+    // Fetch completed lectures for the student in the given course
+    const progress = await Progress.findOne({ studentId, courseId });
+
+    if (!progress) {
+        return res.status(200).json({
+            success: true,
+            completedLectures: []
+        });
+    }
+
+    const completedLectureIds = progress.completedLectures.map(lecture => ({ lectureId: lecture.lectureId }));
+
+
+    return res.status(200).json({
+        success: true,
+        completedLectures: completedLectureIds
+    });
+})
 export {
     addLecture,
     updateLecture,
@@ -212,4 +251,5 @@ export {
     getLectureById,
     getAllLectures,
     markLectureCompleted,
+    getLecturesCompleted,
 }

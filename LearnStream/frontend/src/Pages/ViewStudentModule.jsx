@@ -78,7 +78,7 @@ const ViewStudentModules = () => {
   const viewLecture = (module_id, lectures) => {
     console.log("Navigating with lectures:", lectures);
     if (enrolled){
-      navigate(`/student/${user_id}/${course_id}/${module_id}/view`, { state: { lectures } });
+      navigate(`/student/${user_id}/${course_id}/${module_id}/view`, { state: { course_id,lectures } });
     } // Debugging step
     else{
       alert(`please Enroll to view resources`)
@@ -90,7 +90,7 @@ const ViewStudentModules = () => {
       navigate(`/student/${user_id}/${course_id}/${module_id}/view`, { state: { lectures } });
     } // Debugging step
     else{
-      navigate('/login/student')
+      alert(`please Enroll to view resources`)
     }
   };
   const loadModules = useCallback(async () => {

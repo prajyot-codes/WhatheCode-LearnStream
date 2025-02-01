@@ -4,7 +4,7 @@ import { verifyJWT } from "../../middleware/authteacher.middleware.js";
 import { upload } from "../../middleware/multer.middleware.js";
 import { verifyJWTStudent } from "../../middleware/authstudent.middleware.js";
 import { verifyJWTCombined } from "../../middleware/authcombined.middleware.js";
-import { addLecture, deleteLecture, getAllLectures, getLectureById, markLectureCompleted, updateLecture } from '../../controllers/Courses/Lecture.controller.js';
+import { addLecture, deleteLecture, getAllLectures, getLectureById, getLecturesCompleted, markLectureCompleted, updateLecture } from '../../controllers/Courses/Lecture.controller.js';
 
 
 const router = Router()
@@ -22,5 +22,5 @@ router.route('/:course_id/modules/:moduleId/lectures/:lecture_id')
 
 router.route('/:courseId/lectures/:lectureId/complete')
     .post(verifyJWTStudent, markLectureCompleted); // Mark lecture as completed
-
+router.route('/:courseId/completed').get(verifyJWTStudent,getLecturesCompleted);
 export default router

@@ -69,7 +69,7 @@ const createCourse = asyncHandler(async (req,res)=> {
 })
 const getCourseByStudentId = asyncHandler(async (req,res)=>{
     const {student_id}  = req.params;
-
+    console.log(req.params)
     if (!student_id){
         throw new ApiError('user is not logged in  or is undefined')
     }
@@ -87,7 +87,7 @@ const getCourseByStudentId = asyncHandler(async (req,res)=>{
         throw new ApiError('student doesnt have any courses')
     }
 
-    res.status(200).json(
+    return res.status(200).json(
         new ApiResponse(200,studentcourses,'studentcourses succesfully sent ')
     )
 
@@ -112,7 +112,7 @@ const getCourseByTeacherId = asyncHandler(async(req,res)=>{
         throw new ApiError('teacher doesnt have any courses')
     }
 
-    res.status(200).json(
+    return res.status(200).json(
         new ApiResponse(200,teachercourses,'teachercourses succesfully sent ')
     )
 
@@ -120,7 +120,8 @@ const getCourseByTeacherId = asyncHandler(async(req,res)=>{
 const getCourseById = asyncHandler(async (req, res)=> {
     const {courseId}  = req.params
 
-    const course = await Courses.findById(courseId)
+    const course = await Courses.findById(courseId).populate('author', 'name');
+
 
     if (!course){
         throw new ApiError("course not found")
@@ -149,7 +150,7 @@ const getCoursesByCategory = asyncHandler(async (req, res) => {
         })
     );
     console.log(updatedCourses)
-    res.status(200).json(new ApiResponse(200, updatedCourses, 'Courses fetched successfully'));
+    return res.status(200).json(new ApiResponse(200, updatedCourses, 'Courses fetched successfully'));
 });
 
 const getAllCourses = asyncHandler(async (req,res) =>{
@@ -177,9 +178,9 @@ const enrollStudent  = asyncHandler(async (req,res)=>{
     const student_id = req.student._id
    
     
-    // console.log('req.student:', req.student);
-    // console.log('courseid',course_id)
-    // console.log('student_id:', student_id);
+    console.log('req.student:', req.student);
+    console.log('courseid',course_id)
+    console.log('student_id:', student_id);
 
     if (!student_id) {
         throw new ApiError(401, 'User not authenticated');
@@ -194,10 +195,12 @@ const enrollStudent  = asyncHandler(async (req,res)=>{
         throw new ApiError('student not found')
     }
     
-    const alreadyeEnrolled = studenttobeEnrolled.Courses.includes(course_id);
+    const alreadyEnrolled = studenttobeEnrolled.Courses.includes(course_id);
 
-    if (alreadyeEnrolled){
-        throw new ApiError(400,"the student is already enrolled in course");
+    if (alreadyEnrolled){
+        return res.status(200).json( 
+            new ApiResponse(200,alreadyEnrolled,'Student Already enrolled')
+        )
     }
 
     const updatedCourse = await Courses.findByIdAndUpdate(course_id,
@@ -212,10 +215,40 @@ const enrollStudent  = asyncHandler(async (req,res)=>{
         throw new ApiError(404,"Failed To Enroll Student")
     }``
     
-    res.status(200).json(
-        new ApiResponse(200,{},
+    return res.status(200).json(
+        new ApiResponse(200,true,
             "student succesfully enrolled"
         )
+    )
+    
+})
+const checkEnrollment = asyncHandler(async(req,res)=>{
+    const { courseId:course_id}  = req.params
+
+    const student_id = req.student._id
+   
+    
+    console.log('req.student:', req.student);
+    console.log('courseid',course_id)
+    console.log('student_id:', student_id);
+
+    if (!student_id) {
+        throw new ApiError(401, 'User not authenticated');
+    }
+
+    const studenttobeEnrolled =await UserStudent.findById(student_id);
+    const courseTobeEnrolled = await Courses.findById(course_id);
+    if (!studenttobeEnrolled){
+        throw new ApiError('course id not found')
+    }
+    if (!courseTobeEnrolled){
+        throw new ApiError('student not found')
+    }
+    
+    const alreadyEnrolled = studenttobeEnrolled.Courses.includes(course_id);
+
+    return res.status(200).json( 
+        new ApiResponse(200,alreadyEnrolled,'Student Already enrolled')
     )
     
 })
@@ -261,6 +294,7 @@ const CourseProgress = asyncHandler(async(req,res)=>{
     .json(new ApiResponse(200,progress,'progress data sent succesfully'))
 })
 
+const  
 
 
 export {
@@ -272,5 +306,6 @@ export {
     CourseProgress,
     getEnrolledStudents,
     enrollStudent,
-    getCourseByTeacherId
+    checkEnrollment,
+    getCourseByTeacherId,
 }

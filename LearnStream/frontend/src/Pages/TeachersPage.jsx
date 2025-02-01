@@ -26,6 +26,7 @@ const [course_id, setcourse_id] = useState('')
   const role='teacher';
   const { user_id } = useParams();
   const errRef = useRef();
+  const [course_id,setCourse_id] = useState('')
   const [errMsg, setErrMsg] = useState('');
   const [courses, setCourses] = useState([]);
   
@@ -74,10 +75,9 @@ const [course_id, setcourse_id] = useState('')
         <img src="../../public/assets/10ca89f6-811b-400e-983b-32c5cd76725a.jpg" alt="" />
       </div>
 
-      <section>
-        <h1>Welcome  {localStorage.getItem('name')},
-           you are logged in!</h1>
-      </section>
+      <section className="m-5 text-3xl">
+          <h1>Welcome <span className="font-league bold text-4xl">{name.charAt(0).toUpperCase() + name.slice(1)}</span></h1>
+          </section>
 
       {/* My Learning Section */}
       <div className="p-6">
@@ -91,7 +91,7 @@ const [course_id, setcourse_id] = useState('')
       <div className="p-6">
         <h3 className="text-2xl font-semibold mb-4">Top Courses</h3>
         <div className="flex gap-6">
-          <GeneralCourses/> 
+          <GeneralCourses ButtonName={`View Course`} buttonHandler={viewCourse} setCourse_id = {setCourse_id}errMsg={errMsg} setErrMsg={setErrMsg}/> 
         </div>
       </div>
 

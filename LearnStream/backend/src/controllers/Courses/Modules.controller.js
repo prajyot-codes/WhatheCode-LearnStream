@@ -31,7 +31,7 @@ const addModule = asyncHandler(async (req, res) => {
     course.modules.push(newModule._id);
     await course.save();
 
-    res.status(200).json(new ApiResponse(200, newModule, "Module added successfully"));
+    return res.status(200).json(new ApiResponse(200, newModule, "Module added successfully"));
 });
 const addLectureToModule = asyncHandler(async (req, res) => {
     const { module_id } = req.params;
@@ -59,7 +59,7 @@ const addLectureToModule = asyncHandler(async (req, res) => {
     module.lectures.push(lecture._id);
     await module.save();
 
-    res.status(200).json(new ApiResponse(200, lecture, "Lecture added to module successfully"));
+    return res.status(200).json(new ApiResponse(200, lecture, "Lecture added to module successfully"));
 });
 const addAssignmentToModule = asyncHandler(async (req, res) => {
     const { module_id } = req.params;
@@ -95,7 +95,7 @@ const addAssignmentToModule = asyncHandler(async (req, res) => {
     module.assignments.push(assignment._id);
     await module.save();
 
-    res.status(200).json(new ApiResponse(200, assignment, "Assignment added to module successfully"));
+    return res.status(200).json(new ApiResponse(200, assignment, "Assignment added to module successfully"));
 });
 const updateModule = asyncHandler(async (req, res) => {
     const { module_id } = req.params;
@@ -146,7 +146,7 @@ const getCourseModules = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Course not found");
     }
 
-    res.status(200).json(new ApiResponse(200, course.modules, "Modules fetched successfully"));
+    return res.status(200).json(new ApiResponse(200, course.modules, "Modules fetched successfully"));
 });
 const getModuleById = asyncHandler(async (req, res) => {
     const { module_id } = req.params;

@@ -5,6 +5,7 @@ import { Button } from "flowbite-react";
 import { Link } from "react-router-dom";
 import GeneralCourses from "../components/GeneralCourses";
 import CourseComp from "../components/CourseComp";
+import LearningGoals from "../components/udemycomponent";
 
 const Teachers = () => {
   const { user_id } = useParams();
@@ -15,7 +16,7 @@ const Teachers = () => {
 
   const userAccessToken = localStorage.getItem('accessToken');
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     setErrMsg('');
   }, [user_id]);
@@ -57,7 +58,7 @@ const Teachers = () => {
 
       {/* Welcome Section */}
       <section className="m-5 text-3xl">
-        <h1>Welcome <span className="font-league bold text-4xl">Teacher</span></h1>
+        <h1>Welcome <span className="font-league bold text-4xl">{name}</span></h1>
       </section>
 
       {/* My Learning Section */}
@@ -96,6 +97,7 @@ const Teachers = () => {
             Make a new course
           </Button>
         </Link>
+        <LearningGoals/>
       </div>
     </div>
   );

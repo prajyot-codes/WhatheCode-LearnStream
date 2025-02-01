@@ -13,9 +13,9 @@ function LoginCommon() {
         {/* Centered div */}
         <div className="bg-white w-4/12 h-auto flex justify-center items-center text-black">
           <div className="text-center">
-            <h1 className="text-[#588157] text-2xl">For Teachers</h1>
+            <h1 className="text-[#588157] text-3xl">For Teachers</h1>
             <br />
-            <p>Lorem, ipsum dolor sit amet adipisicing elit. Blanditiis fuga id qui iusto assumenda nisi? Dignissimos, error ratione.</p>
+            <p className="text-lg">Lorem, ipsum dolor sit amet adipisicing elit. Blanditiis fuga id qui iusto assumenda nisi? Dignissimos, error ratione.</p>
             <br />
             <div className="flex justify-center flex-col items-center">
               <Button 
@@ -28,7 +28,7 @@ function LoginCommon() {
               <br />
               <Link to="/signup/teacher">
               <p className="mt-2">Don't have an account?</p>
-              <p className="cursor-pointer">create an account</p>
+              <p className="cursor-pointer font-bold">Create an account</p>
               </Link>
 
             </div>
@@ -41,20 +41,20 @@ function LoginCommon() {
         {/* Centered div */}
         <div className="bg-white w-4/12 h-auto flex justify-center items-center text-black">
           <div className="text-center">
-            <h1 className="text-[#588157] text-2xl">For Students</h1>
+            <h1 className="text-[#588157] text-3xl">For Students</h1>
             <br />
            
-            <p>Lorem, ipsum dolor sit amet adipisicing elit. Blanditiis fuga id qui iusto assumenda nisi? Dignissimos, error ratione.</p>
+            <p className="text-lg">Lorem, ipsum dolor sit amet adipisicing elit. Blanditiis fuga id qui iusto assumenda nisi? Dignissimos, error ratione.</p>
             <br />
             <div className="flex justify-center flex-col items-center">
             <Link
             to='/login/student'>
-              <Button color="success">Login</Button>
+              <Button className="text-xl" color="success">Login</Button>
             </Link>
               <br />
               <Link to="/signup/student">
               <p className="mt-2">Don’t have an account?</p>
-              <p className="cursor-pointer">create an account</p>
+              <p className="cursor-pointer font-bold">Create an account</p>
               </Link>
             </div>
           </div>

@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import GeneralCourses from "../components/GeneralCourses";
+import LearningGoals from "../components/udemycomponent";
+import Testimonials from "../components/testimonials";
 
 const Home = () => {
   const courseDiv = useRef(null);
@@ -56,6 +58,9 @@ const Home = () => {
           />{" "}
           {/* Fetches courses itself */}
         </div>
+        <LearningGoals/>
+          <br />
+          <Testimonials/>
       </div>
     </>
   );

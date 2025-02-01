@@ -27,9 +27,9 @@ function Component({role}) {
     useEffect(() => {
       const userId = localStorage.getItem('user_id');
       const accessToken = localStorage.getItem('accessToken');
-      const name = localStorage.getItem('name')
+      
       if ((userId && accessToken) || success) {
-        navigate(`/${role}/${userId}`,{state:{name}});
+        navigate(`/${role}/${userId}`);
       }
     }, [navigate, success]);
 
@@ -57,7 +57,7 @@ function Component({role}) {
             localStorage.setItem('role',roles)
             setAuth({ user_id,name, roles, accessToken });
             const targetUrl = `/${role}/${user_id}`;
-            navigate(targetUrl,{name});
+            navigate(targetUrl,{ name });
             window.location.href = targetUrl;
             setUser('');
             setPwd('');

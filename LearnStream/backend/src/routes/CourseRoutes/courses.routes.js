@@ -25,7 +25,7 @@ const router = Router();
 router.route('/:courseId').get( verifyJWTCombined, getCourseById);//
 router.route('/:courseId/students').get( verifyJWT, getEnrolledStudents);//
 router.route('/:courseId/enroll').post( verifyJWTStudent, enrollStudent);
-router.route('/:courseId/enrolled').get( verifyJWTStudent, checkEnrollment);
+router.route('/:courseId/enrolled').get( verifyJWTCombined, checkEnrollment);
 router.route('/:courseId/progress').get(verifyJWTCombined, CourseProgress)//
 router.route('/student/:student_id').get(verifyJWTStudent,getCourseByStudentId);
 router.route('/teacher/:teacher_id').get(verifyJWT,getCourseByTeacherId)
@@ -34,7 +34,7 @@ router.route('').get(getCoursesByCategory)
 router.route('/').post(verifyJWT,upload.single('thumbnail'),createCourse)
                 .get(getAllCourses)// i still have doubts regarding this feature and plan to remove it 
 // router.route('/:courseId').put( verifyJWT, updateCourse);
-// router.route('/:courseId').delete( verifyJWT, deleteCourse);
+router.route('/:courseId').delete( verifyJWT, deleteCourse);
 
 
 

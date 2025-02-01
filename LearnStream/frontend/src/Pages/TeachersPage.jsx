@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import axios from "../api/axios";
 import { Button } from "flowbite-react";
@@ -56,8 +56,9 @@ const Teachers = () => {
     fetchCourses();
   }, [userAccessToken]);
   const name = localStorage.getItem('name');
+  const navigate = useNavigate();
   const viewCourse = (course_id)=>{
-    navigate(`/user/${course_id}`)
+    navigate(`/teacher/${user_id}/${course_id}`)
   }
   return (
     <div>
@@ -85,7 +86,7 @@ const Teachers = () => {
       <div className="p-6">
         <h3 className="text-2xl font-semibold mb-4">Top Courses</h3>
         <div className="flex gap-6">
-          <GeneralCourses/> 
+          <GeneralCourses ButtonName={`View Course`} buttonHandler={viewCourse} setCourse_id = {setCourse_id}errMsg={errMsg} setErrMsg={setErrMsg}/> 
         </div>
       </div>
 

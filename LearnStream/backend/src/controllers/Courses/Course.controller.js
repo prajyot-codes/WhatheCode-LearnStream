@@ -294,6 +294,7 @@ const CourseProgress = asyncHandler(async(req,res)=>{
     .json(new ApiResponse(200,progress,'progress data sent succesfully'))
 })
 
+const  
 
 
 export {

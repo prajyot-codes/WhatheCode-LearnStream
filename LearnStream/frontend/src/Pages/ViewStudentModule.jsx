@@ -40,6 +40,28 @@ const ModuleDropdown = ({ module, viewLecture }) => {
           ) : (
             <p className="text-gray-500">No lectures available</p>
           )}
+          <br/>
+            {isOpen && (
+        <div className="p-4">
+          {module.assignments.length > 0 ? (
+            module.assignments.map((assignment, index) => (
+              <div
+                key={index}
+                className="py-2 border-b last:border-none hover:bg-gray-100"
+              >
+                <button
+                  onClick={() => viewAssignment(module._id, module.assignment)}
+                  className="font-medium w-full text-left"
+                >
+                  {assignment.title}
+                </button>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No lectures available</p>
+          )}
+        </div>
+      )}
         </div>
       )}
     </div>
@@ -49,12 +71,22 @@ const ModuleDropdown = ({ module, viewLecture }) => {
 const ViewStudentModules = () => {
   const { course_id } = useParams();
   console.log(course_id);
+  const [enrolled,setEnroll] = useState(false)
   const user_id = localStorage.getItem('user_id')
   const [modules, setModules] = useState([]);
   const navigate = useNavigate();
   const viewLecture = (module_id, lectures) => {
     console.log("Navigating with lectures:", lectures);
-    if (user_id){
+    if (enrolled){
+      navigate(`/student/${user_id}/${course_id}/${module_id}/view`, { state: { lectures } });
+    } // Debugging step
+    else{
+      alert(`please Enroll to view resources`)
+    }
+  };
+  const viewAssignment = (module_id, assignments) => {
+    console.log("Navigating with assignments:", assignments);
+    if (enrolled){
       navigate(`/student/${user_id}/${course_id}/${module_id}/view`, { state: { lectures } });
     } // Debugging step
     else{
@@ -89,12 +121,7 @@ const [course,setCourse] = useState({})
           withCredentials: true,
         })
         setCourse(response.data.data);
-        const thumbnail = response.data.data.thumbnail;
-        const desc = response.data.data.description;
-        const title = response.data.data.title;
-        setCourseTitle(title)
-        setCourseThumbnail(thumbnail);
-        setCourseDesc(desc);
+        
       } catch (error) {
         console.log('error whilefetching course')
       }
@@ -111,8 +138,8 @@ const [course,setCourse] = useState({})
         <div className="flex-col items-center mb-4">
 
         <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
-        <h2 className="text-xl font-bold mb-2 font-league-200">Instructor : {course.author.name}</h2>
-        <EnrollButton course_id={course_id}/>
+        <h2 className="text-xl font-bold mb-2 font-league-200">Instructor : {course?.author?.name || 'someone'}</h2>
+        <EnrollButton course_id={course_id} setEnroll={setEnroll}/>
         </div>
         <img src={course.thumbnail} alt="" srcset="" className="w-full "/>
       </div>

@@ -1,7 +1,7 @@
 import axios from '../api/axios.js';
 import React, { useEffect, useState } from 'react';
 
-const EnrollButton = ({ course_id }) => {
+const EnrollButton = ({ course_id ,setEnroll }) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [Enrolled, setEnrolled] = useState(false);
     const token = localStorage.getItem('accessToken')
@@ -16,7 +16,8 @@ const EnrollButton = ({ course_id }) => {
       });
 
       console.log(response.data.data);
-      setEnrolled(response.data.data); // ✅ Store boolean value in state
+      setEnrolled(response.data.data);
+      setEnroll(response.data.data); // ✅ Store boolean value in state
 
     } catch (error) {
       console.log(error);

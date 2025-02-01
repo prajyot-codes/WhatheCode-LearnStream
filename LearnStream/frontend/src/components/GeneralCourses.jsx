@@ -48,7 +48,9 @@ const GeneralCourses = ({setCourse_id,ButtonName,buttonHandler,errMsg,setErrMsg}
 
   return (
     <div>
-      <CategoryBar categories={categories} onCategorySelect={handleCategoryChange} />
+     
+     <CategoryBar categories={categories} onCategorySelect={handleCategoryChange} />
+      <br />
       <CourseComp courses={courses} setCourse_id={setCourse_id} ButtonName={ButtonName} buttonHandler={buttonHandler}  errMsg={errMsg} />
     </div>
   );

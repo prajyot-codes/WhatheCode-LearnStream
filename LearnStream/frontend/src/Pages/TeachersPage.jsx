@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from 'react-router-dom';
-import ReactPlayer from 'react-player';
 import axios from "../api/axios";
 import { Button } from "flowbite-react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import GeneralCourses from "../components/GeneralCourses";
 import CourseComp from "../components/CourseComp";
+
 const videos = [
   {
     id: 1,
@@ -18,13 +18,17 @@ const videos = [
     src: "/assets/videos/video2.mp4", // Update with your actual local file path
   },
 ];
+
+
 const Teachers = () => {
+const [course_id, setcourse_id] = useState('')
+
   const role='teacher';
   const { user_id } = useParams();
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState('');
   const [courses, setCourses] = useState([]);
-
+  
   useEffect(() => {
     setErrMsg('');
   }, [user_id]);
@@ -55,8 +59,10 @@ const Teachers = () => {
     fetchCourses();
   }, [userAccessToken]);
 
-  const editCourse = async ()=>{
-    
+  
+  const navigate=useNavigate()
+  const viewCourse = (course_id)=>{
+    navigate(`/teacher/${user_id}/${course_id}`)
   }
   return (
     <div>
@@ -64,8 +70,8 @@ const Teachers = () => {
       {/* <Component /> */}
 
       {/* Offers Section */}
-      <div className="bg-gray-300 p-9 text-center text-xl font-semibold">
-        Offers regarding courses
+      <div className="bg-gray-300 text-center text-xl font-semibold">
+        <img src="../../public/assets/10ca89f6-811b-400e-983b-32c5cd76725a.jpg" alt="" />
       </div>
 
       <section>
@@ -76,8 +82,8 @@ const Teachers = () => {
       {/* My Learning Section */}
       <div className="p-6">
         <h3 className="text-2xl font-semibold mb-4">My Courses</h3>
-        <div className="flex flex-wrap gap-6">
-         <CourseComp courses={courses}  errMsg={errMsg} ButtonName={'Edit Course'} buttonHandler={editCourse} errRef={errRef} />
+        <div className="flex   flex-wrap gap-6">
+         <CourseComp setCourse_id={setcourse_id} courses={courses}  errMsg={errMsg} ButtonName={'Edit Course'} buttonHandler={viewCourse} errRef={errRef} />
         </div>
       </div>
 
@@ -94,7 +100,7 @@ const Teachers = () => {
       {/* Sticky Button */}
       <div className="relative bottom-4 right-4">
         <Link to={`/${role}/${user_id}/makecourse`}>
-        <Button pill className="w-45 h-12 rounded-full flex items-center justify-center">
+        <Button pill className="w-45  h-12 rounded-full flex items-center justify-center">
           Make a new course
         </Button>
         </Link>

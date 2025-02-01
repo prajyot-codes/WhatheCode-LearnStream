@@ -43,28 +43,30 @@ import { Modules } from "../../models/Course/Modules.js";
 //         new ApiResponse(200,assignmentObject,'assignment Succesfully Created')
 //     )
 // }) 
+import fs from "fs/promises"; // Use fs.promises for async operations
+
 const createAssignment = asyncHandler(async (req, res) => {
     const { title, deadline } = req.body;
     const { course_id, moduleId } = req.params;
 
-    // Validate required fields
+    // ✅ Validate required fields
     if (!course_id || !title || !moduleId) {
         throw new ApiError('CourseId, Title, and ModuleId cannot be empty');
     }
 
-    // Check for uploaded files
+    // ✅ Check for uploaded files
     const assignmentFiles = req.files?.assignmentFiles;
     if (!assignmentFiles || assignmentFiles.length === 0) {
         throw new ApiError('No assignments uploaded');
     }
 
-    // Check if an assignment already exists
+    // ✅ Check if an assignment already exists in the module
     const existingAssignment = await Assignments.findOne({ course_id, module_id: moduleId, title });
     if (existingAssignment) {
         throw new ApiError('Assignment with the same title already exists for this module.');
     }
 
-    // Map file paths and upload to Cloudinary
+    // ✅ Upload files to Cloudinary
     const filePaths = assignmentFiles.map((file) => file.path);
     let uploadedFiles;
     try {
@@ -73,37 +75,46 @@ const createAssignment = asyncHandler(async (req, res) => {
         throw new ApiError('Error uploading files to Cloudinary. Please try again.');
     }
 
-    // Extract URLs and public IDs
     const fileUrls = uploadedFiles.map((file) => file.secure_url);
     const public_ids = uploadedFiles.map((file) => file.public_id);
 
-    // Create assignment in the database
+    const parsedDeadline = deadline && !isNaN(new Date(deadline)) ? new Date(deadline) : null;
+
     const assignment = await Assignments.create({
         course_id,
         module_id: moduleId,
         title,
         public_id: public_ids,
         assignmentUrls: fileUrls,
-        deadline,
+        deadline: parsedDeadline,
     });
 
-    // Delete temporary files
-    filePaths.forEach(async (path) => {
+    const updatedModule = await Modules.findByIdAndUpdate(
+        moduleId,
+        { $push: { assignments: assignment._id } }, // Push assignment ID into the module
+        { new: true }
+    ).populate("assignments"); // ✅ Populate assignments to confirm the update
+
+    if (!updatedModule) {
+        throw new ApiError(404, "Module not found, assignment not linked.");
+    }
+
+    for (const path of filePaths) {
         try {
-            await fs.unlink(path); // Remove temp file
+            await fs.unlink(path);
         } catch (error) {
             console.error(`Error deleting file ${path}:`, error);
         }
-    });
+    }
 
-    // Fetch required fields for the response
-    const assignmentObject = await Assignments.findById(assignment._id).select('_id public_id deadline');
+    const assignmentObject = await Assignments.findById(assignment._id).select('_id public_id deadline title');
 
-    // Send response
     return res.status(200).json(
-        new ApiResponse(200, assignmentObject, 'Assignment successfully created')
+        new ApiResponse(200, assignmentObject, 'Assignment successfully created and linked to the module')
     );
 });
+
+
 
 const submitAssignment = asyncHandler(async (req,res)=>{
     const {assignmentId} = req?.params;

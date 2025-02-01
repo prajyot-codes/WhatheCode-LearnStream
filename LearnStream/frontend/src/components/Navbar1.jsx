@@ -17,7 +17,7 @@ const Navbar1 = () => {
     // setAvatarUrl(
     //   localStorage.getItem("avatarUrl") || "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Ddefault%2Bavatar&psig=AOvVaw04t_GWwT7vB3zbrFgLQkWh&ust=1737262814023000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJCxsLm-_ooDFQAAAAAdAAAAABAE" // Default placeholder
     // );
-    setUserName(localStorage.getItem("user_name") || "Guest");
+    setUserName(localStorage.getItem("name") || "Guest");
   }, []);
 
   const handleLogout =async () => {

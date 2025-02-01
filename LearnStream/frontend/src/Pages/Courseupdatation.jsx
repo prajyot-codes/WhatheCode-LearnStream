@@ -1,12 +1,13 @@
-import React, { useState,useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from '../api/axios';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+// import { response } from 'express';
 
 function ModuleForm() {
   const [modules, setModules] = useState([]);
   const { user_id, course_id } = useParams();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   const handleAddModule = () => {
     setModules([
@@ -65,7 +66,7 @@ function ModuleForm() {
               ...module,
               assignments: [
                 ...module.assignments,
-                { id: module.assignments.length + 1, title: '', file: null },
+                { id: module.assignments.length + 1, title: '', file: null, deadline: '' },
               ],
             }
           : module
@@ -103,85 +104,79 @@ function ModuleForm() {
     );
   };
 
-  const addAssignmentToModule= async(moduleId) => {
-    try{
-      for(const module of modules){
-        for(const assignment of module.assignments)
-        {
-          const formdata= new FormData();
-          formdata.append('title',assignment.title)
-          formdata.append('assignmentUrls',assignment.file)
-          formdata.append('deadline',assignment.deadline)
-          const response=axios.post(
-             `/courses/${course_id}/modules/${moduleId}/assignments`,
-            formdata,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            }
-          )
-          console.log(response);
-          
+  const addAssignmentToModule = async (moduleId) => {
+    try {
+      for (const module of modules) {
+        for (const assignment of module.assignments) {
+          if (assignment.file && assignment.title) {
+            const formdata = new FormData();
+            formdata.append('title', assignment.title);
+            formdata.append('assignmentFiles', assignment.file);
+            formdata.append('deadline', JSON.stringify(assignment.deadline));
+
+            console.log('FormData being sent:', formdata);
+
+            const response = await axios.post(
+              `/courses/${course_id}/modules/${moduleId}/assignments`,
+              formdata,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              }
+            );
+            console.log('Assignment added response:', response);
+          } else {
+            console.log('Assignment missing file, title, or deadline:', assignment);
+          }
         }
       }
-      alert('All assignment added successfully!');
+      alert('All assignments added successfully!');
+    } catch (error) {
+      console.error('Error adding assignments:', error);
+      alert('An unexpected error occurred. Please try again.');
     }
-    catch(error){
-      console.error('Error adding lectures:', error);
-      if (error.response) {
-        alert(`Error: ${error.response.data.message || 'Something went wrong'}`);
-      } else {
-        alert('An unexpected error occurred. Please try again.');
-      }  
-    }
-  }
+  };
 
   const addLectureToModule = async (moduleId) => {
     try {
-      // Iterate over all modules
       for (const module of modules) {
-        // For each module, iterate over the lectures
         for (const lecture of module.lectures) {
-          const formData = new FormData();
-          formData.append('title', lecture.title);
-          formData.append('videourl', lecture.file);
-  
-          // Sending a POST request for each lecture in the module
-          const response = await axios.post(
-            `/courses/${course_id}/modules/${moduleId}/lectures`, // Backend route for adding a lecture to a module
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            }
-          );
-  
-          console.log('Lecture added to module:', response.data);
+          if (lecture.file && lecture.title) {
+            const formData = new FormData();
+            formData.append('title', lecture.title);
+            formData.append('videourl', lecture.file);
+
+            const response = await axios.post(
+              `/courses/${course_id}/modules/${moduleId}/lectures`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              }
+            );
+
+            console.log('Lecture added response:', response);
+          } else {
+            console.log('Lecture missing file or title:', lecture);
+          }
         }
       }
-  
       alert('All lectures added successfully!');
     } catch (error) {
       console.error('Error adding lectures:', error);
-      if (error.response) {
-        alert(`Error: ${error.response.data.message || 'Something went wrong'}`);
-      } else {
-        alert('An unexpected error occurred. Please try again.');
-      }
+      alert('An unexpected error occurred. Please try again.');
     }
   };
-  
-  // const moduleresponse=[];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
-      // Map over the modules and send each one to the backend
       for (const module of modules) {
         const response = await axios.post(
-          `/courses/${course_id}/modules`, // Backend route
+          `/courses/${course_id}/modules`,
           JSON.stringify({
             title: module.name,
             description: module.description || "", // Optional description
@@ -192,33 +187,22 @@ function ModuleForm() {
             },
           }
         );
-        console.log('response obj',response);
-        
-        await addLectureToModule(response?.data?.data?._id)
-        await addAssignmentToModule(response?.data?.data?._id)
-        const targetUrl=`/teacher/${user_id}/${course_id}`
-        navigate(targetUrl);
-        window.location.href=targetUrl
+        // console.log('Module added response:', response);
 
-        // console.log('Module added:', modules); // Log the server response for debugging
+        await addLectureToModule(response?.data?.data?._id);
+        await addAssignmentToModule(response?.data?.data?._id);
+        console.log(response);
       }
-  
+      
       alert('Modules submitted successfully!');
     } catch (error) {
       console.error('Error adding modules:', error);
-      if (error.response) {
-        alert(`Error: ${error.response.data.message || 'Something went wrong'}`);
-      } else {
-        alert('An unexpected error occurred. Please try again.');
-      }
+      alert('An unexpected error occurred. Please try again.');
     }
   };
-  
-  
-  
 
   return (
-    <div className=" overflow-scroll  w-auto bg-gray-100 flex items-center justify-center py-10">
+    <div className="overflow-scroll w-auto bg-gray-100 flex items-center justify-center py-10">
       <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Module Form</h1>
         <form onSubmit={handleSubmit}>
@@ -336,14 +320,12 @@ function ModuleForm() {
                             module.id,
                             'assignments',
                             assignment.id,
-                            'title',
+                            'deadline',
                             e.target.value
                           )
                         }
-                        placeholder="set deadline"
                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
-                      
                       <button
                         type="button"
                         onClick={() =>
@@ -379,22 +361,19 @@ function ModuleForm() {
               </div>
             </div>
           ))}
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={handleAddModule}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-            >
-              Add Module
-            </button>
-            <br/>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-            >
-              Submit
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleAddModule}
+            className="w-full py-2 mt-4 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          >
+            Add Module
+          </button>
+          <button
+            type="submit"
+            className="w-full py-2 mt-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Submit Modules
+          </button>
         </form>
       </div>
     </div>

@@ -5,18 +5,21 @@ import { useEffect, useRef, useState } from "react";
 import { Card } from "flowbite-react";
 import axios from "../api/axios.js";
 import PDFPreviewModal from "../components/PDFPreviewModal.jsx";
+import YourWork from "../components/YourWork.jsx";
 
 const CLOUDINARY_CLOUD_NAME = "dc9lboron";
 
 const LectureAssig = () => {
   const location = useLocation();
-  const { lectures = [], assignments = [], course_id } = location.state || {};
+  const { course_id="", lectures = [], assignments = [] } = location.state || {};
   const [lectureUrl, setLectureUrl] = useState("");
   const [currentLectureId, setCurrentLectureId] = useState(null);
   const [completedLectures, setCompletedLectures] = useState({});
+  const [currentAssignmentId,setCurrentAssignmentId] = useState(null)
   const [assignmentUrls, setAssignmentUrls] = useState([]);
   const [selectedPdfUrl, setSelectedPdfUrl] = useState(null); // Stores the 
   const [selectedDiv,setSelectedDiv] = useState(null);
+  const [assignmentDeadline,setAssignmentDeadline] = useState(null)
   const requestSent = useRef({});
 
   useEffect(() => {
@@ -47,6 +50,8 @@ const LectureAssig = () => {
 
   const handleSelectAssignment = (assignment) => {
     setSelectedDiv("assignment")
+    setCurrentAssignmentId(assignment._id);
+    setAssignmentDeadline(assignment.deadline)
     setAssignmentUrls(
       assignment.public_id.map((url) => `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${url}.pdf`)
     );
@@ -55,7 +60,7 @@ const LectureAssig = () => {
   return (
     <div className="flex">
       {/* Left Panel - Lecture & Assignment List */}
-      <div className="bg-white border-r-2 border-black w-1/4 min-h-screen p-5 text-black">
+      <div className="bg-white border-r-2 border-black w-1/4  p-5 text-black overflow-y-auto">
         <h2 className="text-xl font-semibold mb-4">Lectures and Assignments</h2>
         
         {/* Lectures List */}
@@ -118,14 +123,15 @@ const LectureAssig = () => {
           ) : (
             <p className="text-gray-500">Please Select an Assignment</p>
           )}
-          {
-            selectedDiv=="assignment" &&
-          }
+          
 
         {/* PDF Preview Modal */}
         {
         selectedPdfUrl && <PDFPreviewModal pdfUrl={selectedPdfUrl} onClose={() => setSelectedPdfUrl(null)} />}
       </div>
+          {
+            selectedDiv=="assignment" && <YourWork assignmentId={currentAssignmentId} courseId={course_id} deadline={assignmentDeadline}/>
+          }
     </div>
   );
 };

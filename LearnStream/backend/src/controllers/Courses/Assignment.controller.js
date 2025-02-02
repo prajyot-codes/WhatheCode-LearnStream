@@ -44,6 +44,7 @@ import { Modules } from "../../models/Course/Modules.js";
 //     )
 // }) 
 import fs from "fs/promises"; // Use fs.promises for async operations
+import { Progress } from "../../models/Course/Progress.js";
 
 const createAssignment = asyncHandler(async (req, res) => {
     const { title, deadline } = req.body;
@@ -118,9 +119,11 @@ const createAssignment = asyncHandler(async (req, res) => {
 
 const submitAssignment = asyncHandler(async (req,res)=>{
     const {assignmentId} = req?.params;
-    const {studentId,deadline} = req.body;
+    const studentId = req.student._id
+    const {deadline} = req.body;
+    console.log(assignmentId, studentId,deadline);
     if(!studentId ||!assignmentId ||!deadline){
-        throw ApiError(404,'assignmentId || studentId ||deadline are missing')
+        throw new ApiError(404,'assignmentId || studentId ||deadline are missing')
     }
 
     const submittedOnTime = Date.now()<deadline?true:false;
@@ -154,13 +157,13 @@ const submitAssignment = asyncHandler(async (req,res)=>{
 })
 const getAssignmentById = asyncHandler(async (req, res)=>{
     const {assignmentId} = req?.params;
-
+    console.log(assignmentId)
     if (!assignmentId){
         throw new ApiError(404,'AssignmentId not sent')
     }
 
     const assignment = await Assignments.findById(assignmentId).select('-module_id -assignmentUrls')
-
+    console.log(assignment)
     if (!assignment){
         throw new ApiError(404,'The Assignment Requested was not found');
     }
@@ -234,10 +237,48 @@ const getStudentsAndUploadedAssignments = asyncHandler(async (req, res) => {
         },"Students and Their Assignments sent Succesfully")
     );
 });
+
+const markAssignmentCompleted = asyncHandler(async (req, res) => {
+    const { courseId, assignmentId } = req.params;
+    console.log(courseId,assignmentId);
+    const studentId = req.student?._id;
+
+    // Find the student's progress for the given course
+    let progress = await Progress.findOne({ studentId, courseId });
+
+    if (!progress) {
+        // If progress doesn't exist, create a new entry
+        progress = await Progress.create({
+            studentId,
+            courseId,
+            completedAssignments: [{ assignmentId, completedAt: Date.now() }],
+            completedAssignmentCount: 1,
+            lastUpdated: Date.now()
+        });
+    } else {
+        // Check if the assignment is already marked as completed
+        const isAlreadyCompleted = progress.completedAssignments.some(
+            (assignment) => assignment.assignmentId.toString() === assignmentId
+        );
+
+        if (!isAlreadyCompleted) {
+            // **Add new completed assignment**
+            progress.completedAssignments.push({ assignmentId, completedAt: Date.now() });
+            progress.completedAssignmentCount = progress.completedAssignments.length;
+        }
+    }
+
+    // Save the progress
+    await progress.save();
+
+    // Respond with success
+    return res.status(200).json(new ApiResponse(200, true, "Marked Assignment as Completed"));
+});
 export {
     createAssignment,
     submitAssignment,
     deleteAssignment,
     getAssignmentById,
+    markAssignmentCompleted,
     getStudentsAndUploadedAssignments
 }

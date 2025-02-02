@@ -274,25 +274,37 @@ const CourseProgress = asyncHandler(async (req, res) => {
     }
 
     // Fetch progress for the student in the given course
-    const progress = await Progress.findOne({ courseId, studentId }).select('completedLectureCount');
+    const progress = await Progress.findOne({ courseId, studentId }).select('completedLectures completedLectureCount completedAssignments');
 
     if (!progress) {
         return res.status(200).json(new ApiResponse(200, 0, "No progress found, returning 0%"));
     }
 
-    // Fetch total lectures in the course
-    const course = await Courses.findById(courseId).select('lectures');
+    // Fetch total lectures and assignments in the course
+    const course = await Courses.findById(courseId).select('lectures assignments');
 
-    if (!course || !course.lectures) {
-        throw new ApiError("Encountered an error while fetching total lectures");
+    if (!course || (!course.lectures && !course.assignments)) {
+        throw new ApiError("Encountered an error while fetching course details");
     }
 
     const totalLectures = course?.lectures.length || 0;
+    const totalAssignments = course?.assignments.length || 0;
+
+    // Calculate progress percentage based on completed lectures
     const progressPercentage = totalLectures > 0 ? (progress.completedLectureCount / totalLectures) * 100 : 0;
 
-    return res.status(200).json(new ApiResponse(200, progressPercentage, "Progress data sent successfully"));
-});
+    // Get the completed lectures and assignments counts from the progress
+    const completedLecturesCount = progress.completedLectures.length;
+    const completedAssignmentsCount = progress.completedAssignments.length;
 
+    return res.status(200).json(new ApiResponse(200, {
+        progressPercentage,
+        completedLecturesCount,
+        completedAssignmentsCount,
+        totalLectures,
+        totalAssignments
+    }, "Progress data sent successfully"));
+});
 
 export {
     createCourse,

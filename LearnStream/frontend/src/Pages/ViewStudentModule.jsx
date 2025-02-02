@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { Progress } from "flowbite-react";
 import axios from "../api/axios";
 import { useNavigate, useParams } from "react-router-dom";
-import AuthContext from "../contexts/AuthProvider";
+import AuthContext from "../contexts/AuthProvider"; 
 import EnrollButton from "../components/EnrollButton";
 // import Modal from "./Modal";
 // import ModuleForm from "./Courseupdatation";
@@ -117,11 +118,32 @@ const [course,setCourse] = useState({})
         console.log('error whilefetching course')
       }
     }
-    
-
+  const [CourseProgress, setCourseProgress] = useState({})
+  const [completedLectures,setCompletedLectures] = useState(0)
+  const [completedAssignments,setCompletedAssignments] = useState(0)
+  const [totalLectures,settotalLectures] = useState(0)
+  const [totalAssignments,settotalAssignments] = useState(0)
+const courseProgressDetails = async ()=>{
+  try {
+    const response = await axios.get(`courses/${course_id}/progress`,{
+      withCredentials:true,
+    })
+    if (response){
+      setCourseProgress(response.data.data.progressPercentage);
+      setCompletedLectures(response.data.data.completedLecturesCount)
+      settotalLectures(response.data.data.totalLectures)
+      setCompletedAssignments(response.data.data.completedAssignmentsCount)
+      settotalAssignments(response.data.data.totalAssignments)
+      console.log(response.data.data)
+    }
+  } catch (error) {
+    console.error("Course Progress error",error);
+  }
+}
   useEffect(() => {
     loadModules();
-    courseDetails()
+    courseDetails();
+    courseProgressDetails();
   }, [course_id]); // Fix infinite re-rendering
   return (
     <div className="max-w-3xl mx-auto p-6">
@@ -137,7 +159,13 @@ const [course,setCourse] = useState({})
 
       <h2 className="text-xl font-bold mb-4">Course Description</h2>
       <p>{course.description}</p>
-      
+      <h2 className="text-xl font-bold mb-4">Course Progress</h2>
+      <p>Lectures completed {completedLectures}/{totalLectures}</p>
+      <p>Assignments completed {completedAssignments}/{totalAssignments}</p>
+      <div >
+        {CourseProgress}%
+      <Progress progress={CourseProgress || 0} label={`${Math.round(CourseProgress || 0)}% Completed`} />
+      </div>
     <div className="mb-4">
       <h2 className="text-2xl font-bold mb-2">Course Modules</h2>
       {modules.length > 0 ? (

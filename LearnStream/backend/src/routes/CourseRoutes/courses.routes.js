@@ -22,7 +22,7 @@ const router = Router();
 
 // Courses
 
-router.route('/:courseId').get( verifyJWTCombined, getCourseById);//
+router.route('/:courseId').get(  getCourseById);//
 router.route('/:courseId/students').get( verifyJWT, getEnrolledStudents);//
 router.route('/:courseId/enroll').post( verifyJWTStudent, enrollStudent);
 router.route('/:courseId/enrolled').get( verifyJWTCombined, checkEnrollment);

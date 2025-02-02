@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import ReactPlayer from "react-player";
 import { Play } from "lucide-react";
-import { useEffect, useState,useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card } from "flowbite-react";
 import axios from "../api/axios.js";
 import PDFPreviewModal from "../components/PDFPreviewModal.jsx";
@@ -11,15 +11,15 @@ const CLOUDINARY_CLOUD_NAME = "dc9lboron";
 
 const LectureAssig = () => {
   const location = useLocation();
-  const { course_id="", lectures = [], assignments = [] } = location.state || {};
+  const { course_id = "", lectures = [], assignments = [] } = location.state || {};
   const [lectureUrl, setLectureUrl] = useState("");
   const [currentLectureId, setCurrentLectureId] = useState(null);
   const [completedLectures, setCompletedLectures] = useState({});
-  const [currentAssignmentId,setCurrentAssignmentId] = useState(null)
+  const [currentAssignmentId, setCurrentAssignmentId] = useState(null);
   const [assignmentUrls, setAssignmentUrls] = useState([]);
-  const [selectedPdfUrl, setSelectedPdfUrl] = useState(null); // Stores the 
-  const [selectedDiv,setSelectedDiv] = useState(null);
-  const [assignmentDeadline,setAssignmentDeadline] = useState(null)
+  const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
+  const [selectedDiv, setSelectedDiv] = useState(null);
+  const [assignmentDeadline, setAssignmentDeadline] = useState(null);
   const requestSent = useRef({});
 
   useEffect(() => {
@@ -34,6 +34,7 @@ const LectureAssig = () => {
           return acc;
         }, {});
         setCompletedLectures(completedMap);
+        console.log("Completed lectures:", completedMap);
       } catch (error) {
         console.error("Error fetching completed lectures:", error);
       }
@@ -44,27 +45,43 @@ const LectureAssig = () => {
     }
   }, [course_id]);
 
-  const handleSelectLecture = (lecture) => {
+  const handleSelectLecture = async (lecture) => {
     setCurrentLectureId(lecture._id);
     setSelectedDiv("lecture");
     setLectureUrl(
       `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/${lecture.public_id}.mp4`
     );
+
+    // ✅ If lecture is not already marked completed, mark it now
+    if (!completedLectures[lecture._id]) {
+      try {
+        await axios.post(`/courses/${course_id}/lectures/${lecture._id}/complete`, {
+          lectureId: lecture._id,
+        });
+
+        // ✅ Update the checkbox state immediately
+        setCompletedLectures((prev) => ({ ...prev, [lecture._id]: true }));
+      } catch (error) {
+        console.error("Error marking lecture as completed:", error);
+      }
+    }
   };
 
   const handleSelectAssignment = (assignment) => {
-    setSelectedDiv("assignment")
+    setSelectedDiv("assignment");
     setCurrentAssignmentId(assignment._id);
-    setAssignmentDeadline(assignment.deadline)
+    setAssignmentDeadline(assignment.deadline);
     setAssignmentUrls(
-      assignment.public_id.map((url) => `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${url}.pdf`)
+      assignment.public_id.map(
+        (url) => `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${url}.pdf`
+      )
     );
   };
 
   return (
     <div className="flex">
       {/* Left Panel - Lecture & Assignment List */}
-      <div className="bg-white border-r-2 border-black w-1/4  p-5 text-black overflow-y-auto">
+      <div className="bg-white border-r-2 border-black w-1/4 p-5 text-black overflow-y-auto">
         <h2 className="text-xl font-semibold mb-4">Lectures and Assignments</h2>
 
         {/* Lectures List */}
@@ -132,21 +149,19 @@ const LectureAssig = () => {
         )}
 
         {/* Assignment PDF List */}
-        
-          {selectedDiv=="assignment" && assignmentUrls.length > 0 ? (
-            assignmentUrls.map((url, index) => (
-              <Card
-                key={index}
-                onClick={() => setSelectedPdfUrl(url)}
-                className="block w-full text-left py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-700 mb-2"
-              >
-                Assignment {index + 1}
-              </Card>
-            ))
-          ) : (
-            <p className="text-gray-500">Please Select an Assignment</p>
-          )}
-          
+        {selectedDiv === "assignment" && assignmentUrls.length > 0 ? (
+          assignmentUrls.map((url, index) => (
+            <Card
+              key={index}
+              onClick={() => setSelectedPdfUrl(url)}
+              className="block w-full text-left py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-700 mb-2"
+            >
+              Assignment {index + 1}
+            </Card>
+          ))
+        ) : (
+          <p className="text-gray-500">Please Select an Assignment</p>
+        )}
 
         {/* PDF Preview Modal */}
         {selectedPdfUrl && (
@@ -156,9 +171,10 @@ const LectureAssig = () => {
           />
         )}
       </div>
-          {
-            selectedDiv=="assignment" && <YourWork assignmentId={currentAssignmentId} courseId={course_id} deadline={assignmentDeadline}/>
-          }
+
+      {selectedDiv === "assignment" && (
+        <YourWork assignmentId={currentAssignmentId} courseId={course_id} deadline={assignmentDeadline} />
+      )}
     </div>
   );
 };

@@ -118,7 +118,9 @@ const LectureAssig = () => {
           ) : (
             <p className="text-gray-500">Please Select an Assignment</p>
           )}
-      
+          {
+            selectedDiv=="assignment" &&
+          }
 
         {/* PDF Preview Modal */}
         {

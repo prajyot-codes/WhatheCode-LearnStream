@@ -10,6 +10,17 @@ const completedLectureSchema = new Schema({
         default: Date.now
     }
 });
+const completedAssignmentSchema = new Schema({
+    assignmentId:{
+        type:Schema.Types.ObjectId,
+        ref:'Assignments',
+        required:true
+    },
+    completedAt:{
+        type:Date,
+        default:Date.now()
+    }
+})
 const ProgressSchema = new Schema({
     studentId:{
         type:Schema.Types.ObjectId,
@@ -20,6 +31,7 @@ const ProgressSchema = new Schema({
         ref:'Courses'
     },
     completedLectures:[completedLectureSchema],
+    completedAssignments:[completedAssignmentSchema],
     completedLectureCount: {
         type: Number,
         default: 0 

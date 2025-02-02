@@ -204,9 +204,40 @@ const deleteAssignment = asyncHandler(async (req,res)=>{
     return res.status(200)
     .json(new ApiResponse(200,null,"Assignment deleted succesfully"))
 })
+const getStudentsAndUploadedAssignments = asyncHandler(async (req, res) => {
+    const { assignmentId } = req.params;  // Corrected to access params directly
+
+    // Find the assignment by assignmentId
+    const assignment = await Assignment.findById(assignmentId)
+        .populate({
+            path: 'uploadedAssignments.studentId', // Populate student details
+            select: 'name email', // You can add other student fields as needed
+        });
+
+    // If the assignment doesn't exist, return an error
+    if (!assignment) {
+        res.status(404);
+        throw new ApiError( 404,'Assignment not found');
+    }
+
+    // Send the response with assignment data and students who uploaded
+    res.status(200).json(
+        new ApiResponse(200,{
+            assignmentTitle: assignment.title,
+            uploadedAssignments: assignment.uploadedAssignments.map((submission) => ({
+                studentId: submission.studentId._id,
+                studentName: submission.studentId.name,
+                studentEmail: submission.studentId.email,
+                submittedAssignmentUrls: submission.submittedAssignmentUrls,
+                uploadedAt: submission.uploadedAt,
+            })),
+        },"Students and Their Assignments sent Succesfully")
+    );
+});
 export {
     createAssignment,
     submitAssignment,
     deleteAssignment,
-    getAssignmentById
+    getAssignmentById,
+    getStudentsAndUploadedAssignments
 }

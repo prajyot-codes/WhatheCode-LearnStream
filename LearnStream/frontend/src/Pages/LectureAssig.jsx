@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import ReactPlayer from "react-player";
 import { Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "flowbite-react";
 import axios from "../api/axios.js";
 import PDFPreviewModal from "../components/PDFPreviewModal.jsx";
@@ -15,15 +15,16 @@ const LectureAssig = () => {
   const [currentLectureId, setCurrentLectureId] = useState(null);
   const [completedLectures, setCompletedLectures] = useState({});
   const [assignmentUrls, setAssignmentUrls] = useState([]);
-  const [selectedPdfUrl, setSelectedPdfUrl] = useState(null); // Stores the 
-  const [selectedDiv,setSelectedDiv] = useState(null);
-  const requestSent = useRef({});
+  const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
+  const [selectedDiv, setSelectedDiv] = useState(""); // Ensured default value
 
   useEffect(() => {
     const fetchCompletedLectures = async () => {
       try {
         const response = await axios.get(`/courses/${course_id}/completed`);
-        const completedLectureIds = response.data.completedLectures.map((lecture) => lecture.lectureId);
+        const completedLectureIds = response.data.completedLectures.map(
+          (lecture) => lecture.lectureId
+        );
         const completedMap = completedLectureIds.reduce((acc, id) => {
           acc[id] = true;
           return acc;
@@ -41,15 +42,25 @@ const LectureAssig = () => {
 
   const handleSelectLecture = (lecture) => {
     setCurrentLectureId(lecture._id);
-    setSelectedDiv("lecture")
-    setLectureUrl(`https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/${lecture.public_id}.mp4`);
+    setSelectedDiv("lecture");
+    setLectureUrl(
+      `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/${lecture.public_id}.mp4`
+    );
   };
 
   const handleSelectAssignment = (assignment) => {
-    setSelectedDiv("assignment")
-    setAssignmentUrls(
-      assignment.public_id.map((url) => `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${url}.pdf`)
-    );
+    setSelectedDiv("assignment");
+
+    if (Array.isArray(assignment.public_id)) {
+      setAssignmentUrls(
+        assignment.public_id.map(
+          (url) =>
+            `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${url}.pdf`
+        )
+      );
+    } else {
+      setAssignmentUrls([]);
+    }
   };
 
   return (
@@ -57,14 +68,26 @@ const LectureAssig = () => {
       {/* Left Panel - Lecture & Assignment List */}
       <div className="bg-white border-r-2 border-black w-1/4 min-h-screen p-5 text-black">
         <h2 className="text-xl font-semibold mb-4">Lectures and Assignments</h2>
-        
+
         {/* Lectures List */}
         <div className="flex-col relative">
           {lectures.length > 0 ? (
             lectures.map((lecture) => (
-              <Card key={lecture._id} className="mb-2 w-auto text-blue-500 gap-1" onClick={() => handleSelectLecture(lecture)}>
-                <input type="checkbox" checked={!!completedLectures[lecture._id]} readOnly />
-                <span>{lecture.title} <Play /></span>
+              <Card
+                key={lecture._id}
+                className={`mb-2 w-auto text-blue-500 gap-1 cursor-pointer ${
+                  currentLectureId === lecture._id ? "bg-gray-200" : ""
+                }`}
+                onClick={() => handleSelectLecture(lecture)}
+              >
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!!completedLectures[lecture._id]}
+                    readOnly
+                  />
+                  <span>{lecture.title} <Play /></span>
+                </label>
               </Card>
             ))
           ) : (
@@ -76,7 +99,13 @@ const LectureAssig = () => {
         <div className="flex-col relative">
           {assignments.length > 0 ? (
             assignments.map((assignment) => (
-              <Card key={assignment._id} className="mb-2 w-auto text-blue-500 gap-1" onClick={() => handleSelectAssignment(assignment)}>
+              <Card
+                key={assignment._id}
+                className={`mb-2 w-auto text-blue-500 gap-1 cursor-pointer ${
+                  selectedDiv === "assignment" ? "bg-gray-200" : ""
+                }`}
+                onClick={() => handleSelectAssignment(assignment)}
+              >
                 <span>{assignment.title} <Play /></span>
               </Card>
             ))
@@ -89,8 +118,7 @@ const LectureAssig = () => {
       {/* Right Panel - Video Player and Assignments */}
       <div className="flex-1 p-4">
         {/* Video Player */}
-        
-        {selectedDiv=="lecture" && lectureUrl ? (
+        {selectedDiv === "lecture" && lectureUrl ? (
           <ReactPlayer
             url={lectureUrl}
             playing={false}
@@ -100,31 +128,33 @@ const LectureAssig = () => {
             height="500px"
           />
         ) : (
-          <p className="text-center text-gray-500">Select a lecture to play or an assignment to view</p>
+          <p className="text-center text-gray-500">
+            Select a lecture to play or an assignment to view
+          </p>
         )}
-          
+
         {/* Assignment PDF List */}
-        
-          {selectedDiv=="assignment" && assignmentUrls.length > 0 ? (
-            assignmentUrls.map((url, index) => (
-              <Card
-                key={index}
-                onClick={() => setSelectedPdfUrl(url)}
-                className="block w-full text-left py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-700 mb-2"
-              >
-                Assignment {index + 1}
-              </Card>
-            ))
-          ) : (
-            <p className="text-gray-500">Please Select an Assignment</p>
-          )}
-          {
-            selectedDiv=="assignment" &&
-          }
+        {selectedDiv === "assignment" && assignmentUrls.length > 0 ? (
+          assignmentUrls.map((url, index) => (
+            <Card
+              key={index}
+              onClick={() => setSelectedPdfUrl(url)}
+              className="block w-full text-left py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-700 mb-2 cursor-pointer"
+            >
+              Assignment {index + 1}
+            </Card>
+          ))
+        ) : selectedDiv === "assignment" ? (
+          <p className="text-gray-500">Please select an assignment</p>
+        ) : null}
 
         {/* PDF Preview Modal */}
-        {
-        selectedPdfUrl && <PDFPreviewModal pdfUrl={selectedPdfUrl} onClose={() => setSelectedPdfUrl(null)} />}
+        {selectedPdfUrl && (
+          <PDFPreviewModal
+            pdfUrl={selectedPdfUrl}
+            onClose={() => setSelectedPdfUrl(null)}
+          />
+        )}
       </div>
     </div>
   );

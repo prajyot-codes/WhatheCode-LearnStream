@@ -208,12 +208,13 @@ const getStudentsAndUploadedAssignments = asyncHandler(async (req, res) => {
     const { assignmentId } = req.params;  // Corrected to access params directly
 
     // Find the assignment by assignmentId
-    const assignment = await Assignment.findById(assignmentId)
+    console.log(assignmentId);
+    const assignment = await Assignments.findById(assignmentId)
         .populate({
             path: 'uploadedAssignments.studentId', // Populate student details
             select: 'name email', // You can add other student fields as needed
         });
-
+        
     // If the assignment doesn't exist, return an error
     if (!assignment) {
         res.status(404);

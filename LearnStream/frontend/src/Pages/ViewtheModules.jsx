@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import axios from "../api/axios";
-import { useParams } from "react-router-dom";
+import { useParams ,useNavigate} from "react-router-dom";
 import Modal from "./Modal";
 import ModuleForm from "./Courseupdatation";
 import LectureAssignment from "../components/LectureAssignment";
@@ -11,8 +11,12 @@ import AssignmentIcon from "../../public/assets/assignmentsvg";
 
 const ModuleDropdown = ({ module, deleteModule, deleteAssignment, deletelecture }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const {user_id,course_id}=useParams();
   const [open, setOpen] = useState(false);
-
+  const navigate=useNavigate();
+  const changepage=(assignmentId) => {
+    navigate(`${assignmentId}`)
+  }
   return (
     <div className="border rounded-lg shadow-sm mb-4 bg-white">
       <button
@@ -66,7 +70,7 @@ const ModuleDropdown = ({ module, deleteModule, deleteAssignment, deletelecture 
                 className="flex justify-between items-start py-2 border-b last:border-none"
               >
                 {/* Left side: Icon, Title & Deadline */}
-                <div className="flex flex-col">
+                <div onClick={()=>{changepage(assignment._id)}} className="flex flex-col ">
                   {/* Icon and Title */}
                   <div className="flex items-center gap-2">
                     <AssignmentIcon size={20} color="gray" />

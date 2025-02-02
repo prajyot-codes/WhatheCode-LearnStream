@@ -84,7 +84,7 @@ function Component({role}) {
       </>
   
   ):(
-    <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4">
+    <form  onSubmit={handleSubmit} className="flex max-w-lg  flex-col gap-4">
     <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
       {/* Email Field */}
       <div>
@@ -121,7 +121,7 @@ function Component({role}) {
       {/* Submit Button */}
       <Button
         type="submit"
-        className="bg-[#7ED757] text-white font-medium"
+        className="bg-[#2a6411] text-white font-medium"
         
       >
         Submit

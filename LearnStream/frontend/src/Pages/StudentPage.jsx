@@ -73,9 +73,14 @@ const videos = [
       
       <div>
         
-        <div className="bg-gray-300 p-9 text-center text-xl font-semibold">
-          Offers regarding courses
-        </div>
+        <div className="bg-black text-center text-xl font-semibold relative w-full h-[500px]">
+  <img 
+    src="/assets/6caba229-b963-4af8-84b8-f71693be2507.jpg" 
+    alt="Course Banner" 
+    className="absolute inset-0 w-full h-full object-cover" 
+  />
+</div>
+
 
         <section className="m-5 text-3xl">
         <h1>Welcome <span className="font-league bold text-4xl">{name.charAt(0).toUpperCase() + name.slice(1)}</span></h1>

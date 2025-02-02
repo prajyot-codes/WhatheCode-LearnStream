@@ -23,7 +23,7 @@ router.route('/:courseId/modules/:moduleId/assignments/:assignmentId/upload')
         submitAssignment
     ); // Submit an assignment
 
-router.route('/:courseId/modules/:moduleId/:assignmentId')
+router.route('/:courseId/assignment/:assignmentId')
 .get(verifyJWT,getStudentsAndUploadedAssignments)
 
 router.route('/:courseId/modules/:moduleId/assignments/:assignmentId')

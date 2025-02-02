@@ -16,10 +16,10 @@ const Home = () => {
   return (
     <>
       <section
-        className="relative bg-[url('/assets/HeroImg.png')] bg-cover bg-center bg-no-repeat"
+        className=" relative bg-[url('/assets/HeroImg.png')] bg-cover bg-center bg-no-repeat"
         style={{ height: "90vh", width: "100%" }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/75 to-transparent/0"></div>
+        <div className=" absolute inset-0 bg-gradient-to-r from-black/75 to-transparent/0"></div>
         <div className="relative mx-auto max-w-screen-xl px-4 py-32 sm:px-6 lg:flex lg:h-screen lg:items-center lg:px-8">
           <div className="max-w-xl text-center ltr:sm:text-left">
             <h1 className="text-3xl font-extrabold sm:text-17xl">

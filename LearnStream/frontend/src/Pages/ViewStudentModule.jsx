@@ -128,6 +128,8 @@ const courseProgressDetails = async ()=>{
     const response = await axios.get(`courses/${course_id}/progress`,{
       withCredentials:true,
     })
+    console.log(response);
+    
     if (response){
       setCourseProgress(response.data.data.progressPercentage);
       setCompletedLectures(response.data.data.completedLecturesCount)

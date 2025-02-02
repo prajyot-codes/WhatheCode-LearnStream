@@ -138,7 +138,7 @@ const getCourseModules = asyncHandler(async (req, res) => {
         path: 'modules',
         populate: [
             { path: 'lectures', select: 'title duration freePreview public_id ' },
-            { path: 'assignments', select: 'title deadline' }
+            { path: 'assignments', select: 'title deadline public_id ' }
         ]
     });
     console.log(course)

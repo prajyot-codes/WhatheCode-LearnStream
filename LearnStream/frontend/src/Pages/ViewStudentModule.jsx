@@ -6,7 +6,7 @@ import AuthContext from "../contexts/AuthProvider";
 import EnrollButton from "../components/EnrollButton";
 // import Modal from "./Modal";
 // import ModuleForm from "./Courseupdatation";
-const ModuleDropdown = ({ module, viewLecture }) => {
+const ModuleDropdown = ({ module, viewResources}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -27,7 +27,7 @@ const ModuleDropdown = ({ module, viewLecture }) => {
                 className="py-2 border-b last:border-none hover:bg-gray-100"
               >
                 <button
-                  onClick={() => viewLecture(module._id, module.lectures)}
+                  onClick={() => viewResources(module._id, module.lectures,module.assignments)}
                   className="font-medium w-full text-left"
                 >
                   {lecture.title}
@@ -50,7 +50,7 @@ const ModuleDropdown = ({ module, viewLecture }) => {
                 className="py-2 border-b last:border-none hover:bg-gray-100"
               >
                 <button
-                  onClick={() => viewAssignment(module._id, module.assignment)}
+                  onClick={() => viewResources(module._id,module.lectures, module.assignments)}
                   className="font-medium w-full text-left"
                 >
                   {assignment.title}
@@ -75,19 +75,10 @@ const ViewStudentModules = () => {
   const user_id = localStorage.getItem('user_id')
   const [modules, setModules] = useState([]);
   const navigate = useNavigate();
-  const viewLecture = (module_id, lectures) => {
+  const viewResources = (module_id, lectures,assignments) => {
     console.log("Navigating with lectures:", lectures);
     if (enrolled){
-      navigate(`/student/${user_id}/${course_id}/${module_id}/view`, { state: { course_id,lectures } });
-    } // Debugging step
-    else{
-      alert(`please Enroll to view resources`)
-    }
-  };
-  const viewAssignment = (module_id, assignments) => {
-    console.log("Navigating with assignments:", assignments);
-    if (enrolled){
-      navigate(`/student/${user_id}/${course_id}/${module_id}/view`, { state: { lectures } });
+      navigate(`/student/${user_id}/${course_id}/${module_id}/view`, { state: { course_id,lectures,assignments } });
     } // Debugging step
     else{
       alert(`please Enroll to view resources`)
@@ -154,7 +145,7 @@ const [course,setCourse] = useState({})
           <ModuleDropdown
             key={module._id}
             module={module}
-            viewLecture={viewLecture}
+            viewResources={viewResources}
           />
         ))
       ) : (

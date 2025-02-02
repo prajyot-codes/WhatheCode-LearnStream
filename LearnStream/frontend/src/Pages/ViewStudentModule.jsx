@@ -118,7 +118,7 @@ const [course,setCourse] = useState({})
         console.log('error whilefetching course')
       }
     }
-  const [CourseProgress, setCourseProgress] = useState({})
+  const [CourseProgress, setCourseProgress] = useState(0)
   const [completedLectures,setCompletedLectures] = useState(0)
   const [completedAssignments,setCompletedAssignments] = useState(0)
   const [totalLectures,settotalLectures] = useState(0)
@@ -160,8 +160,9 @@ const courseProgressDetails = async ()=>{
       <h2 className="text-xl font-bold mb-4">Course Description</h2>
       <p>{course.description}</p>
       <h2 className="text-xl font-bold mb-4">Course Progress</h2>
-      <p>Lectures completed {completedLectures}/{totalLectures}</p>
-      <p>Assignments completed {completedAssignments}/{totalAssignments}</p>
+      <p className="font-semibold">Lectures completed {completedLectures}/{totalLectures}</p>
+      <p  className="font-semibold">Assignments completed {completedAssignments}/{totalAssignments}</p>
+      <br />
       <div >
         {CourseProgress}%
       <Progress progress={CourseProgress || 0} label={`${Math.round(CourseProgress || 0)}% Completed`} />

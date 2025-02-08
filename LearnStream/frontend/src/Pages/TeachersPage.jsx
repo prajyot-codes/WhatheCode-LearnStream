@@ -13,7 +13,7 @@
     const [errMsg, setErrMsg] = useState('');
     const [courses, setCourses] = useState([]);
     const [course_id, setCourse_id] = useState(''); // Single declaration for course_id
-
+    const name = localStorage.getItem('name')
     const userAccessToken = localStorage.getItem('accessToken');
     const navigate = useNavigate();
     
@@ -58,7 +58,7 @@
 
         {/* Welcome Section */}
         <section className="m-5 text-3xl">
-          <h1>Welcome <span className="font-league bold text-4xl">{name}</span></h1>
+        <h1>Welcome <span className="font-league bold text-4xl">{name.charAt(0).toUpperCase() + name.slice(1)}</span></h1>
         </section>
 
         {/* My Learning Section */}

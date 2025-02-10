@@ -189,6 +189,8 @@ $ git clone https://github.com/prajyot-codes/WhatheCode-LearnStream
 
 - [Team Member 1 Prajyot Narware](https://github.com/prajyot-codes): narwareprajyot25@gmail.com
 - [Team Member 2 Abdul Razzaq Munshi](https://github.com/Armunshi): munshiabdulrazzaq@gmail.com
+- [Team Member 3 Harsh Sharma](https://github.com/harshgsharma1501): hgsharma_b23@ce.vjti.ac.in
+- [Team Member 4 Wasi Khan](https://github.com/wasiiiii76): mwkhan_b23@ce.vjti.ac.in
 
 ## 👨‍🏫Mentors
 

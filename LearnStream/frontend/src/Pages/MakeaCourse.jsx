@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, TextInput, Textarea, Label, Dropdown } from "flowbite-react";
+import { Button,Checkbox ,TextInput, Textarea, Label, Dropdown } from "flowbite-react";
 import axios from "../api/axios"; // Ensure this path matches your file structure
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +11,7 @@ function MakeaCourse() {
   const [coursePrice, setCoursePrice] = useState("");
   const [courseCategory, setCourseCategory] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
-
+  const [Live, setLive] = useState(true)
   const categories = [ "Web Development",
     "Arts and Humanities",
     "Business",
@@ -44,6 +44,7 @@ function MakeaCourse() {
       courseData.append("description", courseDescription); // Add description
       courseData.append("price", coursePrice); // Add price
       courseData.append("category", courseCategory); // Add category
+      courseData.append("isLive", Live);
 
       // Axios POST request
       const response = await axios.post("/courses/", courseData, {
@@ -67,6 +68,9 @@ function MakeaCourse() {
       setCoursePrice("");
       setCourseCategory("");
       setThumbnail(null);
+      if(Live) {
+        navigate
+      }
       navigate(`/teacher/${userId}/${courseId}`)
     } catch (e) {
       console.error("Error creating course:", e.response?.data || e.message);
@@ -152,6 +156,12 @@ function MakeaCourse() {
             className="w-full border rounded-lg p-2"
           />
         </div>
+        <div className="flex items-center gap-2 ">
+        <Checkbox id="accept" checked={Live} onChange={(e)=>setLive(e.target.checked)}  />
+        <Label htmlFor="accept" className="flex text-xl">
+          Make it Live  
+        </Label>
+      </div>
         <Button type="submit">Create Course</Button>
       </form>
     </div>

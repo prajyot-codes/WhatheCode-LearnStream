@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import ReactPlayer from "react-player";
 import { Play } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState,  } from "react";
 import { Card } from "flowbite-react";
 import axios from "../api/axios.js";
 import PDFPreviewModal from "../components/PDFPreviewModal.jsx";
@@ -20,7 +20,6 @@ const LectureAssig = () => {
   const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
   const [selectedDiv, setSelectedDiv] = useState(null);
   const [assignmentDeadline, setAssignmentDeadline] = useState(null);
-  const requestSent = useRef({});
 
   useEffect(() => {
     const fetchCompletedLectures = async () => {

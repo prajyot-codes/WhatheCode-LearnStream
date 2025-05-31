@@ -11,7 +11,6 @@ import SignupS from './Pages/Signup-students.jsx';
 import SignupT from './Pages/Signup-Teacher.jsx';
 import Teachers from './Pages/TeachersPage.jsx';
 import Student from './Pages/StudentPage.jsx';
-import LoginCommon from './Pages/LoginCommon.jsx';
 import Home from './Pages/Home.jsx';
 import MakeaCourse from './Pages/MakeaCourse.jsx';
 // import ModuleForm from './Pages/Courseupdatation.jsx';
@@ -19,12 +18,13 @@ import ViewtheModules from './Pages/ViewtheModules.jsx';
 import ViewStudentModules from './Pages/ViewStudentModule.jsx';
 import LectureAssig from './Pages/LectureAssig.jsx';
 import UploadedAssignment from './Pages/UploadedAssignment.jsx';
+import LoginPage from './Pages/login.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<Layout />}>
       <Route path='/' element={<Home />} />
-      <Route path='login' element={<LoginCommon />} />
+      <Route path='login' element={<LoginPage />} />
       <Route path='login/student' element={<LoginS />} />
       <Route path='login/teacher' element={<LoginT />} />
       <Route path='signup/student' element={<SignupS />} />

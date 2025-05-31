@@ -8,6 +8,10 @@ const courseSchema =new Schema({
             type:String,
             required:true
         },
+        isLive:{
+            type:Boolean,
+            default:false,
+        },
         title:{
             type:String, 
             required:true

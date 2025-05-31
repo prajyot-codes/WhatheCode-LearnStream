@@ -17,6 +17,31 @@ const ModuleDropdown = ({ module, deleteModule, deleteAssignment, deletelecture 
   const changepage=(assignmentId) => {
     navigate(`${assignmentId}`)
   }
+ const [ownerId, setOwnerId] = useState(null)
+ 
+  const owner = async (course_id) => {
+  try {
+    const response = await axios.get(`/courses/${course_id}/getTeacher`);
+    return response.data; // return the data so the caller can use it
+  } catch (error) {
+    console.error("Error fetching teacher:", error);
+    throw error; // rethrow or handle as needed
+  }
+};
+
+
+  useEffect(() => {
+    const getOwner = async () => {
+      try {
+        const data = await owner(course_id); 
+        setOwnerId(data?.author); 
+      } catch (error) {
+        console.error("Failed to fetch course owner:", error);
+      }
+    };
+
+    if (course_id) getOwner(); // prevent API call if course_id is null/undefined
+  }, [course_id]);
   return (
     <div className="border rounded-lg shadow-sm mb-4 bg-white">
       <button
@@ -50,12 +75,12 @@ const ModuleDropdown = ({ module, deleteModule, deleteAssignment, deletelecture 
                 </div>
 
                 {/* Right side: Delete (X) */}
-                <button
+                { user_id == ownerId && <button
                   onClick={() => deletelecture(module._id, lecture._id)} // Correctly call deletelecture
                   className="text-red-500 cursor-pointer hover:text-red-700"
                 >
                   ✖
-                </button>
+                </button>}
               </div>
             ))
           ) : (
@@ -95,12 +120,12 @@ const ModuleDropdown = ({ module, deleteModule, deleteAssignment, deletelecture 
                 </div>
 
                 {/* Right side: Delete (X) */}
-                <button
+                { user_id==ownerId && <button
                   onClick={() => deleteAssignment(module._id, assignment._id)}
                   className="cursor-pointer text-red-500 hover:text-red-700"
                 >
                   ✖
-                </button>
+                </button>}
               </div>
             ))
           ) : (
@@ -109,18 +134,18 @@ const ModuleDropdown = ({ module, deleteModule, deleteAssignment, deletelecture 
 
           {/* Delete Module Button */}
           <div className="flex justify-between">
-            <button
+            { user_id == ownerId && <button
               onClick={() => deleteModule(module._id)}
               className="p-1 m-1 rounded-lg bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
             >
               Delete
-            </button>
-            <button
+            </button>}
+           {user_id==ownerId && <button
               onClick={() => setOpen(true)}
               className="p-1 m-1 w-auto rounded-lg bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
             >
               Add lecture-assignment
-            </button>
+            </button>}
             <Modal open={open} onClose={() => setOpen(false)}>
               <LectureAssignment moduleId={module._id} />
             </Modal>

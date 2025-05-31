@@ -24,7 +24,7 @@ const Navbar1 = () => {
     try {
       const response = await axios.post(
         `/user/${localStorage.getItem('role')}/logout`,
-        {}, // Empty body
+        {}, 
         {
           headers: {
             'Content-Type': 'application/json',

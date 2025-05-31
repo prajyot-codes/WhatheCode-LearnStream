@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState,useEffect, useRef } from 'react';
 import axios from '../api/axios';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,32 @@ function ModuleForm() {
   const [modules, setModules] = useState([]);
   const { user_id, course_id } = useParams();
   const navigate = useNavigate();
+  const [ownerId, setOwnerId] = useState(null)
+ 
+  const owner = async (course_id) => {
+  try {
+    const response = await axios.get(`/courses/${course_id}/getTeacher`);
+    return response.data; // return the data so the caller can use it
+  } catch (error) {
+    console.error("Error fetching teacher:", error);
+    throw error; // rethrow or handle as needed
+  }
+};
+
+
+  useEffect(() => {
+    const getOwner = async () => {
+      try {
+        const data = await owner(course_id); 
+        setOwnerId(data?.author); 
+      } catch (error) {
+        console.error("Failed to fetch course owner:", error);
+      }
+    };
+
+    if (course_id) getOwner(); // prevent API call if course_id is null/undefined
+  }, [course_id]);
+
 
   const handleAddModule = () => {
     setModules([
@@ -214,13 +240,13 @@ function ModuleForm() {
               <h3 className="text-lg font-semibold text-gray-700 mb-4">
                 Module {module.id}
               </h3>
-              <button
+              ({user_id}=={ownerId})&&{<button
                 type="button"
                 onClick={() => handleDeleteModule(module.id)}
                 className="absolute top-2 right-2 text-red-500 hover:text-red-700"
               >
                 ✖
-              </button>
+              </button>}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-600 mb-1">
                   Module Name
@@ -361,13 +387,13 @@ function ModuleForm() {
               </div>
             </div>
           ))}
-          <button
+          ({user_id}=={ownerId}){<button
             type="button"
             onClick={handleAddModule}
             className="w-full py-2 mt-4 bg-green-500 text-white rounded-lg hover:bg-green-600"
           >
             Add Module
-          </button>
+          </button>}
           <button
             type="submit"
             className="w-full py-2 mt-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"

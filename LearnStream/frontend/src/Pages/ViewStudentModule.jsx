@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback, useContext } from "react";
+import  { useState, useEffect, useCallback } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Progress } from "flowbite-react";
 import axios from "../api/axios";
 import { useNavigate, useParams } from "react-router-dom";
-import AuthContext from "../contexts/AuthProvider"; 
 import EnrollButton from "../components/EnrollButton";
 // import Modal from "./Modal";
 // import ModuleForm from "./Courseupdatation";
@@ -165,10 +164,10 @@ const courseProgressDetails = async ()=>{
       <p className="font-semibold">Lectures completed {completedLectures}/{totalLectures}</p>
       <p  className="font-semibold">Assignments completed {completedAssignments}/{totalAssignments}</p>
       <br />
-      <div >
-        {CourseProgress}%
+      {<div >
+        {CourseProgress !== undefined ? CourseProgress.toFixed(2) + "%" : "0.00%"}
       <Progress progress={CourseProgress || 0} label={`${Math.round(CourseProgress || 0)}% Completed`} />
-      </div>
+      </div>}
     <div className="mb-4">
       <h2 className="text-2xl font-bold mb-2">Course Modules</h2>
       {modules.length > 0 ? (

@@ -12,7 +12,7 @@ import { UserTeacher } from "../../models/user/userteachermodel.js";
 const createCourse = asyncHandler(async (req,res)=> {
     // thumbnail upload using multer and cloudinary
     // save the rest of the data and link the author 
-    const { title,description,price,category } = req.body;
+    const { title,description,price,category,isLive } = req.body;
 
     if (!title || !description || !price || !req.teacher || !category){
         throw new ApiError(400,'Basic info about the course required')
@@ -46,6 +46,7 @@ const createCourse = asyncHandler(async (req,res)=> {
         price,
         author:req.teacher._id,
         category,
+        isLive: isLive,
     })
 
     const teacher = await UserTeacher.findByIdAndUpdate(req.teacher._id,{
@@ -306,6 +307,17 @@ const CourseProgress = asyncHandler(async (req, res) => {
     }, "Progress data sent successfully"));
 });
 
+const getCourseOwner=asyncHandler( async(req,res)=>{
+    const {courseId}=req.body;
+    if(!courseId){
+        throw new ApiError("courseId no found");
+    }
+    const owner= await Courses.findById(courseId).select("author");
+
+    // const owner= await course.select("author")
+    return res.status(200).json(new ApiResponse(200,owner," owner fetced successfully"))
+})
+
 export {
     createCourse,
     getCoursesByCategory,
@@ -317,4 +329,5 @@ export {
     enrollStudent,
     checkEnrollment,
     getCourseByTeacherId,
+    getCourseOwner
 }

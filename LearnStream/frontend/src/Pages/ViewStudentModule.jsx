@@ -4,6 +4,7 @@ import { Progress } from "flowbite-react";
 import axios from "../api/axios";
 import { useNavigate, useParams } from "react-router-dom";
 import EnrollButton from "../components/EnrollButton";
+import BackButton from "../components/BackButton";
 // import Modal from "./Modal";
 // import ModuleForm from "./Courseupdatation";
 const ModuleDropdown = ({ module, viewResources}) => {
@@ -147,45 +148,60 @@ const courseProgressDetails = async ()=>{
     courseProgressDetails();
   }, [course_id]); // Fix infinite re-rendering
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex-col items-center mb-4">
-
-        <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
-        <h2 className="text-xl font-bold mb-2 font-league-200">Instructor : {course?.author?.name || 'someone'}</h2>
-        <EnrollButton course_id={course_id} setEnroll={setEnroll}/>
+      <div className="max-w-3xl mx-auto p-6">
+      {/* Top Section: BackButton, Title, Instructor, EnrollButton + Thumbnail */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+        {/* Text Section */}
+        <div className="flex flex-col">
+          <BackButton />
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">{course.title}</h1>
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">
+            Instructor: {course?.author?.name || 'someone'}
+          </h2>
+          <EnrollButton course_id={course_id} setEnroll={setEnroll} />
         </div>
-        <img src={course.thumbnail} alt="" srcset="" className="w-full "/>
+
+        {/* Course Thumbnail */}
+        <img
+          src={course.thumbnail}
+          alt="Course Thumbnail"
+          className="w-full md:w-60 rounded-lg shadow-md"
+        />
       </div>
 
-      <h2 className="text-xl font-bold mb-4">Course Description</h2>
-      <p>{course.description}</p>
-      <h2 className="text-xl font-bold mb-4">Course Progress</h2>
+      {/* Description Section */}
+      <h2 className="text-xl font-bold mb-2">Course Description</h2>
+      <p className="mb-4">{course.description}</p>
+
+      {/* Progress Section */}
+      <h2 className="text-xl font-bold mb-2">Course Progress</h2>
       <p className="font-semibold">Lectures completed {completedLectures}/{totalLectures}</p>
-      <p  className="font-semibold">Assignments completed {completedAssignments}/{totalAssignments}</p>
-      <br />
-      {<div >
+      <p className="font-semibold mb-2">Assignments completed {completedAssignments}/{totalAssignments}</p>
+      <div className="mb-4">
         {CourseProgress !== undefined ? CourseProgress.toFixed(2) + "%" : "0.00%"}
-      <Progress progress={CourseProgress || 0} label={`${Math.round(CourseProgress || 0)}% Completed`} />
-      </div>}
-    <div className="mb-4">
-      <h2 className="text-2xl font-bold mb-2">Course Modules</h2>
-      {modules.length > 0 ? (
-        modules.map((module) => (
-          <ModuleDropdown
-            key={module._id}
-            module={module}
-            viewResources={viewResources}
-          />
-        ))
-      ) : (
-        <div>
-          
+        <Progress
+          progress={CourseProgress || 0}
+          label={`${Math.round(CourseProgress || 0)}% Completed`}
+        />
+      </div>
+
+      {/* Modules Section */}
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold mb-2">Course Modules</h2>
+        {modules.length > 0 ? (
+          modules.map((module) => (
+            <ModuleDropdown
+              key={module._id}
+              module={module}
+              viewResources={viewResources}
+            />
+          ))
+        ) : (
           <p className="text-gray-500">No modules available</p>
-        </div>
-      )}
-     </div>
+        )}
+      </div>
     </div>
+
   );
 };
 

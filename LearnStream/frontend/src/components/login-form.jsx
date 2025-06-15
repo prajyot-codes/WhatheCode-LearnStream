@@ -8,7 +8,7 @@ import axios from '../api/axios';
 import { Link, useNavigate } from "react-router-dom";
 function Component({role}) {
     const navigate = useNavigate();
-    const { setAuth } = useContext(AuthContext);
+    const {auth, setAuth } = useContext(AuthContext);
     const userRef = useRef();
     const errRef = useRef();
     const [user, setUser] = useState('');
@@ -17,6 +17,7 @@ function Component({role}) {
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
+      console.log("Current AUth",auth);
         userRef?.current?.focus();
     }, [])
 
@@ -50,15 +51,15 @@ function Component({role}) {
             const user_id = response?.data?.data?.user._id
             const roles = response?.data?.data?.role;
             const name = response?.data?.data?.user.name;
-            console.log(name);
-            localStorage.setItem('name',name);
-            localStorage.setItem('accessToken',accessToken);
-            localStorage.setItem('user_id',user_id);
-            localStorage.setItem('role',roles)
+            // localStorage.setItem('name',name);
+            // localStorage.setItem('accessToken',accessToken);
+            // localStorage.setItem('user_id',user_id);
+            // localStorage.setItem('role',roles)
             setAuth({ user_id,name, roles, accessToken });
-            const targetUrl = `/${role}/${user_id}`;
-            navigate(targetUrl,{ name });
-            window.location.href = targetUrl;
+            localStorage.setItem('auth',JSON.stringify({ user_id,name, roles, accessToken }));
+            const targetUrl = `/${auth.roles}/${auth.user_id}`;
+            navigate(targetUrl);
+            console.log('Current COntext',auth);
             setUser('');
             setPwd('');
             setSuccess(true);
@@ -122,7 +123,6 @@ function Component({role}) {
       <Button
         type="submit"
         className="bg-[#2a6411] text-white font-medium"
-        
       >
         Submit
       </Button>

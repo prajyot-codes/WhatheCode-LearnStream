@@ -6,6 +6,7 @@ import { Card } from "flowbite-react";
 import axios from "../api/axios.js";
 import PDFPreviewModal from "../components/PDFPreviewModal.jsx";
 import YourWork from "../components/YourWork.jsx";
+import BackButton from "../components/BackButton.jsx";
 
 const CLOUDINARY_CLOUD_NAME = "dc9lboron";
 
@@ -77,105 +78,108 @@ const LectureAssig = () => {
     );
   };
 
-  return (
-    <div className="flex">
-      {/* Left Panel - Lecture & Assignment List */}
-      <div className="bg-white border-r-2 border-black w-1/4 p-5 text-black overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-4">Lectures and Assignments</h2>
+    return (
+      
+      <div className="flex flex-col md:flex-row">
+        <BackButton/> 
+        {/* Left Panel - Lecture & Assignment List */}
+        <div className="bg-white border-t-2 md:border-t-0 md:border-r-2 border-black 
+                w-full md:w-1/4 p-5 text-black overflow-y-auto order-last md:order-first">
+          <h2 className="text-xl font-semibold mb-4">Lectures and Assignments</h2>
 
-        {/* Lectures List */}
-        <div className="flex-col relative">
-          {lectures.length > 0 ? (
-            lectures.map((lecture) => (
+          {/* Lectures List */}
+          <div className="flex-col relative">
+            {lectures.length > 0 ? (
+              lectures.map((lecture) => (
+                <Card
+                  key={lecture._id}
+                  className={`mb-2 w-auto text-blue-500 gap-1 cursor-pointer ${
+                    currentLectureId === lecture._id ? "bg-gray-200" : ""
+                  }`}
+                  onClick={() => handleSelectLecture(lecture)}
+                >
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={!!completedLectures[lecture._id]}
+                      readOnly
+                    />
+                    <span>{lecture.title} <Play /></span>
+                  </label>
+                </Card>
+              ))
+            ) : (
+              <p className="text-gray-500">No lectures available</p>
+            )}
+          </div>
+
+          {/* Assignments List */}
+          <div className="flex-col relative">
+            {assignments.length > 0 ? (
+              assignments.map((assignment) => (
+                <Card
+                  key={assignment._id}
+                  className={`mb-2 w-auto text-blue-500 gap-1 cursor-pointer ${
+                    selectedDiv === "assignment" ? "bg-gray-200" : ""
+                  }`}
+                  onClick={() => handleSelectAssignment(assignment)}
+                >
+                  <span>{assignment.title} <Play /></span>
+                </Card>
+              ))
+            ) : (
+              <p className="text-gray-500">No Assignments available</p>
+            )}
+          </div>
+        </div>
+
+        {/* Right Panel - Video Player and Assignments */}
+        <div className="flex-1 p-4">
+          {/* Video Player */}
+          {selectedDiv === "lecture" && lectureUrl ? (
+            <ReactPlayer
+              url={lectureUrl}
+              playing={false}
+              loop={false}
+              controls={true}
+              width="100%"
+              height="500px"
+            />
+          ) : (
+            <p className="text-center text-gray-500">
+              Select a lecture to play or an assignment to view
+            </p>
+          )}
+
+          {/* Assignment PDF List */}
+          {selectedDiv === "assignment" && assignmentUrls.length > 0 ? (
+            assignmentUrls.map((url, index) => (
               <Card
-                key={lecture._id}
-                className={`mb-2 w-auto text-blue-500 gap-1 cursor-pointer ${
-                  currentLectureId === lecture._id ? "bg-gray-200" : ""
-                }`}
-                onClick={() => handleSelectLecture(lecture)}
+                key={index}
+                onClick={() => setSelectedPdfUrl(url)}
+                className="block w-full text-left py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-700 mb-2"
               >
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={!!completedLectures[lecture._id]}
-                    readOnly
-                  />
-                  <span>{lecture.title} <Play /></span>
-                </label>
+                Assignment {index + 1}
               </Card>
             ))
           ) : (
-            <p className="text-gray-500">No lectures available</p>
+            <p className="text-gray-500">Please Select an Assignment</p>
+          )}
+
+          {/* PDF Preview Modal */}
+          {selectedPdfUrl && (
+            <PDFPreviewModal
+              pdfUrl={selectedPdfUrl}
+              onClose={() => setSelectedPdfUrl(null)}
+            />
           )}
         </div>
 
-        {/* Assignments List */}
-        <div className="flex-col relative">
-          {assignments.length > 0 ? (
-            assignments.map((assignment) => (
-              <Card
-                key={assignment._id}
-                className={`mb-2 w-auto text-blue-500 gap-1 cursor-pointer ${
-                  selectedDiv === "assignment" ? "bg-gray-200" : ""
-                }`}
-                onClick={() => handleSelectAssignment(assignment)}
-              >
-                <span>{assignment.title} <Play /></span>
-              </Card>
-            ))
-          ) : (
-            <p className="text-gray-500">No Assignments available</p>
-          )}
-        </div>
-      </div>
-
-      {/* Right Panel - Video Player and Assignments */}
-      <div className="flex-1 p-4">
-        {/* Video Player */}
-        {selectedDiv === "lecture" && lectureUrl ? (
-          <ReactPlayer
-            url={lectureUrl}
-            playing={false}
-            loop={false}
-            controls={true}
-            width="100%"
-            height="500px"
-          />
-        ) : (
-          <p className="text-center text-gray-500">
-            Select a lecture to play or an assignment to view
-          </p>
-        )}
-
-        {/* Assignment PDF List */}
-        {selectedDiv === "assignment" && assignmentUrls.length > 0 ? (
-          assignmentUrls.map((url, index) => (
-            <Card
-              key={index}
-              onClick={() => setSelectedPdfUrl(url)}
-              className="block w-full text-left py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-700 mb-2"
-            >
-              Assignment {index + 1}
-            </Card>
-          ))
-        ) : (
-          <p className="text-gray-500">Please Select an Assignment</p>
-        )}
-
-        {/* PDF Preview Modal */}
-        {selectedPdfUrl && (
-          <PDFPreviewModal
-            pdfUrl={selectedPdfUrl}
-            onClose={() => setSelectedPdfUrl(null)}
-          />
+        {selectedDiv === "assignment" && (
+          <YourWork assignmentId={currentAssignmentId} courseId={course_id} deadline={assignmentDeadline} />
         )}
       </div>
-
-      {selectedDiv === "assignment" && (
-        <YourWork assignmentId={currentAssignmentId} courseId={course_id} deadline={assignmentDeadline} />
-      )}
-    </div>
-  );
-};
+    );
+  };
 
 export default LectureAssig;

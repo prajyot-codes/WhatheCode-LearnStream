@@ -175,7 +175,8 @@ const loginUserStudent = asyncHandler(async (req,res)=>{
 })
 
 const logoutUserStudent = asyncHandler(async (req,res)=>{
-    await UserStudent.findByIdAndUpdate(
+    console.log('hel');
+    const response = await UserStudent.findByIdAndUpdate(
         req.student._id,
         {
             $set:{
@@ -190,14 +191,15 @@ const logoutUserStudent = asyncHandler(async (req,res)=>{
 
     const options ={
         httpOnly:true,
-        secure:true
-    }
+        secure:true,
+        sameSite:'None'
+    };
 
     return res
     .status(200)
     .clearCookie("studentAccessToken",options)
     .clearCookie("studentRefreshToken",options)
-    .json(new ApiResponse(200,{},"user logged out"));
+    .json(new ApiResponse(200,response,"user logged out"));
 })
 
 const refreshAccessToken= asyncHandler(async (req,res)=>{

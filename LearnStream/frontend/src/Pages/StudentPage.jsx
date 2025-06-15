@@ -6,6 +6,8 @@ import axios from "../api/axios";
 import CourseComp from "../components/CourseComp";
 import { asyncHandler } from "../../../backend/src/utils/asyncHandler";
 import GeneralCourses from "../components/GeneralCourses";
+import { useContext } from "react";
+import AuthContext from "../contexts/AuthProvider";
 
 const videos = [
     {
@@ -23,6 +25,7 @@ const videos = [
   const Student = () => {
     const { user_id } = useParams();
     const location = useLocation();
+    const {auth, setAuth } = useContext(AuthContext);
     const token = localStorage.getItem('accessToken');
     const name = localStorage.getItem('name')
     const errRef = useRef();
@@ -42,6 +45,7 @@ const videos = [
         
     // const userAccessToken = localStorage.getItem('accessToken') 
     useEffect(()=>{ 
+      console.log("Current Auth",auth);
       const fetchStudentCourses = async ()=>{
         try {
           const response =await axios.get(`courses/student/${user_id}`,{

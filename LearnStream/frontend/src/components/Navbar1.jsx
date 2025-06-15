@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import { Avatar, Dropdown, DropdownItem, Navbar } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
+import { useContext } from "react";
+import AuthContext from "../contexts/AuthProvider";
 // import {user.jpg} from "../assests/user.jpg"
 
 const Navbar1 = () => {
   const [userId, setUserId] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState(null);
+  const {auth,setAuth} = useContext(AuthContext);
+  const role = localStorage.getItem('role')||""
   const [userName, setUserName] = useState("Guest");
   const navigate = useNavigate()
   // Fetch user details from localStorage when component mounts
   useEffect(() => {
+    console.log(auth);
     setUserId(localStorage.getItem("user_id"));
     setAccessToken(localStorage.getItem("accessToken"));
     // setAvatarUrl(
@@ -19,11 +24,13 @@ const Navbar1 = () => {
     // );
     setUserName(localStorage.getItem("name") || "Guest");
   }, []);
-
+  const handleMyCourses =  ()=>{
+    navigate(`/${role}/${userId}`)
+  }
   const handleLogout =async () => {
     try {
       const response = await axios.post(
-        `/user/${localStorage.getItem('role')}/logout`,
+        `/user/${role}/logout`,
         {}, 
         {
           headers: {
@@ -37,7 +44,7 @@ const Navbar1 = () => {
       if (response){
         localStorage.clear();
         navigate('/');
-        window.location.href = '/'
+        setAuth({})
       }
       else throw Error;
     } catch (error) {
@@ -71,6 +78,7 @@ const Navbar1 = () => {
             <Dropdown.Header>
               <span className="block text-sm">{userName}</span>
             </Dropdown.Header>
+            <Dropdown.Item onClick={(handleMyCourses)}>My Courses</Dropdown.Item>
             <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
           </Dropdown>
         )}

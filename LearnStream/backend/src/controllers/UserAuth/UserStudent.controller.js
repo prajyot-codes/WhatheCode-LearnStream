@@ -4,6 +4,7 @@ import { UserStudent } from '../../models/user/userstudentmodel.js';
 import { uploadOnCloudinary } from '../../utils/cloudinary.js';
 import { ApiResponse  } from '../../utils/ApiResponse.js'
 import  jwt  from 'jsonwebtoken';
+import { maxHeaderSize } from 'http';
 // const User = require('../models/student/userstudentmodel');
 
 const generateAccessAndRefreshTokens  = async (userId)=>{
@@ -157,7 +158,9 @@ const loginUserStudent = asyncHandler(async (req,res)=>{
     
     const options = {
         httpOnly:true,
-        secure:true
+        secure:true,
+        sameSite:"None",
+        maxAge:24*60*60*1000
     }
 
     console.log("Cookies set: ", accessToken, refreshToken);

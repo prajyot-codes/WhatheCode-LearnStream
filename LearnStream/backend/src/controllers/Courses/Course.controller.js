@@ -69,7 +69,7 @@ const createCourse = asyncHandler(async (req,res)=> {
     )
 })
 const getCourseByStudentId = asyncHandler(async (req,res)=>{
-    const {student_id}  = req.params;
+    const {student_id}  = req.student._id;
     console.log(req.params)
     if (!student_id){
         throw new ApiError('user is not logged in  or is undefined')

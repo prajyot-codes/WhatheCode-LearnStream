@@ -3,7 +3,7 @@ import apiClient from './axios'; // Your configured Axios instance
 // Function to call the backend refresh token endpoint
 export const fetchNewAccessToken = async () => {
     try {
-        const response = await apiClient.post('/auth/refresh-token', {}, { withCredentials: true });
+        const response = await apiClient.post('/auth/refresh-Token', {}, { withCredentials: true });
         const { accessToken } = response.data.data;
 
         // Store the new access token in localStorage

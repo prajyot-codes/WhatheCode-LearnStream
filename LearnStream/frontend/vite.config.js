@@ -7,5 +7,8 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 4173,
     allowedHosts: ['learnstream.onrender.com']
+  },
+  server:{
+    port:2000
   }
 })

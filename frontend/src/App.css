@@ -1,0 +1,16 @@
+.custom-scrollbar::-webkit-scrollbar {
+    height: 8px; /* Height for horizontal scrollbar */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #3b82f6; /* Blue color */
+    border-radius: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background-color: #f3f4f6; /* Light gray */
+  }
+  /* body {
+    background: linear-gradient(to bottom, rgb(178, 248, 178), white);
+    min-height: 100vh;
+  } */

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an Axios instance
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8000',
+    baseURL: 'https://whathecode-learnstream.onrender.com',
     withCredentials: true, // Allows sending cookies
 });
 

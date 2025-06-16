@@ -50,7 +50,8 @@ const videos = [
         try {
           const response =await axios.get(`courses/student/${user_id}`,{
             headers: { 'Content-Type': 'application/json' },
-            withCredentials: true 
+            Authorization: `Bearer ${token}` ,
+            withCredentials: true ,
         })
           setStudentCourses(response.data.data.Courses);
         console.log(localStorage.getItem('accessToken'));

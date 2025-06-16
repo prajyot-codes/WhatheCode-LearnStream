@@ -94,7 +94,7 @@ const getCourseByStudentId = asyncHandler(async (req,res)=>{
 
 })
 const getCourseByTeacherId = asyncHandler(async(req,res)=>{
-    const {teacher_id}  = req.params;
+    const teacher_id  = req.teacher._id;
 
     if (!teacher_id){
         throw new ApiError('user is not logged in  or is undefined')

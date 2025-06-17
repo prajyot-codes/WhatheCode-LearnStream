@@ -92,9 +92,11 @@ const registerUserStudent = asyncHandler( async (req,res) =>{
     )
     
     const options = {
-        httpOnly:true,
-        secure:true
-    }
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Lax",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+    };
 
     console.log("Cookies set: ", accessToken, refreshToken);
 
@@ -157,11 +159,11 @@ const loginUserStudent = asyncHandler(async (req,res)=>{
     const LoggedInUserStudent = await UserStudent.findById(userStudent._id).select("-password -refreshToken")
     
     const options = {
-        httpOnly:true,
-        secure:true,
-        sameSite:"None",
-        maxAge:24*60*60*1000
-    }
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Lax",
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+    };
 
     console.log("Cookies set: ", accessToken, refreshToken);
 
@@ -192,10 +194,11 @@ const logoutUserStudent = asyncHandler(async (req,res)=>{
     )
     // there is something wrong with cookie clearing part have to resolve later
 
-    const options ={
-        httpOnly:true,
-        secure:true,
-        sameSite:'None'
+    const options = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Lax",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
     };
 
     return res
@@ -205,44 +208,6 @@ const logoutUserStudent = asyncHandler(async (req,res)=>{
     .json(new ApiResponse(200,response,"user logged out"));
 })
 
-const refreshAccessToken= asyncHandler(async (req,res)=>{
-    try {
-        const incomingrefreshToken = req.cookie?.refreshToken || req.body.refreshToken
-        
-        if (!incomingrefreshToken){
-            throw new ApiError(401,"incoming refresh token is invalid")
-        }
-        const options = {
-            httpOnly:true,
-            secure:true
-        }
-        const decodedToken = jwt.verify(incomingrefreshToken,process.env.REFRESH_TOKEN_SECRET)
-    
-        const user =  await UserStudent.findById(decodedToken?._id)
-    
-        if (!user){
-            throw new ApiError(401,"invalid token")
-        }
-    
-        if (user?.refreshToken !== incomingrefreshToken){
-            throw new ApiError(401,"refresh token is expired or used")
-        }
-    
-        const {accessToken,newRefreshToken} = await generateAccessAndRefreshTokens(user._id);
-        
-        return res.
-        status(200)
-        .cookie("studentAccessToken",accessToken,options)
-        .cookie("studentRefreshToken",newRefreshToken,options)
-        .json(
-            new ApiResponse(200,
-                {accessToken,refreshToken:newRefreshToken},
-            "access token refreshed")
-        )
-    } catch (error) {
-         throw new ApiError(400,error?.message  || "invalid refresh token")
-    }
-})
 
 
 
@@ -250,5 +215,5 @@ export {
     registerUserStudent,
     loginUserStudent,
     logoutUserStudent,
-    refreshAccessToken,
+    generateAccessAndRefreshTokens,
 }

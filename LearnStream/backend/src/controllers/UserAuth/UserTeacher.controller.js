@@ -68,9 +68,11 @@ const registerUser = asyncHandler( async (req,res) =>{
 
 
     const options = {
-        httpOnly:true,
-        secure:true
-    }
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Lax",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+    };
 
     console.log("Cookies set: ", accessToken, refreshToken);
 
@@ -119,9 +121,11 @@ const loginUser = asyncHandler(async (req,res)=>{
     const LoggedInUserTeacher = await UserTeacher.findById(userTeacher._id).select("-password -refreshToken")
     
     const options = {
-        httpOnly:true,
-        secure:true
-    }
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Lax",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+    };
 
     console.log("Cookies set: ", accessToken, refreshToken);
 
@@ -151,10 +155,12 @@ const logoutUser = asyncHandler(async (req,res)=>{
     )
     // there is something wrong with cookie clearing part have to resolve later
 
-    const options ={
-        httpOnly:true,
-        secure:true
-    }
+        const options = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Lax",
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        };
 
     return res
     .status(200)
@@ -171,9 +177,11 @@ const refreshAccessToken= asyncHandler(async (req,res)=>{
             throw new ApiError(401,"incoming refresh token is invalid")
         }
         const options = {
-            httpOnly:true,
-            secure:true
-        }
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Lax",
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        };
         const decodedToken = jwt.verify(incomingrefreshToken,process.env.REFRESH_TOKEN_SECRET)
     
         const user =  await UserTeacher.findById(decodedToken?._id)
@@ -208,5 +216,5 @@ export {
     registerUser,
     loginUser,
     logoutUser,
-    refreshAccessToken
+    generateAccessAndRefreshTokens
 }

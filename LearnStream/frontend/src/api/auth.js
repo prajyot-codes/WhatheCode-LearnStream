@@ -5,9 +5,8 @@ export const fetchNewAccessToken = async () => {
     try {
         const response = await apiClient.post('/auth/refresh-Token', {}, { withCredentials: true });
         const { accessToken } = response.data.data;
-
         // Store the new access token in localStorage
-        localStorage.setItem('studentAccessToken', accessToken);
+        localStorage.setItem('accessToken', accessToken);
 
         return accessToken; // Return the new token for immediate use if needed
     } catch (error) {

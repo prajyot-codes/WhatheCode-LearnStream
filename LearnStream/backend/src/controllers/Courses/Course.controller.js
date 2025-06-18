@@ -307,16 +307,24 @@ const CourseProgress = asyncHandler(async (req, res) => {
     }, "Progress data sent successfully"));
 });
 
-const getCourseOwner=asyncHandler( async(req,res)=>{
-    const {courseId}=req.body;
-    if(!courseId){
-        throw new ApiError("courseId no found");
-    }
-    const owner= await Courses.findById(courseId).select("author");
+const getCourseOwner = asyncHandler(async (req, res) => {
+  const { courseId } = req.body;
 
-    // const owner= await course.select("author")
-    return res.status(200).json(new ApiResponse(200,owner," owner fetced successfully"))
-})
+  if (!courseId) {
+    throw new ApiError(400, "courseId not found");
+  }
+
+  const owner = await Courses.findById(courseId).select("author");
+
+  if (!owner) {
+    throw new ApiError(404, "Course not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, owner, "Owner fetched successfully")
+  );
+});
+
 
 export {
     createCourse,

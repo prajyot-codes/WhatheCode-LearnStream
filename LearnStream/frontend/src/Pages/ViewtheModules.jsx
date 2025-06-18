@@ -21,7 +21,7 @@ const ModuleDropdown = ({ module, deleteModule, deleteAssignment, deletelecture 
  
   const owner = async (course_id) => {
   try {
-    const response = await axios.get(`/courses/${course_id}/getTeacher`);
+    const response = await axios.get(`/courses/courseId/getTeacher`);
     return response.data; // return the data so the caller can use it
   } catch (error) {
     console.error("Error fetching teacher:", error);
@@ -157,9 +157,47 @@ const ModuleDropdown = ({ module, deleteModule, deleteAssignment, deletelecture 
 };
 
 const ViewtheModules = () => {
-  const { course_id } = useParams();
   const [modules, setModules] = useState([]);
+const [ownerId, setOwnerId] = useState(null)
+  const {user_id,course_id}=useParams();
+ 
+  const owner = async (course_id) => {
+  try {
+    const response = await axios.post(
+      `/courses/courseId/getTeacher`,
+      { courseId: course_id }, // sending courseId in body
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+    
+    return response.data.author; // because author is inside `data`
+  } catch (error) {
+    console.error("Error fetching teacher:", error);
+    throw error;
+  }
+};
 
+
+
+  useEffect(() => {
+    const getOwner = async () => {
+      try {
+        const data = await owner(course_id); 
+        setOwnerId(data?.author);
+        console.log(ownerId);
+         
+        
+      } catch (error) {
+        console.error("Failed to fetch course owner:", error);
+      }
+    };
+
+    if (course_id) getOwner(); // prevent API call if course_id is null/undefined
+  }, [course_id]);
   const deleteModule = async (module_id) => {
     try {
       await axios.delete(`/courses/${course_id}/modules/${module_id}`);
@@ -238,7 +276,7 @@ const ViewtheModules = () => {
   }, [course_id, loadModules]);
 
   const [open, setOpen] = useState(false);
-  return (
+   return (
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Course Modules</h1>
 
@@ -250,20 +288,22 @@ const ViewtheModules = () => {
             module={module}
             deleteModule={deleteModule}
             deleteAssignment={deleteAssignment}
-            deletelecture={deletelecture} // Pass deletelecture as a prop
+            deletelecture={deletelecture}
           />
         ))
       ) : (
         <p className="text-gray-500">No modules available</p>
       )}
 
-      {/* Add Module Button */}
-      <button
-        onClick={() => setOpen(true)}
-        className="bg-green-200 p-2 rounded-lg border border-stone-800 mt-4"
-      >
-        Add Modules
-      </button>
+      {/* ✅ Conditionally render Add Modules button only for owner */}
+      {user_id === ownerId && (
+        <button
+          onClick={() => setOpen(true)}
+          className="bg-green-200 p-2 rounded-lg border border-stone-800 mt-4"
+        >
+          Add Modules
+        </button>
+      )}
 
       {/* Modal for Adding Module */}
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -272,5 +312,7 @@ const ViewtheModules = () => {
     </div>
   );
 };
+
+
 
 export default ViewtheModules;

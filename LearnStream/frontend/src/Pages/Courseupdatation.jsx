@@ -240,7 +240,7 @@ function ModuleForm() {
               <h3 className="text-lg font-semibold text-gray-700 mb-4">
                 Module {module.id}
               </h3>
-              ({user_id}=={ownerId})&&{<button
+              {<button
                 type="button"
                 onClick={() => handleDeleteModule(module.id)}
                 className="absolute top-2 right-2 text-red-500 hover:text-red-700"

@@ -387,7 +387,7 @@ function ModuleForm() {
               </div>
             </div>
           ))}
-          ({user_id}=={ownerId}){<button
+          {<button
             type="button"
             onClick={handleAddModule}
             className="w-full py-2 mt-4 bg-green-500 text-white rounded-lg hover:bg-green-600"

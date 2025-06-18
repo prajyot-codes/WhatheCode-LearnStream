@@ -30,7 +30,7 @@ router.route('/:courseId/enrolled').get( verifyJWTCombined, checkEnrollment);
 router.route('/:courseId/progress').get(verifyJWTCombined, CourseProgress)//
 router.route('/student/:student_id').get(verifyJWTStudent,getCourseByStudentId);
 router.route('/teacher/:teacher_id').get(verifyJWT,getCourseByTeacherId)
-router.route('/courseId/getTeacher').get(getCourseOwner);
+router.route('/:courseId/getTeacher').get(getCourseOwner);
 router.route('').get(getCoursesByCategory)
 router.route('/').post(verifyJWT,upload.single('thumbnail'),createCourse)
                 .get(getAllCourses)// i still have doubts regarding this feature and plan to remove it 

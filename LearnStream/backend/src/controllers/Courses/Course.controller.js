@@ -308,7 +308,7 @@ const CourseProgress = asyncHandler(async (req, res) => {
 });
 
 const getCourseOwner = asyncHandler(async (req, res) => {
-  const { courseId } = req.body;
+  const { courseId } = req.params;
 
   if (!courseId) {
     throw new ApiError(400, "courseId not found");

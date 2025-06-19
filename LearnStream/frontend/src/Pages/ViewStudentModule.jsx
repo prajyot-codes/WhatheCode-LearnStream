@@ -158,7 +158,7 @@ const courseProgressDetails = async ()=>{
           <h2 className="text-lg sm:text-xl font-semibold mb-2">
             Instructor: {course?.author?.name || 'someone'}
           </h2>
-          <EnrollButton course_id={course_id} setEnroll={setEnroll} />
+          {user_id && <EnrollButton course_id={course_id} setEnroll={setEnroll} />}
         </div>
 
         {/* Course Thumbnail */}

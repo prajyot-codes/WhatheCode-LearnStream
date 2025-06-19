@@ -23,7 +23,7 @@
       navigate(`${assignmentId}`);
     };
     const [ownerId, setOwnerId] = useState(null);
-
+    let owner_id
     const owner = async (course_id) => {
       try {
         // console.log(course_id)
@@ -32,8 +32,7 @@
             withCredentials: true,
           })
         // console.log(response)
-          // console.log(response.data.data.author )
-          // console.log(user_id);
+          // console.log(response.data.data.author ==user_id )
           
         return response.data.data.author; // Access `.author` from returned object
       } catch (error) {
@@ -45,15 +44,21 @@
     useEffect(() => {
       const getOwner = async () => {
         try {
-          const data = await owner(course_id);
-          setOwnerId(data?.author);
+          const authorId = await owner(course_id); // This is a string
+          setOwnerId(authorId); // No `.author` needed
+          console.log(owner_id)
+          console.log(owner_id==user_id);
+          
         } catch (error) {
           console.error("Failed to fetch course owner:", error);
         }
       };
 
-      if (course_id) getOwner(); // prevent API call if course_id is null/undefined
+      if (course_id) {
+        getOwner();
+      }
     }, [course_id]);
+
     return (
       <div className="border rounded-lg shadow-sm mb-4 bg-white">
         <button
@@ -88,14 +93,14 @@
                   </div>
 
                   {/* Right side: Delete (X) */}
-                  {   String(user_id) === String(ownerId?._id || ownerId) &&(
+                  {  ownerId==user_id &&
                     <button
                       onClick={() => deletelecture(module._id, lecture._id)} // Correctly call deletelecture
                       className="text-red-500 cursor-pointer hover:text-red-700"
                     >
                       ✖
                     </button>
-                  )}
+                  }
                 </div>
               ))
             ) : (
@@ -166,7 +171,7 @@
                   Delete
                 </button>
               )}
-              {user_id==ownerId && (
+              {user_id==owner_id && (
                 <button
                   onClick={() => setOpen(true)}
                   className="p-1 m-1 w-auto rounded-lg bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
@@ -186,9 +191,9 @@
 
   const ViewtheModules = () => {
     const [modules, setModules] = useState([]);
-    const [ownerId, setOwnerId] = useState(null);
     const { user_id, course_id } = useParams();
-
+    const [ownerId, setOwnerId] = useState(null);
+    let owner_id
     const owner = async (course_id) => {
       try {
         // console.log(course_id)
@@ -197,8 +202,7 @@
             withCredentials: true,
           })
         // console.log(response)
-          console.log(response.data.data.author )
-          console.log(user_id);
+          // console.log(response.data.data.author ==user_id )
           
         return response.data.data.author; // Access `.author` from returned object
       } catch (error) {
@@ -212,6 +216,10 @@
         try {
           const authorId = await owner(course_id); // This is a string
           setOwnerId(authorId); // No `.author` needed
+          console.log(owner_id)
+          owner_id=authorId
+          console.log(owner_id==user_id);
+          
         } catch (error) {
           console.error("Failed to fetch course owner:", error);
         }
@@ -318,14 +326,14 @@
         )}
 
         {/* ✅ Conditionally render Add Modules button only for owner */}
-        {user_id==ownerId && (
+        {user_id==ownerId ? (
           <button
             onClick={() => setOpen(true)}
             className="bg-green-200 p-2 rounded-lg border border-stone-800 mt-4"
           >
             Add Modules
           </button>
-        )}
+        ):null}
 
         {/* Modal for Adding Module */}
         <Modal open={open} onClose={() => setOpen(false)}>

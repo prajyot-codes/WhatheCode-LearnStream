@@ -2,10 +2,11 @@ import axios from 'axios';
 
 // Create an Axios instance
 const apiClient = axios.create({
-    baseURL: 'https://whathecode-learnstream.onrender.com',
-    // baseURL: 'http://localhost:8000', // Change this to your backend URL
+    // baseURL: 'https://whathecode-learnstream.onrender.com',
+    baseURL:  import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000', // Change this to your backend URL
     withCredentials: true, // Allows sending cookies
 });
+export default apiClient;
 
 // Function to call the backend refresh token endpoint
 // const fetchNewAccessToken = async () => {
@@ -25,4 +26,3 @@ const apiClient = axios.create({
 
 // Add interceptors here using fetchNewAccessToken
 
-export default apiClient;

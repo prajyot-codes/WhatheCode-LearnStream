@@ -8,10 +8,10 @@ const verifyJWTCombined = (req, res, next) => {
                 return res.status(401).json({ message: 'Unauthorized' });
             }
             if (!teacherErr) {
-                req.teacher = req.teacher; // Set req.teacher if teacher verification is successful
+                req.role = req.user; // Set req.teacher if teacher verification is successful
             }
             if (!studentErr) {
-                req.student = req.student; // Set req.student if student verification is successful
+                req.student = req.user; // Set req.student if student verification is successful
             }
             next();
         });

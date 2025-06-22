@@ -141,33 +141,38 @@ const loginUser = asyncHandler(async (req,res)=>{
     )
 })
 
-const logoutUser = asyncHandler(async (req,res)=>{
-    await UserTeacher.findByIdAndUpdate(
-        req.teacher._id,
-        {
-            $set:{
-                refreshToken:undefined
-            }
-            
-        },{
-            new:true
-        }
-    )
-    // there is something wrong with cookie clearing part have to resolve later
+const logoutUser = asyncHandler(async (req, res) => {
+    const refreshToken = req.cookies?.teacherRefreshToken;
 
-        const options = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "Lax",
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
-        };
+    if (!refreshToken) {
+        throw new ApiError(400, "No refresh token found");
+    }
+
+    let decoded;
+    try {
+        decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    } catch (err) {
+        throw new ApiError(401, "Invalid or expired refresh token");
+    }
+
+    await UserTeacher.findByIdAndUpdate(decoded._id, {
+        $set: { refreshToken: undefined },
+    });
+
+    const options = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Lax",
+        maxAge: 0, // instantly expire
+    };
 
     return res
-    .status(200)
-    .clearCookie("teacherAccessToken",options)
-    .clearCookie("teacherRefreshToken",options)
-    .json(new ApiResponse(200,{},"user logged out"));
-})
+        .status(200)
+        .clearCookie("teacherAccessToken", options)
+        .clearCookie("teacherRefreshToken", options)
+        .json(new ApiResponse(200, {}, "User logged out"));
+});
+
 
 const refreshAccessToken= asyncHandler(async (req,res)=>{
     try {

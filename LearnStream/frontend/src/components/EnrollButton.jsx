@@ -15,7 +15,7 @@ const EnrollButton = ({ course_id ,setEnroll }) => {
         withCredentials: true,
       });
 
-      console.log(response.data.data);
+      console.log(`hjvgakjvdkjg${response.data.data}`);
       setEnrolled(response.data.data);
       setEnroll(response.data.data); // ✅ Store boolean value in state
 
@@ -52,7 +52,7 @@ const EnrollButton = ({ course_id ,setEnroll }) => {
     if (token){
         checkEnrolled();
     }
-  }, [token,Enrolled]); // ✅ Run only once when component mounts
+  }, [token,Enrolled]); // ✅  Run only once when component mounts
 
   return (
     <div>

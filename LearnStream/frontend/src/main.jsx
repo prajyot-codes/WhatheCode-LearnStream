@@ -39,6 +39,8 @@ const router = createBrowserRouter(
       <Route path='student/:user_id/Cart' element={<Cart/>}/>
       <Route path ='student/:user_id/:course_id/:module_id/view' element={<LectureAssig/>}/>
       <Route path='student/:user_id' element={<Student />} />
+      <Route path='cart/' element={<Cart/>} />
+      
     </Route>
   )
 );

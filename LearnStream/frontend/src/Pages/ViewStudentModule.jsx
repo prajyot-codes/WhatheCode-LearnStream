@@ -5,6 +5,7 @@ import axios from "../api/axios";
 import { useNavigate, useParams } from "react-router-dom";
 import EnrollButton from "../components/EnrollButton";
 import BackButton from "../components/BackButton";
+import AddToCartBtn from "../components/AddToCartBtn";
 // import Modal from "./Modal";
 // import ModuleForm from "./Courseupdatation";
 const ModuleDropdown = ({ module, viewResources}) => {
@@ -73,7 +74,7 @@ const ViewStudentModules = () => {
   const { course_id } = useParams();
   console.log(course_id);
   const [enrolled,setEnroll] = useState(false)
-  const user_id = localStorage.getItem('user_id')
+  const user_id = localStorage.getItem('studentaccessToken')
   const [modules, setModules] = useState([]);
   const navigate = useNavigate();
   const viewResources = (module_id, lectures,assignments) => {
@@ -96,7 +97,9 @@ const ViewStudentModules = () => {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
-      console.log("Modules fetched:", response.data);
+      // console.log("Modules fetched:", response.data);
+      // console.log(`gfjvdjg,sv${user_id}`);
+      
       setModules(response.data.data);
     } catch (error) {
       console.error("Error fetching modules:", error);
@@ -158,7 +161,8 @@ const courseProgressDetails = async ()=>{
           <h2 className="text-lg sm:text-xl font-semibold mb-2">
             Instructor: {course?.author?.name || 'someone'}
           </h2>
-          {user_id && <EnrollButton course_id={course_id} setEnroll={setEnroll} />}
+          { user_id && <EnrollButton course_id={course_id} setEnroll={setEnroll} />}
+          {  <AddToCartBtn course_id={course_id}/>}
         </div>
 
         {/* Course Thumbnail */}

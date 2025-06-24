@@ -5,10 +5,8 @@ import axios from "../api/axios";
 import { useContext } from "react";
 import AuthContext from "../contexts/AuthProvider";
 // import {user.jpg} from "../assests/user.jpg"
-
+import {Badge, ShoppingCart} from "lucide-react"
 const Navbar1 = () => {
-  const [userId, setUserId] = useState(null);
-  const [accessToken, setAccessToken] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState(null);
   const {auth,setAuth} = useContext(AuthContext);
   const role = localStorage.getItem('role')||""
@@ -17,25 +15,20 @@ const Navbar1 = () => {
   // Fetch user details from localStorage when component mounts
   useEffect(() => {
     console.log(auth);
-    setUserId(localStorage.getItem("user_id"));
-    setAccessToken(localStorage.getItem("accessToken"));
-    // setAvatarUrl(
-    //   localStorage.getItem("avatarUrl") || "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Ddefault%2Bavatar&psig=AOvVaw04t_GWwT7vB3zbrFgLQkWh&ust=1737262814023000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJCxsLm-_ooDFQAAAAAdAAAAABAE" // Default placeholder
-    // );
-    setUserName(localStorage.getItem("name") || "Guest");
+    
   }, []);
   const handleMyCourses =  ()=>{
-    navigate(`/${role}/${userId}`)
+    navigate(`/${auth?.roles}/${auth?.user_id}`)
   }
   const handleLogout =async () => {
     try {
       const response = await axios.post(
-        `/user/${role}/logout`,
+        `/user/${auth?.roles}/logout`,
         {}, 
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            Authorization: `Bearer ${auth?.accessToken}`,
           },
           withCredentials: true,
         }
@@ -63,7 +56,7 @@ const Navbar1 = () => {
       {/* Right Section */}
       <div className="flex md:order-2">
         {/* Dropdown Menu for Logged-In Users */}
-        {userId && accessToken && (
+        {auth?.user_id && auth?.accessToken && (
           <Dropdown
             arrowIcon
             inline
@@ -82,7 +75,17 @@ const Navbar1 = () => {
             <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
           </Dropdown>
         )}
-
+        
+        {
+            /* Cart */
+            auth?.user_id && auth?.accessToken &&(
+                <ShoppingCart onClick={()=>{
+                  navigate(`${auth?.roles}/${auth?.user_id}/Cart`)
+                }}>
+                </ShoppingCart>
+            )
+        }
+        
         {/* Navbar Toggle (Mobile) */}
         <Navbar.Toggle />
       </div>

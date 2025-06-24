@@ -24,6 +24,7 @@
     useEffect(() => { 
       const fetchCourses = async () => {
         try {
+          console.log('THIS IS THE HEADERS BEING SENT',userAccessToken)
           const response = await axios.get(`courses/teacher/${user_id}`, {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true,
@@ -58,7 +59,7 @@
 
         {/* Welcome Section */}
         <section className="m-5 text-3xl">
-        <h1>Welcome <span className="font-league bold text-4xl">{name.charAt(0).toUpperCase() + name.slice(1)}</span></h1>
+        <h1>Welcome <span className="font-league bold text-4xl">{name?.charAt(0).toUpperCase() + name?.slice(1)}</span></h1>
         </section>
 
         {/* My Learning Section */}

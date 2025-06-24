@@ -5,6 +5,16 @@ import { uploadOnCloudinary } from '../../utils/cloudinary.js';
 import { ApiResponse  } from '../../utils/ApiResponse.js'
 import  jwt  from 'jsonwebtoken';
 import { maxHeaderSize } from 'http';
+
+import dotenv from "dotenv";
+dotenv.config()
+
+
+ const options = {
+        httpOnly: true,
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+    };
 // const User = require('../models/student/userstudentmodel');
 
 const generateAccessAndRefreshTokens  = async (userId)=>{
@@ -91,12 +101,7 @@ const registerUserStudent = asyncHandler( async (req,res) =>{
         "-password -refreshToken"
     )
     
-    const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
-    };
+   
 
     console.log("Cookies set: ", accessToken, refreshToken);
 
@@ -158,13 +163,7 @@ const loginUserStudent = asyncHandler(async (req,res)=>{
 
     const LoggedInUserStudent = await UserStudent.findById(userStudent._id).select("-password -refreshToken")
     
-    const options = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "None",
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
-    };
-
+  
     console.log("Cookies set: ", accessToken, refreshToken);
 
     return res.status(200)
@@ -196,13 +195,6 @@ const logoutUserStudent = asyncHandler(async (req, res) => {
     await UserStudent.findByIdAndUpdate(decoded._id, {
         $set: { refreshToken: undefined },
     });
-
-    const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
-        maxAge: 0, // instantly expire
-    };
 
     return res
         .status(200)

@@ -88,7 +88,7 @@ const videos = [
 
 
         <section className="m-5 text-3xl">
-        <h1>Welcome <span className="font-league bold text-4xl">{name.charAt(0).toUpperCase() + name.slice(1)}</span></h1>
+        <h1>Welcome <span className="font-league bold text-4xl">{auth?.name?.charAt(0).toUpperCase() + auth?.name?.slice(1)}</span></h1>
         </section>
 
         {/* My Learning Section */}

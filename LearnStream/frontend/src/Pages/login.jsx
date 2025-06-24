@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Spinner, TextInput } from "flowbite-react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../contexts/AuthProvider";
@@ -6,32 +6,26 @@ import axios from "../api/axios";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { setAuth } = useContext(AuthContext);
+  const { auth, setAuth } = useContext(AuthContext);
+
+  const [student, setStudent] = useState({ email: "", password: "", error: "", loading: false });
+  const [teacher, setTeacher] = useState({ email: "", password: "", error: "", loading: false });
+
+  // If already logged in via context (in-memory), redirect
   useEffect(() => {
-  const accessToken = localStorage.getItem("accessToken");
-  const userId = localStorage.getItem("user_id");
-  const role = localStorage.getItem("role");
+    if (auth?.accessToken && auth?.user_id && auth?.roles) {
+      navigate(`/${auth.roles}/${auth.user_id}`);
+    }
+  }, [auth, navigate]);
 
-  if (accessToken && userId && role) {
-    navigate(`/${role}/${userId}`, { replace: true });
-  }
-}, [navigate]);
+  const handleLogin = async (role, credentials, setCredentials) => {
+    const { email, password } = credentials;
 
-
-  // Shared logic for both forms
-  const [studentEmail, setStudentEmail] = useState("");
-  const [studentPwd, setStudentPwd] = useState("");
-  const [teacherEmail, setTeacherEmail] = useState("");
-  const [teacherPwd, setTeacherPwd] = useState("");
-
-  const [errMsg, setErrMsg] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async (role, email, password) => {
     try {
-      setLoading(true);
-      setErrMsg("");
-      const response = await axios.post(`/user/${role}/login`,
+      setCredentials(prev => ({ ...prev, loading: true, error: "" }));
+
+      const res = await axios.post(
+        `/user/${role}/login`,
         JSON.stringify({ email, password }),
         {
           headers: { "Content-Type": "application/json" },
@@ -39,33 +33,29 @@ const LoginPage = () => {
         }
       );
 
-      const accessToken = response?.data?.data?.accessToken;
-      const user_id = response?.data?.data?.user._id;
-      const roles = response?.data?.data?.role;
-      const name = response?.data?.data?.user.name;
+      const { accessToken, user, role: userRole } = res.data.data;
+      const user_id = user._id;
+      const name = user.name;
 
-      localStorage.setItem("name", name);
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("user_id", user_id);
-      localStorage.setItem("role", roles);
+      // 🧠 Store token only in memory (auth context)
+      setAuth({ user_id, name, roles: userRole, accessToken });
 
-      setAuth({ user_id, name, roles, accessToken });
+      // 💾 Store non-sensitive info for persistence
+      localStorage.setItem("userMeta", JSON.stringify({ user_id, name, roles: userRole }));
 
-      const targetUrl = `/${role}/${user_id}`;
-      window.location.href = targetUrl;
-
+      navigate(`/${userRole}/${user_id}`);
     } catch (err) {
-      if (!err?.response) {
-        setErrMsg("No Server Response");
-      } else if (err.response?.status === 400) {
-        setErrMsg("Missing Username or Password");
-      } else if (err.response?.status === 401) {
-        setErrMsg("Unauthorized");
-      } else {
-        setErrMsg("Login Failed");
-      }
+      const msg = !err?.response
+        ? "No Server Response"
+        : err.response.status === 400
+        ? "Missing Username or Password"
+        : err.response.status === 401
+        ? "Unauthorized"
+        : "Login Failed";
+
+      setCredentials(prev => ({ ...prev, error: msg }));
     } finally {
-      setLoading(false);
+      setCredentials(prev => ({ ...prev, loading: false }));
     }
   };
 
@@ -76,102 +66,98 @@ const LoginPage = () => {
         {/* Student Login */}
         <div className="p-10">
           <div className="flex flex-col items-center">
-            <img src="../../public/assets/Screenshot 2025-05-23 103312 (1).png" alt="Student" className="w-92" />
+            <img src="/assets/Screenshot 2025-05-23 103312 (1).png" alt="Student" className="w-92" />
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">Student Login</h2>
             <p className="text-sm text-gray-500">
-              Not a member yet?{" "}
-              <Link to="/signup/student" className="text-green-500 hover:underline">Sign up!</Link>
+              Not a member yet? <Link to="/signup/student" className="text-green-500 hover:underline">Sign up!</Link>
             </p>
           </div>
           <form
             className="mt-6"
             onSubmit={(e) => {
               e.preventDefault();
-              handleLogin("student", studentEmail, studentPwd);
+              handleLogin("student", student, setStudent);
             }}
           >
             <TextInput
               type="email"
-              placeholder="Username or E-mail"
-              value={studentEmail}
-              onChange={(e) => setStudentEmail(e.target.value)}
-              className="w-full p-3 border rounded mt-4"
+              placeholder="Email"
+              value={student.email}
+              onChange={(e) => setStudent({ ...student, email: e.target.value })}
+              className="w-full mt-4"
               required
             />
             <TextInput
               type="password"
               placeholder="Password"
-              value={studentPwd}
-              onChange={(e) => setStudentPwd(e.target.value)}
-              className="w-full p-3 border rounded mt-4"
+              value={student.password}
+              onChange={(e) => setStudent({ ...student, password: e.target.value })}
+              className="w-full mt-4"
               required
             />
             <div className="flex items-center justify-between mt-2 text-sm text-gray-500">
               <label className="flex items-center">
-                <input type="checkbox" className="mr-1" />
-                Remember me
+                <input type="checkbox" className="mr-1" /> Remember me
               </label>
               <a href="#" className="hover:underline">Forgot Password?</a>
             </div>
             <button
               type="submit"
               className="w-full bg-green-500 hover:bg-green-600 text-white py-3 mt-4 rounded"
-              disabled={loading}
+              disabled={student.loading}
             >
-              {loading ? <Spinner size="sm" /> : "Login"}
+              {student.loading ? <Spinner size="sm" /> : "Login"}
             </button>
-            {errMsg && <p className="text-red-500 text-center mt-2">{errMsg}</p>}
+            {student.error && <p className="text-red-500 text-center mt-2">{student.error}</p>}
           </form>
         </div>
 
         {/* Teacher Login */}
         <div className="bg-gray-50 p-10">
           <div className="flex flex-col items-center">
-            <img src="../../public/assets/Screenshot 2025-05-23 103846.png" alt="Teacher" className="w-92" />
+            <img src="/assets/Screenshot 2025-05-23 103846.png" alt="Teacher" className="w-92" />
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">Teacher Login</h2>
             <p className="text-sm text-gray-500">
-              Not a member yet?{" "}
-              <Link to="/signup/teacher" className="text-green-500 hover:underline">Sign up!</Link>
+              Not a member yet? <Link to="/signup/teacher" className="text-green-500 hover:underline">Sign up!</Link>
             </p>
           </div>
           <form
             className="mt-6"
             onSubmit={(e) => {
               e.preventDefault();
-              handleLogin("teacher", teacherEmail, teacherPwd);
+              handleLogin("teacher", teacher, setTeacher);
             }}
           >
             <TextInput
               type="email"
-              placeholder="Username or E-mail"
-              value={teacherEmail}
-              onChange={(e) => setTeacherEmail(e.target.value)}
-              className="w-full p-3 border rounded mt-4"
+              placeholder="Email"
+              value={teacher.email}
+              onChange={(e) => setTeacher({ ...teacher, email: e.target.value })}
+              className="w-full mt-4"
               required
             />
             <TextInput
               type="password"
               placeholder="Password"
-              value={teacherPwd}
-              onChange={(e) => setTeacherPwd(e.target.value)}
-              className="w-full p-3 border rounded mt-4"
+              value={teacher.password}
+              onChange={(e) => setTeacher({ ...teacher, password: e.target.value })}
+              className="w-full mt-4"
               required
             />
             <div className="flex items-center justify-between mt-2 text-sm text-gray-500">
               <label className="flex items-center">
-                <input type="checkbox" className="mr-1" />
-                Remember me
+                <input type="checkbox" className="mr-1" /> Remember me
               </label>
               <a href="#" className="hover:underline">Forgot Password?</a>
             </div>
             <button
               type="submit"
               className="w-full bg-green-500 hover:bg-green-600 text-white py-3 mt-4 rounded"
-              disabled={loading}
+              disabled={teacher.loading}
             >
-              {loading ? <Spinner size="sm" /> : "Login"}
+              {teacher.loading ? <Spinner size="sm" /> : "Login"}
             </button>
-            {errMsg && <p className="text-red-500 text-center mt-2">{errMsg}</p>}
+            {teacher.error && <p className="text-red-500 text-center mt-2">{teacher.error}</p>}
           </form>
         </div>
 

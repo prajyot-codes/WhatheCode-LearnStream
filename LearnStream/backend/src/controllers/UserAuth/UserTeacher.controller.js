@@ -70,15 +70,15 @@ const registerUser = asyncHandler( async (req,res) =>{
     const options = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
+        sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
         maxAge: 24 * 60 * 60 * 1000, // 1 day
     };
 
     console.log("Cookies set: ", accessToken, refreshToken);
 
     return res.status(200)
-    .cookie("teacherAccessToken" ,accessToken,options)
-    .cookie("teacherRefreshToken" ,refreshToken,options)
+    .cookie("studentAccessToken" ,accessToken,options)
+    .cookie("studentRefreshToken" ,refreshToken,options)
     .json(
         new ApiResponse(200,{
             user: LoggedInUserTeacher,role:'teacher',accessToken,refreshToken
@@ -123,7 +123,7 @@ const loginUser = asyncHandler(async (req,res)=>{
     const options = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
+        sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
         maxAge: 24 * 60 * 60 * 1000, // 1 day
     };
 
@@ -162,7 +162,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
+        sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
         maxAge: 0, // instantly expire
     };
 
@@ -184,7 +184,7 @@ const refreshAccessToken= asyncHandler(async (req,res)=>{
         const options = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Lax",
+            sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
             maxAge: 24 * 60 * 60 * 1000, // 1 day
         };
         const decodedToken = jwt.verify(incomingrefreshToken,process.env.REFRESH_TOKEN_SECRET)

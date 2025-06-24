@@ -4,9 +4,9 @@ import apiClient from './axios'; // Your configured Axios instance
 export const fetchNewAccessToken = async () => {
     try {
         const response = await apiClient.post('/auth/refresh-Token', {}, { withCredentials: true });
-        const { accessToken } = response.data.data;
+        const { accessToken,refreshToken,role } = response.data.data;
         // Store the new access token in localStorage
-
+        localStorage.setItem(`${role}accessToken`,accessToken)
         return accessToken; // Return the new token for immediate use if needed
     } catch (error) {
         console.error('Error refreshing access token:', error.response?.data?.message || error.message);

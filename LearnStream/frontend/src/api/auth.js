@@ -7,7 +7,7 @@ export const fetchNewAccessToken = async () => {
         const { accessToken,refreshToken,role } = response.data.data;
         // Store the new access token in localStorage
         localStorage.setItem(`${role}accessToken`,accessToken)
-        return accessToken; // Return the new token for immediate use if needed
+        return {accessToken,role}; // Return the new token for immediate use if needed
     } catch (error) {
         console.error('Error refreshing access token:', error.response?.data?.message || error.message);
         throw error; // Handle logout or other fallback logic if needed

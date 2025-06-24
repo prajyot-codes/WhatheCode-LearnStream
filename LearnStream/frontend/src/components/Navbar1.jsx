@@ -9,21 +9,19 @@ import {Badge, ShoppingCart} from "lucide-react"
 const Navbar1 = () => {
   const [avatarUrl, setAvatarUrl] = useState(null);
   const {auth,setAuth} = useContext(AuthContext);
-  const role = localStorage.getItem('role')||""
   const [userName, setUserName] = useState("Guest");
   const navigate = useNavigate()
   // Fetch user details from localStorage when component mounts
   useEffect(() => {
     console.log(auth);
-    
   }, []);
   const handleMyCourses =  ()=>{
-    navigate(`/${auth?.roles}/${auth?.user_id}`)
+    navigate(`/${auth?.role}/${auth?.user_id}`)
   }
   const handleLogout =async () => {
     try {
       const response = await axios.post(
-        `/user/${auth?.roles}/logout`,
+        `/user/${auth?.role}/logout`,
         {}, 
         {
           headers: {
@@ -80,7 +78,7 @@ const Navbar1 = () => {
             /* Cart */
             auth?.user_id && auth?.accessToken &&(
                 <ShoppingCart onClick={()=>{
-                  navigate(`${auth?.roles}/${auth?.user_id}/Cart`)
+                  navigate(`${auth?.role}/${auth?.user_id}/Cart`)
                 }}>
                 </ShoppingCart>
             )

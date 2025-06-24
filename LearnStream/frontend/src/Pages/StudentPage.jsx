@@ -26,10 +26,8 @@ const videos = [
     const { user_id } = useParams();
     const location = useLocation();
     const {auth, setAuth } = useContext(AuthContext);
-    const token = localStorage.getItem('accessToken');
-    const name = localStorage.getItem('name')
+    
     const errRef = useRef();
-    // const ModuleRef = useRef();
     const [course_id,setCourse_id] = useState(''); 
     const [errMsg, setErrMsg] = useState('');
     const [studentcourses,setStudentCourses] = useState([])
@@ -50,11 +48,11 @@ const videos = [
         try {
           const response =await axios.get(`courses/student/${user_id}`,{
             headers: { 'Content-Type': 'application/json' },
-            Authorization: `Bearer ${token}` ,
+            Authorization: `Bearer ${auth?.accessToken}` ,
             withCredentials: true ,
         })
           setStudentCourses(response.data.data.Courses);
-        console.log(localStorage.getItem('accessToken'));
+        
         } catch (err) {
           console.log(err)
               if (!err?.response) {
@@ -69,7 +67,7 @@ const videos = [
         }
     }
     fetchStudentCourses();
-  },[localStorage.getItem('accessToken')])  
+  },[auth?.accesstoken])  
   const navigate  = useNavigate();
   const viewCourse = (course_id)=>{
     navigate(`/user/${course_id}`)

@@ -1,4 +1,4 @@
-  import React, { useEffect, useRef, useState } from "react";
+  import React, { useContext, useEffect, useRef, useState } from "react";
   import { useParams, useNavigate } from 'react-router-dom';
   import axios from "../api/axios";
   import { Button } from "flowbite-react";
@@ -6,26 +6,28 @@
   import GeneralCourses from "../components/GeneralCourses";
   import CourseComp from "../components/CourseComp";
   import LearningGoals from "../components/udemycomponent";
+import AuthContext from "../contexts/AuthProvider";
 
   const Teachers = () => {
     const { user_id } = useParams();
+    const {auth,setAuth} = useContext(AuthContext);
     const errRef = useRef();
     const [errMsg, setErrMsg] = useState('');
     const [courses, setCourses] = useState([]);
     const [course_id, setCourse_id] = useState(''); // Single declaration for course_id
-    const name = localStorage.getItem('name')
-    const userAccessToken = localStorage.getItem('accessToken');
+    // const name = localStorage.getItem('name')
+    // const userAccessToken = localStorage.getItem('accessToken');
     const navigate = useNavigate();
     
     useEffect(() => {
       setErrMsg('');
     }, [user_id]);
 
-    useEffect(() => { 
+    useEffect(() => {
+      console.log('Current Auth',auth) 
       const fetchCourses = async () => {
         try {
-          console.log('THIS IS THE HEADERS BEING SENT',userAccessToken)
-          const response = await axios.get(`courses/teacher/${user_id}`, {
+          const response = await axios.get(`courses/teacher/${auth?.user_id}`, {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true,
           });
@@ -44,10 +46,10 @@
         }
       };
       fetchCourses();
-    }, [userAccessToken]);
+    }, [auth?.accessToken]);
 
     const viewCourse = (course_id) => {
-      navigate(`/teacher/${user_id}/${course_id}`);
+      navigate(`/teacher/${auth?.user_id}/${course_id}`);
     };
 
     return (
@@ -59,7 +61,7 @@
 
         {/* Welcome Section */}
         <section className="m-5 text-3xl">
-        <h1>Welcome <span className="font-league bold text-4xl">{name?.charAt(0).toUpperCase() + name?.slice(1)}</span></h1>
+        <h1>Welcome <span className="font-league bold text-4xl">{auth?.name?.charAt(0).toUpperCase() + auth?.name?.slice(1)}</span></h1>
         </section>
 
         {/* My Learning Section */}
@@ -93,7 +95,7 @@
 
         {/* Sticky Button */}
         <div className="relative bottom-4 right-4">
-          <Link to={`/teacher/${user_id}/makecourse`}>
+          <Link to={`/teacher/${auth?.user_id}/makecourse`}>
             <Button pill className=" m-10 mx-24 w-45 h-12 rounded-full flex items-center justify-center">
               Make a new course
             </Button>

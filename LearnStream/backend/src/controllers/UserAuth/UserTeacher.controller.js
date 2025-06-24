@@ -5,7 +5,11 @@ import { uploadOnCloudinary } from '../../utils/cloudinary.js';
 import { ApiResponse  } from '../../utils/ApiResponse.js'
 import  jwt  from 'jsonwebtoken';
 // const User = require('../models/student/userteachermodel');
-
+ const options = {
+        httpOnly: true,
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+    };
 const generateAccessAndRefreshTokens  = async (userId)=>{
     try {
         const userTeacher = await UserTeacher.findById(userId)
@@ -56,29 +60,14 @@ const registerUser = asyncHandler( async (req,res) =>{
     const createdTeacher =await UserTeacher.findById(userTeacher._id).select(
         "-password -refreshToken"
     )
-    // 8 
-    // if (!createdTeacher){
-    //     throw new ApiError(500,"something went wrong while registering the user")
-    // }
-    // // 9
-    // console.log("sending response")
-    // return res.status(201).json(
-    //     new ApiResponse(201,createdTeacher,"User Registered Succesfully")
-    // )
 
 
-    const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
-    };
 
     console.log("Cookies set: ", accessToken, refreshToken);
 
     return res.status(200)
-    .cookie("studentAccessToken" ,accessToken,options)
-    .cookie("studentRefreshToken" ,refreshToken,options)
+    .cookie("teacherAccessToken" ,accessToken,options)
+    .cookie("teacherRefreshToken" ,refreshToken,options)
     .json(
         new ApiResponse(200,{
             user: LoggedInUserTeacher,role:'teacher',accessToken,refreshToken
@@ -120,12 +109,7 @@ const loginUser = asyncHandler(async (req,res)=>{
 
     const LoggedInUserTeacher = await UserTeacher.findById(userTeacher._id).select("-password -refreshToken")
     
-    const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
-    };
+    
 
     console.log("Cookies set: ", accessToken, refreshToken);
 
@@ -159,12 +143,6 @@ const logoutUser = asyncHandler(async (req, res) => {
         $set: { refreshToken: undefined },
     });
 
-    const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
-        maxAge: 0, // instantly expire
-    };
 
     return res
         .status(200)
@@ -173,47 +151,6 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "User logged out"));
 });
 
-
-const refreshAccessToken= asyncHandler(async (req,res)=>{
-    try {
-        const incomingrefreshToken = req.cookie?.refreshToken || req.body.refreshToken
-        
-        if (!incomingrefreshToken){
-            throw new ApiError(401,"incoming refresh token is invalid")
-        }
-        const options = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
-        };
-        const decodedToken = jwt.verify(incomingrefreshToken,process.env.REFRESH_TOKEN_SECRET)
-    
-        const user =  await UserTeacher.findById(decodedToken?._id)
-    
-        if (!user){
-            throw new ApiError(401,"invalid token")
-        }
-    
-        if (user?.refreshToken !== incomingrefreshToken){
-            throw new ApiError(401,"refresh token is expired or used")
-        }
-    
-        const {accessToken,newRefreshToken} =await generateAccessAndRefreshTokens(user._id);
-        
-        return res.
-        status(200)
-        .cookie("teacherAccessToken",accessToken,options)
-        .cookie("teacherRefreshToken",newRefreshToken,options)
-        .json(
-            new ApiResponse(200,
-                {accessToken,refreshToken:newRefreshToken},
-            "access token refreshed")
-        )
-    } catch (error) {
-         throw new ApiError(400,error?.message  || "invalid refresh token")
-    }
-})
 
 
 

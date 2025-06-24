@@ -13,8 +13,8 @@ const LoginPage = () => {
 
   // If already logged in via context (in-memory), redirect
   useEffect(() => {
-    if (auth?.accessToken && auth?.user_id && auth?.roles) {
-      navigate(`/${auth.roles}/${auth.user_id}`);
+    if (auth?.accessToken && auth?.user_id && auth?.role) {
+      navigate(`/${auth.role}/${auth.user_id}`);
     }
   }, [auth, navigate]);
 
@@ -38,10 +38,10 @@ const LoginPage = () => {
       const name = user.name;
 
       // 🧠 Store token only in memory (auth context)
-      setAuth({ user_id, name, roles: userRole, accessToken });
+      setAuth({ user_id, name, role: userRole, accessToken });
 
       // 💾 Store non-sensitive info for persistence
-      localStorage.setItem("userMeta", JSON.stringify({ user_id, name, roles: userRole }));
+      localStorage.setItem("userMeta", JSON.stringify({ user_id, name, role: userRole }));
 
       navigate(`/${userRole}/${user_id}`);
     } catch (err) {

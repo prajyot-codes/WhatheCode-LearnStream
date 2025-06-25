@@ -1,10 +1,10 @@
 import axios from '../api/axios';
 import React, { useEffect, useState } from 'react';
-
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const token = localStorage.getItem('studentAccessToken');
-
+  const navigate=useNavigate();
   const getCart = async () => {
     try {
       const response = await axios.get(`/courses/cart`, {
@@ -16,13 +16,27 @@ const Cart = () => {
       });
 
       const items = response.data?.data?.items || [];
-
-      // Map items to extract only course information
       const courses = items.map(item => item.course);
-      console.log(courses);
       setCartItems(courses);
     } catch (error) {
       console.error("Error fetching cart:", error);
+    }
+  };
+
+  const removeFromCart = async (courseId) => {
+    try {
+      await axios.delete(`/courses/cart/${courseId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        withCredentials: true,
+      });
+
+      // Refresh cart after removal
+      setCartItems(prev => prev.filter(item => item._id !== courseId));
+    } catch (error) {
+      console.error("Error removing from cart:", error);
     }
   };
 
@@ -43,10 +57,11 @@ const Cart = () => {
             <p className="text-center text-gray-500">Your cart is empty.</p>
           ) : (
             cartItems.map((item) => (
-              <div key={item._id} className="flex gap-4 items-center border-b pb-4">
+              <div key={item._id} className="flex gap-4 items-center border-b pb-4 cursor-pointer" onClick={()=> navigate(`/user/${item._id}`)} >
                 <img
                   src={item.thumbnail}
                   alt={item.title}
+                  
                   className="w-24 h-24 object-cover rounded-lg"
                 />
                 <div className="flex-1">
@@ -55,11 +70,18 @@ const Cart = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-green-600 font-semibold text-lg">₹{item.price}</p>
+                  <button
+                    onClick={() => removeFromCart(item._id)}
+                    className="text-red-600 mt-2 hover:underline text-sm"
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
             ))
           )}
 
+          {/* Total at the bottom of cart items */}
           {cartItems.length > 0 && (
             <div className="flex justify-between items-center pt-4 mt-4 border-t text-lg font-semibold">
               <span>Total Amount:</span>

@@ -1,29 +1,32 @@
 import { Router } from "express";
 import { 
-    addToCart,
     checkEnrollment,
     CourseProgress, 
     createCourse, 
     enrollStudent, 
     getAllCourses, 
-    getCart, 
     getCourseById, 
     getCourseByStudentId, 
     getCourseByTeacherId, 
     getCourseOwner, 
     getCoursesByCategory, 
-    getEnrolledStudents,
-    removeFromCart, 
+    getEnrolledStudents, 
  } from "../../controllers/Courses/Course.controller.js";
 
 import { verifyJWT } from "../../middleware/authteacher.middleware.js";
 import { upload } from "../../middleware/multer.middleware.js";
 import { verifyJWTStudent } from "../../middleware/authstudent.middleware.js";
 import { verifyJWTCombined } from "../../middleware/authcombined.middleware.js";
-
+import { addToCart, getCart, inCart, removeFromCart } from "../../controllers/Courses/cart.controller.js";
 const router = Router();
 
-
+// router.route('/cart').post(verifyJWTStudent,addToCart)
+//                         .delete(verifyJWTStudent,removeFromCart)
+//                         .get(verifyJWTStudent,getCart)
+router.route('/cart').get(verifyJWTStudent,getCart)
+router.route('/cart/:courseId').post(verifyJWTStudent,addToCart)
+                                .delete(verifyJWTStudent,removeFromCart)
+                                .get(verifyJWTStudent,inCart)
 // Courses
 router.route('/:courseId').get(  getCourseById);//
 // Enrollment Routes
@@ -44,9 +47,6 @@ router.route('/').post(verifyJWT,upload.single('thumbnail'),createCourse)
 
 
 // Course Cart 
-router.route('/cart').post(verifyJWTStudent,addToCart)
-                        .delete(verifyJWTStudent,removeFromCart)
-                        .get(verifyJWTStudent,getCart)
 
 // Assignments
 // router.route('/:course_id/free-previews').get( verifyJWT, getFreePreviews);lecture_

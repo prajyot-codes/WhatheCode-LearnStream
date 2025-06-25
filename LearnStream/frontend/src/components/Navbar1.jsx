@@ -7,6 +7,7 @@ import AuthContext from "../contexts/AuthProvider";
 // import {user.jpg} from "../assests/user.jpg"
 import {Badge, ShoppingCart} from "lucide-react"
 const Navbar1 = () => {
+  const token=localStorage.getItem('studentaccessToken')
   const [avatarUrl, setAvatarUrl] = useState(null);
   const {auth,setAuth} = useContext(AuthContext);
   const [userName, setUserName] = useState("Guest");
@@ -54,7 +55,7 @@ const Navbar1 = () => {
       {/* Right Section */}
       <div className="flex md:order-2">
         {/* Dropdown Menu for Logged-In Users */}
-        {auth?.user_id && auth?.accessToken && (
+        {token && (
           <Dropdown
             arrowIcon
             inline
@@ -76,9 +77,9 @@ const Navbar1 = () => {
         
         {
             /* Cart */
-            auth?.user_id && auth?.accessToken &&(
+             token &&(
                 <ShoppingCart onClick={()=>{
-                  navigate(`${auth?.role}/${auth?.user_id}/Cart`)
+                  navigate(`/cart`)
                 }}>
                 </ShoppingCart>
             )

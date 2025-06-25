@@ -1,3 +1,4 @@
+
 import axios from '../api/axios.js';
 import React, { useEffect, useState } from 'react';
 
@@ -49,10 +50,11 @@ const EnrollButton = ({ course_id ,setEnroll }) => {
   };
 
   useEffect(() => {
-    if (token){
+    
         checkEnrolled();
-    }
-  }, [token,Enrolled]); // ✅ Run only once when component mounts
+    // console.log("prajyot");
+    
+  }, [token,course_id]); // ✅ Run only once when component mounts
 
   return (
     <div>

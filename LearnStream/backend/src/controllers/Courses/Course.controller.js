@@ -8,7 +8,7 @@ import { deleteMediaFromCloudinary, uploadMultipleFilesOnCloudinary, uploadOnClo
 import { UserStudent } from "../../models/user/userstudentmodel.js";
 import { Progress } from "../../models/Course/Progress.js";
 import { UserTeacher } from "../../models/user/userteachermodel.js";
-import { Cart } from "../../models/Cart.js";
+// import { Cart } from "../../models/Cart.js";
 
 const createCourse = asyncHandler(async (req,res)=> {
     // thumbnail upload using multer and cloudinary
@@ -396,9 +396,6 @@ const getCart = asyncHandler(
 )
 
 export {
-    addToCart,
-    removeFromCart,
-    getCart,
     createCourse,
     getCoursesByCategory,
     getAllCourses,

@@ -6,8 +6,8 @@ import { UserStudent } from "../models/user/userstudentmodel.js";
 const verifyJWTStudent = asyncHandler(async (req,res,next)=>{
    try {
     const token = req.cookies?.studentAccessToken || req.header("Authorization")?.replace(/^Bearer\s/, "").trim();
-    console.log("Auth Header:", req.header("Authorization"));
-    console.log("studentAccessToken Cookie:", req.cookies?.studentAccessToken);
+    // console.log("Auth Header:", req.header("Authorization"));
+    // console.log("studentAccessToken Cookie:", req.cookies?.studentAccessToken);
 
     console.log(token)
      if (!token){

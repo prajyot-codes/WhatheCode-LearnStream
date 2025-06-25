@@ -9,8 +9,6 @@ const CourseComp = ({setCourse_id, courses=[],ButtonName,buttonHandler,errRef,er
     setCourse_id(courseId)
     buttonHandler(courseId);
   }
-  const userId= localStorage.getItem('user_id')
-  const username= localStorage.getItem('name')
   return (
     <div className="flex flex-wrap gap-16">
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>

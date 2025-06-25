@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { Button,Checkbox ,TextInput, Textarea, Label, Dropdown } from "flowbite-react";
 import axios from "../api/axios"; // Ensure this path matches your file structure
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import AuthContext from "../contexts/AuthProvider";
 
 
 function MakeaCourse() {
   const navigate = useNavigate();
   const [courseTitle, setCourseTitle] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
+  const {auth,setAuth} = useContext(AuthContext)
+  const {user_id,accessToken} = auth;
   const [coursePrice, setCoursePrice] = useState("");
   const [courseCategory, setCourseCategory] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
@@ -32,7 +36,7 @@ function MakeaCourse() {
     setCourseCategory(category);
   };
 
-  const token = localStorage.getItem('accessToken');
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,7 +55,7 @@ function MakeaCourse() {
         headers: {
           "Content-Type": "multipart/form-data", // Required for file uploads
           withCredentials: true,
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${accessToken}`, 
         },
       });
 
@@ -60,7 +64,7 @@ function MakeaCourse() {
       const courseId= response?.data?._id || response?.data?.data?._id;
 
       console.log(courseId);
-      const userId=localStorage.getItem('user_id')
+      
       // console.log(response?.data?.data.)
       // Reset form fields
       setCourseTitle("");
@@ -71,7 +75,7 @@ function MakeaCourse() {
       if(Live) {
         navigate
       }
-      navigate(`/teacher/${userId}/${courseId}`)
+      navigate(`/teacher/${user_id}/${courseId}`)
     } catch (e) {
       console.error("Error creating course:", e.response?.data || e.message);
     }

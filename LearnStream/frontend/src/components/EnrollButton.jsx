@@ -1,11 +1,14 @@
 
+import { useContext } from 'react';
 import axios from '../api/axios.js';
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
+import AuthContext from '../contexts/AuthProvider.jsx';
 
 const EnrollButton = ({ course_id ,setEnroll }) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [Enrolled, setEnrolled] = useState(false);
-    const token = localStorage.getItem('accessToken')
+  const {auth,setAuth} = useContext(AuthContext)
+  const token = auth?.accessToken
   const checkEnrolled = async () => {
     try {
       const response = await axios.get(`/courses/${course_id}/enrolled`, {

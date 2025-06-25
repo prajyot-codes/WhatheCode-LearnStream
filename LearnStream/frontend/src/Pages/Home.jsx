@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import GeneralCourses from "../components/GeneralCourses";
 import LearningGoals from "../components/udemycomponent";
 import Testimonials from "../components/testimonials";
+import { useContext } from "react";
+import AuthContext from "../contexts/AuthProvider";
 
 const Home = () => {
   const courseDiv = useRef(null);
@@ -12,7 +14,8 @@ const Home = () => {
   const viewCourse = (course_id) => {
     navigate(`/user/${course_id}`);
   };
-  const user_id=localStorage.getItem('user_id')
+  const {auth,setAuth}  = useContext(AuthContext)
+  const {user_id} = auth
   return (
     <>
       <section

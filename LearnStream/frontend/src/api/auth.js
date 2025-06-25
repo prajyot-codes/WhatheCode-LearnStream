@@ -6,7 +6,7 @@ export const fetchNewAccessToken = async () => {
         const response = await apiClient.post('/auth/refresh-Token', {}, { withCredentials: true });
         const { accessToken,refreshToken,role } = response.data.data;
         // Store the new access token in localStorage
-        localStorage.setItem(`${role}accessToken`,accessToken)
+        // localStorage.setItem(`${role}accessToken`,accessToken)
         return {accessToken,role}; // Return the new token for immediate use if needed
     } catch (error) {
         console.error('Error refreshing access token:', error.response?.data?.message || error.message);

@@ -6,6 +6,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import EnrollButton from "../components/EnrollButton";
 import BackButton from "../components/BackButton";
 import AddToCartBtn from "../components/AddToCartBtn";
+import { useContext } from "react";
+import AuthContext from "../contexts/AuthProvider";
 // import Modal from "./Modal";
 // import ModuleForm from "./Courseupdatation";
 const ModuleDropdown = ({ module, viewResources}) => {
@@ -73,8 +75,9 @@ const ModuleDropdown = ({ module, viewResources}) => {
 const ViewStudentModules = () => {
   const { course_id } = useParams();
   console.log(course_id);
+  const {auth,setAuth} = useContext(AuthContext)
   const [enrolled,setEnroll] = useState(false)
-  const user_id = localStorage.getItem('studentaccessToken')
+  const {user_id} =auth 
   const [modules, setModules] = useState([]);
   const navigate = useNavigate();
   const viewResources = (module_id, lectures,assignments) => {

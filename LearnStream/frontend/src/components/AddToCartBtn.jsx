@@ -1,10 +1,13 @@
 import axios from '../api/axios.js';
 import React, { useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../contexts/AuthProvider.jsx';
 
 function AddToCartBtn({ course_id }) {
   const [inCart, setInCart] = useState(false);
-  const token = localStorage.getItem('studentaccessToken');
+  const {auth,setAuth} = useContext(AuthContext)
+  const token = auth?.accessToken
   const navigate = useNavigate();
 
   const checkPresence = async () => {

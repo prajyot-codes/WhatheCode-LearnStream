@@ -2,10 +2,10 @@
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
-    courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
-    studentId: { type: mongoose.Schema.Types.ObjectId, ref: "UserStudent", required: true },
-    razorpayOrderId: { type: String, required: true },
-    razorpayPaymentId: { type: String },
+    course_id: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: "UserStudent", required: true },
+    razorpayOrder_id: { type: String, required: true },
+    razorpayPayment_id: { type: String },
     razorpaySignature: { type: String },
     amount: { type: Number, required: true },
     currency: { type: String, default: "INR" },

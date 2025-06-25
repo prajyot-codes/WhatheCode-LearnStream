@@ -86,11 +86,7 @@ const Signup = ({ role, verb = "amazing" }) => {
 
       // Extract user data from the response
       const { accessToken, user: userData } = response.data.data;
-      localStorage.setItem("user_id", userData._id);
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("name", userData.name);
-      localStorage.setItem("avatarUrl", userData.avatar || "https://via.placeholder.com/150");
-
+      
       setAuth({'user_id':userData._id,accessToken,'name':userData.name,role})
       // Redirect user based on role
       const targetUrl = `/${role}/${userData._id}`;

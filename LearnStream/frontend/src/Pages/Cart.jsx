@@ -1,9 +1,12 @@
 import axios from '../api/axios';
 import React, { useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
+import AuthContext from '../contexts/AuthProvider';
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
-  const token = localStorage.getItem('studentAccessToken');
+  const {auth,setAuthContext} = useContext(AuthContext);
+  const token = auth?.accessToken
   const navigate=useNavigate();
   const getCart = async () => {
     try {

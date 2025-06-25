@@ -29,9 +29,9 @@ function AddToCartBtn({ course_id }) {
   };
 
   useEffect(() => {
-    if (course_id && token) {
+    
       checkPresence();
-    }
+    
   }, [course_id, token]);
 
   const handleClick = async () => {

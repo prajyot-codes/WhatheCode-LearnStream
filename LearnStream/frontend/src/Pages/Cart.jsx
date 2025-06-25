@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
-  const token = localStorage.getItem('studentAccessToken'); // make sure it's the correct key!
+  const token = localStorage.getItem('studentAccessToken');
 
   const getCart = async () => {
     try {
@@ -15,18 +15,21 @@ const Cart = () => {
         withCredentials: true,
       });
 
-      console.log(response.data);
-      setCartItems([]); // Assuming response.data contains an array of cart items
+      const items = response.data?.data?.items || [];
+
+      // Map items to extract only course information
+      const courses = items.map(item => item.course);
+      console.log(courses);
+      setCartItems(courses);
     } catch (error) {
       console.error("Error fetching cart:", error);
     }
   };
 
   useEffect(() => {
-    getCart();
-  }, []);
+     getCart();
+  }, [token]);
 
-  // Calculate total price
   const total = cartItems.length === 0 ? 0 : cartItems.reduce((acc, item) => acc + item.price, 0);
 
   return (
@@ -40,7 +43,7 @@ const Cart = () => {
             <p className="text-center text-gray-500">Your cart is empty.</p>
           ) : (
             cartItems.map((item) => (
-              <div key={item.id} className="flex gap-4 items-center border-b pb-4">
+              <div key={item._id} className="flex gap-4 items-center border-b pb-4">
                 <img
                   src={item.thumbnail}
                   alt={item.title}
@@ -48,7 +51,7 @@ const Cart = () => {
                 />
                 <div className="flex-1">
                   <h2 className="text-lg font-semibold">{item.title}</h2>
-                  <p className="text-sm text-gray-600">by {item.instructor}</p>
+                  <p className="text-sm text-gray-600">Category: {item.category}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-green-600 font-semibold text-lg">₹{item.price}</p>
@@ -57,7 +60,6 @@ const Cart = () => {
             ))
           )}
 
-          {/* Total at the bottom of cart items */}
           {cartItems.length > 0 && (
             <div className="flex justify-between items-center pt-4 mt-4 border-t text-lg font-semibold">
               <span>Total Amount:</span>

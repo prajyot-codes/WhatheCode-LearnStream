@@ -7,11 +7,13 @@ function BuyCourseButton({ amount }) {
   const { auth } = useContext(AuthContext);
   const token = auth?.accessToken;
 
-  const { course_id } = useParams(); // ✅ destructure from useParams
+  const { course_id } = useParams();
+  const course_ids = [course_id]; // 👈 Convert to array
+
   return (
     <button
       className="bg-green-600 text-white px-4 py-2 rounded"
-      onClick={() => displayRazorpay({ course_id, amount, token })}
+      onClick={() => displayRazorpay({ course_ids, amount, token })}
     >
       Buy Now
     </button>

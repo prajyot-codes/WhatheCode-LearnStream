@@ -1,4 +1,5 @@
-import axios from "../api/axios"; // your configured axios instance
+// src/utils/displayRazorpay.js
+import axios from "../api/axios"; // Your Axios instance
 
 async function loadScript(src) {
   return new Promise((resolve) => {
@@ -10,16 +11,42 @@ async function loadScript(src) {
   });
 }
 
-export const displayRazorpay = async ({ course_id, amount, token }) => {
+export const displayRazorpay = async ({ course_ids, amount, token }) => {
   const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
   if (!res) {
-    alert("Razorpay SDK failed to load. Are you online?");
+    alert("Razorpay SDK failed to load.");
     return;
   }
 
+const enrollStudent = async (course_ids) => {
+  try {
+    
+      const response = await axios.post(
+        `/courses/enroll`, 
+        { course_ids },     
+        {
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        console.log(`✅ Enrollment successful for:`, course_ids);
+      }
+    
+  } catch (error) {
+    console.error("❌ Enrollment error:", error);
+  }
+};
+
+
+
   const { data } = await axios.post(
     "/payment/create-order",
-    { course_id, amount },
+    { course_ids, amount },
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -31,18 +58,16 @@ export const displayRazorpay = async ({ course_id, amount, token }) => {
 
   const order = data.data;
 
+  console.log(order);
+
   const options = {
-    key: "rzp_test_yLlU5Vi0wMY8hC", // ✅ your Razorpay key
+    key: "rzp_test_yLlU5Vi0wMY8hC", // Replace with your Razorpay Key
     amount: order.amount,
     currency: order.currency,
     name: "LearnStream",
     description: "Course Purchase",
-    image: "",
     order_id: order.id,
     handler: async function (response) {
-      console.log("🧾 Razorpay response:", response);
-
-      // ✅ Send to backend for signature verification
       try {
         const verifyRes = await axios.post(
           "/payment/verify",
@@ -61,13 +86,13 @@ export const displayRazorpay = async ({ course_id, amount, token }) => {
         );
 
         if (verifyRes.data.success) {
-          alert(`✅ Payment successful & verified ${order.id}`);
+          enrollStudent(course_ids);
         } else {
-          alert("❌ Payment failed verification");
+          alert("❌ Payment verification failed.");
         }
       } catch (err) {
-        console.error("❌ Error during verification:", err);
-        alert("Verification request failed");
+        console.error("Verification Error:", err);
+        alert("Payment verification failed.");
       }
     },
     prefill: {
@@ -75,14 +100,10 @@ export const displayRazorpay = async ({ course_id, amount, token }) => {
       contact: "9999999999",
     },
     notes: {
-      course_id,
+      course_ids: course_ids.join(","),
     },
     theme: {
       color: "#3399cc",
-    },
-    retry: {
-      enabled: true,
-      max_count: 3,
     },
   };
 

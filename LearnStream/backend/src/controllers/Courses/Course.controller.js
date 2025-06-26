@@ -170,60 +170,56 @@ const getAllCourses = asyncHandler(async (req,res) =>{
     )
 })
 
-const enrollStudent  = asyncHandler(async (req,res)=>{
-    // get student data such as id,and payment data
-    // check if the student exists
-    // add student to courses.enrolledStudents Array.
-    // add course to the given Students model 
-    const { courseId:course_id}  = req.params
+const enrollMultipleCourses = asyncHandler(async (req, res) => {
+  const student_id = req.student._id;
+  const { course_ids } = req.body;
 
-    const student_id = req.student._id
-   
-    
-    console.log('req.student:', req.student);
-    console.log('courseid',course_id)
-    console.log('student_id:', student_id);
+  if (!student_id) {
+    throw new ApiError(401, 'User not authenticated');
+  }
 
-    if (!student_id) {
-        throw new ApiError(401, 'User not authenticated');
+  if (!Array.isArray(course_ids) || course_ids.length === 0) {
+    throw new ApiError(400, 'course_ids must be a non-empty array');
+  }
+
+  const student = await UserStudent.findById(student_id);
+  if (!student) {
+    throw new ApiError(404, 'Student not found');
+  }
+
+  const results = [];
+
+  for (const course_id of course_ids) {
+    const course = await Courses.findById(course_id);
+    if (!course) {
+      results.push({ course_id, status: "Course not found" });
+      continue;
     }
 
-    const studenttobeEnrolled =await UserStudent.findById(student_id);
-    const courseTobeEnrolled = await Courses.findById(course_id);
-    if (!studenttobeEnrolled){
-        throw new ApiError('course id not found')
-    }
-    if (!courseTobeEnrolled){
-        throw new ApiError('student not found')
-    }
-    
-    const alreadyEnrolled = studenttobeEnrolled.Courses.includes(course_id);
+    const alreadyEnrolled = student.Courses.includes(course_id);
 
-    if (alreadyEnrolled){
-        return res.status(200).json( 
-            new ApiResponse(200,alreadyEnrolled,'Student Already enrolled')
-        )
+    if (alreadyEnrolled) {
+      results.push({ course_id, status: "Already enrolled" });
+      continue;
     }
 
-    const updatedCourse = await Courses.findByIdAndUpdate(course_id,
-        {$push:{enrolledStudents:student_id}},{new:true}
-    )
+    // Enroll the student
+    await Courses.findByIdAndUpdate(course_id, {
+      $push: { enrolledStudents: student_id }
+    });
 
-    const updatedStudent = await UserStudent.findByIdAndUpdate(student_id,
-        {$push:{Courses:course_id}},{new:true}
-    )
+    await UserStudent.findByIdAndUpdate(student_id, {
+      $push: { Courses: course_id }
+    });
 
-    if (!updatedCourse || !updatedStudent){
-        throw new ApiError(404,"Failed To Enroll Student")
-    }``
-    
-    return res.status(200).json(
-        new ApiResponse(200,true,
-            "student succesfully enrolled"
-        )
-    )
-    
-})
+    results.push({ course_id, status: "Enrolled" });
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, results, "Enrollment processed")
+  );
+});
+
 const checkEnrollment = asyncHandler(async(req,res)=>{
     const { courseId:course_id}  = req.params
 
@@ -403,7 +399,7 @@ export {
     getCourseByStudentId,
     CourseProgress,
     getEnrolledStudents,
-    enrollStudent,
+    enrollMultipleCourses,
     checkEnrollment,
     getCourseByTeacherId,
     getCourseOwner

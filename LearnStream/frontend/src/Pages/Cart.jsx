@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useContext } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import AuthContext from '../contexts/AuthProvider';
+import { displayRazorpay } from "./displayRazorpay";
+
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const {auth,setAuthContext} = useContext(AuthContext);
@@ -49,6 +51,9 @@ const Cart = () => {
 
   const total = cartItems.length === 0 ? 0 : cartItems.reduce((acc, item) => acc + item.price, 0);
 
+  const course_ids = cartItems.map(course => course._id);
+
+
   return (
     <>
       <h1 className="text-3xl font-bold my-6 text-center">🛒 Your Cart</h1>
@@ -60,12 +65,13 @@ const Cart = () => {
             <p className="text-center text-gray-500">Your cart is empty.</p>
           ) : (
             cartItems.map((item) => (
-              <div key={item._id} className="flex gap-4 items-center border-b pb-4 cursor-pointer" onClick={()=> navigate(`/user/${item._id}`)} >
+              <div key={item._id} className="flex gap-4 items-center border-b pb-4 "  >
                 <img
+                onClick={()=> navigate(`/user/${item._id}`)}
                   src={item.thumbnail}
                   alt={item.title}
                   
-                  className="w-24 h-24 object-cover rounded-lg"
+                  className="w-24 h-24 object-cover rounded-lg cursor-pointer"
                 />
                 <div className="flex-1">
                   <h2 className="text-lg font-semibold">{item.title}</h2>
@@ -106,7 +112,7 @@ const Cart = () => {
           </div>
           <button
             className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold"
-            disabled={cartItems.length === 0}
+            disabled={cartItems.length === 0} onClick={() => displayRazorpay({ course_ids, amount: total, token })}
           >
             Proceed to Checkout
           </button>

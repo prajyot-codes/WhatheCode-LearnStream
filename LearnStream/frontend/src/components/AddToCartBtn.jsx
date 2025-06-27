@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../contexts/AuthProvider.jsx';
 
-function AddToCartBtn({ course_id }) {
+function AddToCartBtn({ course_id,enrolled }) {
   const [inCart, setInCart] = useState(false);
   const {auth,setAuth} = useContext(AuthContext)
   const token = auth?.accessToken
@@ -38,7 +38,7 @@ function AddToCartBtn({ course_id }) {
   }, [course_id, token]);
 
   const handleClick = async () => {
-  if (inCart) {
+  if (inCart && !enrolled) {
     navigate('/cart')
     
   } else {
@@ -67,6 +67,7 @@ function AddToCartBtn({ course_id }) {
     <button
       className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
       onClick={handleClick}
+      disabled = {enrolled}
     >
       {inCart ? 'Go to Cart' : 'Add to Cart'}
     </button>

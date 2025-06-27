@@ -86,7 +86,32 @@ const ViewStudentModules = () => {
   const [totalLectures, setTotalLectures] = useState(0);
   const [totalAssignments, setTotalAssignments] = useState(0);
   const navigate = useNavigate();
-
+  const [isDisabled,setIsDisabled] =  useState(false);
+  const token = auth?.accessToken
+    const checkEnrolled = async () => {
+      try {
+        const response = await axios.get(`/courses/${course_id}/enrolled`, {
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}` 
+          },
+          withCredentials: true,
+        });
+  
+        console.log(response.data.data);
+        // setEnrolled(response.data.data);
+        setEnroll(response.data.data); // ✅ Store boolean value in state
+  
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    useEffect(() => {
+      
+          checkEnrolled();
+      // console.log("prajyot");
+      
+    }, [token,course_id]); // ✅ Run only once when component mounts
   const viewResources = (module_id, lectures, assignments) => {
     if (enrolled) {
       navigate(`/student/${user_id}/${course_id}/${module_id}/view`, {
@@ -159,9 +184,9 @@ const ViewStudentModules = () => {
           {/* Action Buttons */}
           {user_id && (
             <div className="flex gap-2 mt-2 flex-wrap">
-              <EnrollButton course_id={course_id} setEnroll={setEnroll} />
-              <AddToCartBtn course_id={course_id} />
-              <BuyCourseButton course_id={course_id} amount={course?.price} />
+              {/* <EnrollButton course_id={course_id}  /> */}
+              <AddToCartBtn course_id={course_id} enrolled = {enrolled} />
+              <BuyCourseButton course_id={course_id} amount={course?.price} enrolled = {enrolled} />
             </div>
           )}
         </div>

@@ -49,7 +49,7 @@ const Cart = () => {
      getCart();
   }, [token]);
 
-  const total = cartItems.length === 0 ? 0 : cartItems.reduce((acc, item) => acc + item.price, 0);
+  const total = cartItems.length === 0 ? 0 : cartItems?.reduce((acc, item) => acc + item.price, 0);
 
   const course_ids = cartItems.map(course => course._id);
 
@@ -112,7 +112,10 @@ const Cart = () => {
           </div>
           <button
             className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold"
-            disabled={cartItems.length === 0} onClick={() => displayRazorpay({ course_ids, amount: total, token })}
+            disabled={cartItems.length === 0} onClick={() => {
+              console.log("🚀 setCartItems being passed to Razorpay:", setCartItems);
+              displayRazorpay({ course_ids, amount: total, token ,setCartItems})
+          }}
           >
             Proceed to Checkout
           </button>

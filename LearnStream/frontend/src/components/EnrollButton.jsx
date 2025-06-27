@@ -27,7 +27,13 @@ const EnrollButton = ({ course_id ,setEnroll }) => {
       console.log(error);
     }
   };
-
+  useEffect(() => {
+    
+        checkEnrolled();
+    // console.log("prajyot");
+    
+  }, [token,course_id]); // ✅ Run only once when component mounts
+  
   const enrollStudent = async () => {
     try {
       if (!Enrolled) {
@@ -52,12 +58,7 @@ const EnrollButton = ({ course_id ,setEnroll }) => {
     }
   };
 
-  useEffect(() => {
-    
-        checkEnrolled();
-    // console.log("prajyot");
-    
-  }, [token,course_id]); // ✅ Run only once when component mounts
+  
 
   return (
     <div>

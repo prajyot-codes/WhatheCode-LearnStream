@@ -10,39 +10,67 @@ async function loadScript(src) {
     document.body.appendChild(script);
   });
 }
-
-export const displayRazorpay = async ({ course_ids, amount, token }) => {
+export const displayRazorpay = async ({ course_ids, amount, token, setCartItems }) => {
   const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
   if (!res) {
     alert("Razorpay SDK failed to load.");
     return;
   }
 
-const enrollStudent = async (course_ids) => {
-  try {
-    
+  const enrollStudent = async (course_ids) => {
+    try {
       const response = await axios.post(
-        `/courses/enroll`, 
-        { course_ids },     
+        `/courses/enroll`,
+        { course_ids },
         {
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           },
           withCredentials: true,
         }
       );
-
       if (response.data.success) {
         console.log(`✅ Enrollment successful for:`, course_ids);
       }
-    
-  } catch (error) {
-    console.error("❌ Enrollment error:", error);
-  }
-};
+    } catch (error) {
+      console.error("❌ Enrollment error:", error);
+    }
+  };
 
+  const handlePaymentSuccess = async (response) => {
+    try {
+      const verifyRes = await axios.post(
+        "/payment/verify",
+        {
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
 
+      if (verifyRes.data.success) {
+        await enrollStudent(course_ids);
+        if (typeof setCartItems === "function") {
+          setCartItems([]); // ✅ now will work safely
+        } else {
+          console.error("❌ setCartItems is not a function:", setCartItems);
+        }
+      } else {
+        alert("❌ Payment verification failed.");
+      }
+    } catch (err) {
+      console.error("Verification Error:", err);
+      alert("Payment verification failed.");
+    }
+  };
 
   const { data } = await axios.post(
     "/payment/create-order",
@@ -58,42 +86,16 @@ const enrollStudent = async (course_ids) => {
 
   const order = data.data;
 
-  console.log(order);
-
   const options = {
-    key: "rzp_test_yLlU5Vi0wMY8hC", // Replace with your Razorpay Key
+    key: "rzp_test_yLlU5Vi0wMY8hC",
     amount: order.amount,
     currency: order.currency,
     name: "LearnStream",
     description: "Course Purchase",
     order_id: order.id,
-    handler: async function (response) {
-      try {
-        const verifyRes = await axios.post(
-          "/payment/verify",
-          {
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
-        );
-
-        if (verifyRes.data.success) {
-          enrollStudent(course_ids);
-        } else {
-          alert("❌ Payment verification failed.");
-        }
-      } catch (err) {
-        console.error("Verification Error:", err);
-        alert("Payment verification failed.");
-      }
+    handler: (response) => {
+      // Wrap to preserve the context
+      handlePaymentSuccess(response);
     },
     prefill: {
       email: "test@example.com",

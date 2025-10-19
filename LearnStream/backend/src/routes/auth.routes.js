@@ -60,7 +60,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         const options = {
             httpOnly: true,
             secure: true,
-            // sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
+            sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000, // 1 day
         };
 
